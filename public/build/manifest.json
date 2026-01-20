@@ -1,0 +1,208 @@
+{
+  "_MainLayout-BeTs2XOL.js": {
+    "file": "assets/MainLayout-BeTs2XOL.js",
+    "name": "MainLayout",
+    "imports": [
+      "resources/js/app.jsx",
+      "_useStore-DLstr-6t.js"
+    ]
+  },
+  "_navigation-!~{00g}~.js": {
+    "file": "assets/navigation-CdQqP09h.css",
+    "src": "_navigation-!~{00g}~.js"
+  },
+  "_navigation-BtS5dvw2.js": {
+    "file": "assets/navigation-BtS5dvw2.js",
+    "name": "navigation",
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/navigation-CdQqP09h.css"
+    ]
+  },
+  "_useStore-DLstr-6t.js": {
+    "file": "assets/useStore-DLstr-6t.js",
+    "name": "useStore",
+    "imports": [
+      "resources/js/app.jsx"
+    ]
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-C3fA1556.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/Pages/Cart.jsx": {
+    "file": "assets/Cart-0NtxFByg.js",
+    "name": "Cart",
+    "src": "resources/js/Pages/Cart.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-BeTs2XOL.js",
+      "_useStore-DLstr-6t.js"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/Catalog.jsx": {
+    "file": "assets/Catalog-BOZ-bJRN.js",
+    "name": "Catalog",
+    "src": "resources/js/Pages/Catalog.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-BeTs2XOL.js",
+      "_navigation-BtS5dvw2.js",
+      "_useStore-DLstr-6t.js"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/Dashboard.jsx": {
+    "file": "assets/Dashboard-BN626wR_.js",
+    "name": "Dashboard",
+    "src": "resources/js/Pages/Dashboard.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/Favorites.jsx": {
+    "file": "assets/Favorites-j4kT04Gg.js",
+    "name": "Favorites",
+    "src": "resources/js/Pages/Favorites.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-BeTs2XOL.js",
+      "_navigation-BtS5dvw2.js",
+      "_useStore-DLstr-6t.js"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/ProductDetail.jsx": {
+    "file": "assets/ProductDetail-eHIwbYAA.js",
+    "name": "ProductDetail",
+    "src": "resources/js/Pages/ProductDetail.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_MainLayout-BeTs2XOL.js",
+      "resources/js/Pages/ProductDetail/ProductImageGallery.jsx",
+      "resources/js/Pages/ProductDetail/ProductInfo.jsx",
+      "resources/js/Pages/ProductDetail/ProductDescription.jsx",
+      "resources/js/Pages/ProductDetail/ProductSpecifications.jsx",
+      "resources/js/Pages/ProductDetail/ProductReviews.jsx",
+      "_useStore-DLstr-6t.js",
+      "_navigation-BtS5dvw2.js"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/ProductDetail/ProductDescription.jsx": {
+    "file": "assets/ProductDescription-BjEZRHi6.js",
+    "name": "ProductDescription",
+    "src": "resources/js/Pages/ProductDetail/ProductDescription.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/ProductDetail/ProductImageGallery.jsx": {
+    "file": "assets/ProductImageGallery-gS_5aVUg.js",
+    "name": "ProductImageGallery",
+    "src": "resources/js/Pages/ProductDetail/ProductImageGallery.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_navigation-BtS5dvw2.js"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/ProductDetail/ProductInfo.jsx": {
+    "file": "assets/ProductInfo-DmV6DHw7.js",
+    "name": "ProductInfo",
+    "src": "resources/js/Pages/ProductDetail/ProductInfo.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx",
+      "_useStore-DLstr-6t.js"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/ProductDetail/ProductReviews.jsx": {
+    "file": "assets/ProductReviews-B55bzP2t.js",
+    "name": "ProductReviews",
+    "src": "resources/js/Pages/ProductDetail/ProductReviews.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/ProductDetail/ProductSpecifications.jsx": {
+    "file": "assets/ProductSpecifications-D5sVQIXO.js",
+    "name": "ProductSpecifications",
+    "src": "resources/js/Pages/ProductDetail/ProductSpecifications.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/Pages/Welcome.jsx": {
+    "file": "assets/Welcome-F_KVLtfG.js",
+    "name": "Welcome",
+    "src": "resources/js/Pages/Welcome.jsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "resources/js/app.jsx"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-nMwxjLQ7.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "dynamicImports": [
+      "resources/js/Pages/Cart.jsx",
+      "resources/js/Pages/Catalog.jsx",
+      "resources/js/Pages/Dashboard.jsx",
+      "resources/js/Pages/Favorites.jsx",
+      "resources/js/Pages/ProductDetail.jsx",
+      "resources/js/Pages/ProductDetail/ProductDescription.jsx",
+      "resources/js/Pages/ProductDetail/ProductImageGallery.jsx",
+      "resources/js/Pages/ProductDetail/ProductInfo.jsx",
+      "resources/js/Pages/ProductDetail/ProductReviews.jsx",
+      "resources/js/Pages/ProductDetail/ProductSpecifications.jsx",
+      "resources/js/Pages/Welcome.jsx"
+    ],
+    "css": [
+      "assets/app-C3fA1556.css"
+    ]
+  }
+}

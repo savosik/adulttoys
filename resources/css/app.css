@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Product Detail Swiper Styles */
+.product-detail-swiper {
+    width: 100%;
+}
+
+.product-detail-swiper .swiper-slide {
+    height: auto;
+}
+
+.product-detail-swiper .swiper-button-next,
+.product-detail-swiper .swiper-button-prev {
+    color: #fff;
+    background: rgba(0, 0, 0, 0.5);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.product-detail-swiper .swiper-button-next:after,
+.product-detail-swiper .swiper-button-prev:after {
+    font-size: 18px;
+}
+
+.product-detail-swiper .swiper-pagination-bullet {
+    background: #ef4444;
+    opacity: 0.5;
+}
+
+.product-detail-swiper .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: #ef4444;
+}
+
+/* Ensure smooth transitions on breakpoint changes */
+.product-detail-swiper .swiper-wrapper {
+    transition-timing-function: ease-out;
+}
