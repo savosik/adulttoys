@@ -6,6 +6,9 @@
 
         <title inertia><?php echo e(config('app.name', 'Laravel')); ?></title>
         
+        <!-- Canonical URL -->
+        <link rel="canonical" href="<?php echo e(url()->current()); ?>">
+        
         <meta name="description" content="<?php echo $__env->yieldContent('meta_description', $page['props']['meta']['description'] ?? ''); ?>">
         
         <!-- Open Graph / Facebook -->

@@ -30,7 +30,7 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
 - [x] **Image Optimization**
     - [x] Add `alt` text attribute to `ProductImage` model and UI.
     - [x] Implement lazy loading for images (completed in Performance section).
-    - [ ] Implement responsive images using `srcset` or modern formats (WebP/AVIF).
+    - [x] Implement responsive images using `srcset` and modern formats (WebP/AVIF support added).
 
 ## 3. Structured Data (Schema.org)
 - [x] **Product Schema**

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
+import { generateResponsiveImageProps } from '@/helpers/imageHelper';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -88,13 +89,13 @@ const ProductImageGallery = ({ product }) => {
                                         onClick={() => openModal(idx)}
                                     >
                                         <img
-                                            src={img}
-                                            alt={`${product.name} - ${idx + 1}`}
-                                            className="w-full h-full object-cover"
-                                            loading={idx === 0 ? "eager" : "lazy"}
-                                            fetchpriority={idx === 0 ? "high" : "auto"}
-                                            width="400"
-                                            height="533"
+                                            {...generateResponsiveImageProps(img, `${product.name} - ${idx + 1}`, {
+                                                loading: idx === 0 ? "eager" : "lazy",
+                                                fetchpriority: idx === 0 ? "high" : "auto",
+                                                width: 400,
+                                                height: 533,
+                                                className: "w-full h-full object-cover"
+                                            })}
                                             onError={(e) => {
                                                 console.error('Image load error:', e);
                                                 e.target.src = 'https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image';
@@ -112,12 +113,12 @@ const ProductImageGallery = ({ product }) => {
                             <SwiperSlide>
                                 <div className="relative w-full overflow-hidden bg-gray-50" style={{aspectRatio: '3/4'}}>
                                     <img
-                                        src="https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image"
-                                        alt="No Image"
-                                        className="w-full h-full object-cover"
-                                        loading="eager"
-                                        width="400"
-                                        height="533"
+                                        {...generateResponsiveImageProps('https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image', 'No Image', {
+                                            loading: "eager",
+                                            width: 400,
+                                            height: 533,
+                                            className: "w-full h-full object-cover"
+                                        })}
                                         onError={(e) => {
                                             e.target.src = 'https://placehold.co/400x400/e5e7eb/6b7280?text=Error';
                                         }}

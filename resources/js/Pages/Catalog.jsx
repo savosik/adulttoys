@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
 import axios from 'axios';
 import useStore from '@/store/useStore';
+import { generateResponsiveImageProps } from '@/helpers/imageHelper';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -317,12 +318,12 @@ const Catalog = (props) => {
                                                 {images.map((img, idx) => (
                                                     <SwiperSlide key={idx}>
                                                         <img
-                                                            src={img}
-                                                            alt={`${product.name} - ${idx + 1}`}
-                                                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                            loading="lazy"
-                                                            width="400"
-                                                            height="600"
+                                                            {...generateResponsiveImageProps(img, `${product.name} - ${idx + 1}`, {
+                                                                loading: "lazy",
+                                                                width: 400,
+                                                                height: 600,
+                                                                className: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            })}
                                                         />
                                                     </SwiperSlide>
                                                 ))}
