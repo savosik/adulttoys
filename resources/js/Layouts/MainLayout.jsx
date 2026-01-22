@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
+import { Link, usePage, router, Head } from '@inertiajs/react';
 import axios from 'axios';
 import useStore from '@/store/useStore';
 import Toast from '@/components/Toast';
@@ -82,12 +82,16 @@ const Icons = {
     ArrowUpDown: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
     ),
+    ArrowUp: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m18 15-6-6-6 6"/></svg>
+    ),
     Star: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
     ),
 };
 
 const getCategoryIcon = (name = '') => {
+    if (!name) return Icons.Package;
     const lowerName = name.toLowerCase();
     if (lowerName.includes('игруш')) return Icons.Package;
     if (lowerName.includes('одежд') || lowerName.includes('бель')) return Icons.Shirt;
@@ -520,7 +524,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                                             />
                                         </div>
                                     ) : (
-                                        <Icon className="w-5 h-5 flex-shrink-0" />
+                                        Icon && typeof Icon === 'function' ? <Icon className="w-5 h-5 flex-shrink-0" /> : <Icons.Package className="w-5 h-5 flex-shrink-0" />
                                     )}
                                     <span className="text-[9px] font-medium leading-tight text-center break-all line-clamp-2 max-w-full overflow-hidden">
                                         {cat.name}

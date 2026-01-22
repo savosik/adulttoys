@@ -104,6 +104,8 @@ const Catalog = (props) => {
     const searchRef = useRef(null);
     const recognitionRef = useRef(null);
     const loadMoreRef = useRef(null);
+    const scrollRef = useRef(null);
+    const [showScrollTop, setShowScrollTop] = useState(false);
 
     const sortOptions = [
         { label: 'Сначала новые', value: 'latest' },
@@ -200,10 +202,20 @@ const Catalog = (props) => {
     }, [products?.next_page_url, isLoading]);
 
     // Scroll Top visibility
-    const handleScroll = (e) => {
-        const scrollTop = e.target.scrollTop;
-        setShowScrollTop(scrollTop > 500);
-    };
+    useEffect(() => {
+        const handleScroll = () => {
+            if (scrollRef.current) {
+                const scrollTop = scrollRef.current.scrollTop;
+                setShowScrollTop(scrollTop > 500);
+            }
+        };
+
+        const scrollElement = scrollRef.current;
+        if (scrollElement) {
+            scrollElement.addEventListener('scroll', handleScroll);
+            return () => scrollElement.removeEventListener('scroll', handleScroll);
+        }
+    }, []);
 
     const scrollToTop = () => {
         scrollRef.current?.scrollTo({
@@ -484,6 +496,16 @@ const Catalog = (props) => {
                                 </div>
                             )}
                         </div>
+
+                        {/* Scroll to Top Button */}
+                        {showScrollTop && (
+                            <button
+                                onClick={scrollToTop}
+                                className="fixed bottom-6 right-6 w-12 h-12 bg-red-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-600 transition-all z-50"
+                            >
+                                <Icons.ArrowUp className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
             </main>
             </>
