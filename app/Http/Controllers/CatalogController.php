@@ -6,6 +6,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 
 class CatalogController extends Controller
@@ -92,6 +93,10 @@ class CatalogController extends Controller
             'products' => $products,
             'subCategories' => $subCategories,
             'brands' => $brands,
+            'meta' => [
+                'title' => $categoryModel?->meta_title ?? $categoryModel?->name ?? 'Каталог товаров',
+                'description' => $categoryModel?->meta_description ?? ($categoryModel ? "Купить интимные товары из категории {$categoryModel->name} в Минске." : 'Каталог интимных товаров с доставкой по всей Беларуси.'),
+            ],
             'filters' => array_merge(
                 $request->only(['sub_category', 'brand', 'search', 'sort']),
                 ['category' => $categoryModel?->slug]
@@ -107,6 +112,11 @@ class CatalogController extends Controller
 
         return Inertia::render('ProductDetail', [
             'product' => $product,
+            'meta' => [
+                'title' => $product->meta_title ?? $product->name,
+                'description' => $product->meta_description ?? Str::limit(strip_tags($product->description), 160),
+                'og_image' => $product->image_main ? asset($product->image_main) : null,
+            ],
             'filters' => $request->only(['category', 'sub_category', 'brand', 'search', 'sort']),
         ]);
     }

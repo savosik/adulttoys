@@ -54,6 +54,8 @@ class Category extends Model
         return [
             'id' => (int) $this->id,
             'name' => $this->name,
+            'meta_title' => $this->meta_title,
+            'meta_description' => $this->meta_description,
             'icon_url' => $this->icon_url,
             'name_translit' => \App\Helpers\SearchHelper::transliterate($this->name),
             'name_cyrillic' => \App\Helpers\SearchHelper::transliterateToCyrillic($this->name),

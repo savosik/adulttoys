@@ -3,11 +3,12 @@
 This document provides a comprehensive roadmap for transforming the e-commerce platform into an SEO-first website, optimized for Google and Yandex.
 
 ## 1. Technical Foundation & URLs
-- [ ] **Implement Slugs for Products & Categories**
-    - Add `slug` column to `products` and `categories` tables.
-    - Update models to use `getRouteKeyName()` and automatically generate slugs from names.
-    - Migrate existing data to have unique slugs.
-    - Update routes in `web.php` to use `{product:slug}` and `{category:slug}`.
+- [x] **Implement Slugs for Products & Categories**
+    - [x] Add `slug` column to `products` and `categories` tables.
+    - [x] Update models to use `getRouteKeyName()` and automatically generate slugs from names.
+    - [x] Migrate existing data to have unique slugs.
+    - [x] Update routes in `web.php` to use `{product:slug}` and `{category:slug}`.
+    - [x] **SEO Path Upgrade**: Moved categories from `?category=id` to `/category/slug`.
 - [ ] **Canonical Tags**
     - Add logic to `app.blade.php` or a shared Inertia prop to include `<link rel="canonical" href="...">` for every page to prevent duplicate content issues.
 - [ ] **SSL & HTTPS Redirection**

@@ -68,6 +68,8 @@ class Product extends Model
             'name' => $this->name,
             'sku' => $this->sku,
             'description' => $this->description,
+            'meta_title' => $this->meta_title,
+            'meta_description' => $this->meta_description,
             'brand' => $this->brand?->name,
             'category' => $this->category?->name,
             'category_id' => (int) $this->category_id,

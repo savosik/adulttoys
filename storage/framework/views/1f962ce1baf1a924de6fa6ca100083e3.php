@@ -5,6 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title inertia><?php echo e(config('app.name', 'Laravel')); ?></title>
+        
+        <meta name="description" content="<?php echo $__env->yieldContent('meta_description', $page['props']['meta']['description'] ?? ''); ?>">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="<?php echo e(url()->current()); ?>">
+        <meta property="og:title" content="<?php echo $__env->yieldContent('meta_title', $page['props']['meta']['title'] ?? config('app.name', 'Laravel')); ?>">
+        <meta property="og:description" content="<?php echo $__env->yieldContent('meta_description', $page['props']['meta']['description'] ?? ''); ?>">
+        <meta property="og:image" content="<?php echo $__env->yieldContent('og_image', $page['props']['meta']['og_image'] ?? asset('logo.svg')); ?>">
+
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:url" content="<?php echo e(url()->current()); ?>">
+        <meta property="twitter:title" content="<?php echo $__env->yieldContent('meta_title', $page['props']['meta']['title'] ?? config('app.name', 'Laravel')); ?>">
+        <meta property="twitter:description" content="<?php echo $__env->yieldContent('meta_description', $page['props']['meta']['description'] ?? ''); ?>">
+        <meta property="twitter:image" content="<?php echo $__env->yieldContent('og_image', $page['props']['meta']['og_image'] ?? asset('logo.svg')); ?>">
 
         <!-- Scripts -->
         <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
