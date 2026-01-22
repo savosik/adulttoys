@@ -64,9 +64,17 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - [x] Add links to verified social media profiles in the footer.
 
 ## 6. Performance & Core Web Vitals
-- [ ] **Optimize LCP (Largest Contentful Paint)**
-    - Preload the main product image on detail pages.
-    - Minimize render-blocking CSS/JS.
+- [x] **Optimize LCP (Largest Contentful Paint)**
+    - [x] Preload the main product image on detail pages.
+    - [x] Minimize render-blocking CSS/JS with Vite build optimizations.
+- [x] **Lazy Loading & Image Optimization**
+    - [x] Implemented lazy loading for all images except LCP element (first product image).
+    - [x] Added explicit width/height attributes to images to reduce CLS.
+    - [x] Set fetchpriority="high" for above-the-fold images.
+- [x] **Code Splitting & Minification**
+    - [x] Configured Vite with terser minification (removes console.logs in production).
+    - [x] Implemented manual chunk splitting for vendor libraries (React, Inertia, Swiper).
+    - [x] Enabled CSS code splitting for better caching.
 - [ ] **Improve FID/INP**
     - Audit heavy React components.
     - Ensure event listeners are efficient.

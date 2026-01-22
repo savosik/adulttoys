@@ -22,6 +22,11 @@
         <meta property="twitter:description" content="<?php echo $__env->yieldContent('meta_description', $page['props']['meta']['description'] ?? ''); ?>">
         <meta property="twitter:image" content="<?php echo $__env->yieldContent('og_image', $page['props']['meta']['og_image'] ?? asset('logo.svg')); ?>">
 
+        <!-- Preload critical resources for LCP optimization -->
+        <?php if(isset($page['props']['product']) && $page['props']['product']['image_main']): ?>
+        <link rel="preload" as="image" href="<?php echo e($page['props']['product']['image_main']); ?>" fetchpriority="high">
+        <?php endif; ?>
+
         <!-- Scripts -->
         <?php echo app('Illuminate\Foundation\Vite')->reactRefresh(); ?>
         <?php echo app('Illuminate\Foundation\Vite')(['resources/js/app.jsx', "resources/js/Pages/{$page['component']}.jsx"]); ?>

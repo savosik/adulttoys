@@ -91,6 +91,10 @@ const ProductImageGallery = ({ product }) => {
                                             src={img}
                                             alt={`${product.name} - ${idx + 1}`}
                                             className="w-full h-full object-cover"
+                                            loading={idx === 0 ? "eager" : "lazy"}
+                                            fetchpriority={idx === 0 ? "high" : "auto"}
+                                            width="400"
+                                            height="533"
                                             onError={(e) => {
                                                 console.error('Image load error:', e);
                                                 e.target.src = 'https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image';
@@ -111,6 +115,9 @@ const ProductImageGallery = ({ product }) => {
                                         src="https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image"
                                         alt="No Image"
                                         className="w-full h-full object-cover"
+                                        loading="eager"
+                                        width="400"
+                                        height="533"
                                         onError={(e) => {
                                             e.target.src = 'https://placehold.co/400x400/e5e7eb/6b7280?text=Error';
                                         }}

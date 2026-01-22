@@ -22,4 +22,29 @@ export default defineConfig({
             usePolling: true,
         }
     },
+    build: {
+        // Production optimizations
+        minify: 'terser',
+        terserOptions: {
+            compress: {
+                drop_console: true, // Remove console.logs in production
+                drop_debugger: true,
+            },
+        },
+        // Code splitting for better caching
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    // Split vendor chunks
+                    'vendor-react': ['react', 'react-dom'],
+                    'vendor-inertia': ['@inertiajs/react'],
+                    'vendor-swiper': ['swiper'],
+                },
+            },
+        },
+        // Increase chunk size warning limit
+        chunkSizeWarningLimit: 1000,
+        // Enable CSS code splitting
+        cssCodeSplit: true,
+    },
 });

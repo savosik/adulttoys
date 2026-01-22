@@ -315,6 +315,9 @@ const Catalog = (props) => {
                                                             src={img}
                                                             alt={`${product.name} - ${idx + 1}`}
                                                             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            loading="lazy"
+                                                            width="400"
+                                                            height="600"
                                                         />
                                                     </SwiperSlide>
                                                 ))}
