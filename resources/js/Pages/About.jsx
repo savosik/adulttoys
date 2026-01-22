@@ -62,6 +62,38 @@ const About = ({ faqs }) => {
         }
     }, [url]);
 
+    // Schema.org FAQPage Data for better SERP display
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Доставка",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Доставка по Минску: При заказе до 19:00 — день в день. Бесплатная доставка при заказе от 100 BYN. Стоимость доставки заказов до 100 BYN — 10 BYN. Доставка по Беларуси: Европочта (до отделения) — 2-4 дня, Белпочта (наложенный платеж) — 3-5 дней, Курьерская служба — 1-2 дня. Все заказы упаковываются в непрозрачную упаковку без опознавательных знаков."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Оплата",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Доступные способы оплаты: Наличными курьеру, Картой через терминал, Онлайн на сайте (ЕРИП), Карты рассрочки (Халва, Черепаха)."
+                }
+            },
+            ...faqs.map(faq => ({
+                "@type": "Question",
+                "name": faq.question,
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": faq.answer
+                }
+            }))
+        ]
+    };
+
     const howToGetImages = [
         'https://placehold.co/800x600/e5e7eb/6b7280?text=Как+добраться+1',
         'https://placehold.co/800x600/e5e7eb/6b7280?text=Как+добраться+2',
@@ -70,7 +102,13 @@ const About = ({ faqs }) => {
 
     return (
         <MainLayout>
-            <Head title={isWeAreHere ? "Мы здесь" : "О нас и FAQ"} />
+            <Head title={isWeAreHere ? "Мы здесь" : "О нас и FAQ"}>
+                {!isWeAreHere && (
+                    <script type="application/ld+json">
+                        {JSON.stringify(faqSchema)}
+                    </script>
+                )}
+            </Head>
             
             <div className="bg-white pb-20">
                 <div className="max-w-4xl mx-auto px-4 py-12">

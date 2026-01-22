@@ -92,6 +92,12 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - Set up Lighthouse CI or similar to track performance metrics over time.
 
 ## 8. SEO "Tricks" & Advanced Tactics (The "Cheatsheet")
+- [x] **Snippet "Stealing" with Microdata**
+    - [x] Implement `FAQPage` schema on product pages to occupy more vertical space in search results.
+    - [ ] Add `PriceRange` to local schema to attract price-sensitive users.
+- [x] **Image Search Domination**
+    - [x] Use descriptive filenames for images (e.g., `iphone-15-pro-max-black.webp` instead of `IMG_123.jpg`).
+    - [x] Add images to the XML Sitemap with proper captions and titles.
 - [ ] **CTR Hijacking with "Power Words"**
     - Use numbers, brackets, and high-conversion words in Meta Titles (e.g., "Best {Product} [2026 Price] - Buy Now").
     - Add Emoji to Meta Descriptions (check Yandex/Google support per region) to stand out in SERP.
@@ -102,9 +108,6 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - Create dynamic landing pages for specific search queries that aren't in your main menu (e.g., "Smartphones under 500 BYN", "Red Electronics").
 - [ ] **Review Keyword Injection**
     - Prompt users to include specific product attributes in their reviews (e.g., "How does the *battery life* of this *laptop* feel?").
-- [ ] **Snippet "Stealing" with Microdata**
-    - Implement `FAQPage` schema on product pages to occupy more vertical space in search results.
-    - Add `PriceRange` to local schema to attract price-sensitive users.
 - [ ] **Zero-Volume Keyword Targeting**
     - Research ultra-long-tail queries that SEO tools often miss but users actually type.
 - [ ] **Competitor "Broken Link" Building**
@@ -112,6 +115,3 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
 - [ ] **Behavioral Signal Boosting (Yandex)**
     - Implement "Add to Compare" or "Save for Later" features to increase "Time on Site" and "Depth of Visit".
     - Use a "Sticky" cart or "Quick View" to reduce bounce rate on mobile.
-- [ ] **Image Search Domination**
-    - Use descriptive filenames for images (e.g., `iphone-15-pro-max-black.webp` instead of `IMG_123.jpg`).
-    - Add images to the XML Sitemap.

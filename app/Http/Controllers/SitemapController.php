@@ -10,7 +10,9 @@ class SitemapController extends Controller
 {
     public function index()
     {
-        $products = Product::where('stock', '>', 0)->get();
+        $products = Product::where('stock', '>', 0)
+            ->with('additionalImages')
+            ->get();
         $categories = Category::all();
 
         return response()->view('sitemap', [
