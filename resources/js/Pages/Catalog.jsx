@@ -49,7 +49,7 @@ const Icons = {
 };
 
 const Catalog = (props) => {
-    const { products, categories, subCategories = [], filters } = props;
+    const { products, categories, subCategories = [], filters, currentCategory = null } = props;
     
     // Zustand store
     const [items, setItems] = useState(products?.data || []);
@@ -222,6 +222,11 @@ const Catalog = (props) => {
                 className="relative"
             >
                 <div className="p-4">
+                        {/* Page Heading (H1 for SEO) */}
+                        <h1 className="sr-only">
+                            {currentCategory ? currentCategory.name : filters.search ? `Поиск: ${filters.search}` : 'Каталог товаров'}
+                        </h1>
+
                         {/* Multi-select Tags UX */}
                         {subCategories.length > 0 && (
                             <div className="mb-6">

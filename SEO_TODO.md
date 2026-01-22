@@ -9,8 +9,8 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - [x] Migrate existing data to have unique slugs.
     - [x] Update routes in `web.php` to use `{product:slug}` and `{category:slug}`.
     - [x] **SEO Path Upgrade**: Moved categories from `?category=id` to `/category/slug`.
-- [ ] **Canonical Tags**
-    - Add logic to `app.blade.php` or a shared Inertia prop to include `<link rel="canonical" href="...">` for every page to prevent duplicate content issues.
+- [x] **Canonical Tags**
+    - [x] Add logic to `app.blade.php` to include `<link rel="canonical" href="...">` for every page to prevent duplicate content issues.
 - [ ] **SSL & HTTPS Redirection**
     - Ensure all traffic is forced to HTTPS (standard but critical).
 - [ ] **WWW vs Non-WWW**
@@ -23,14 +23,14 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
 - [x] **OpenGraph & Twitter Cards**
     - [x] Implement OG tags (title, description, image, url) in `app.blade.php`.
     - [x] Ensure product images are used as OG images on product detail pages.
-- [ ] **Semantic HTML Audit**
-    - Ensure only one `<h1>` per page (Product Title on detail page, Category Name on catalog).
-    - Use `<header>`, `<footer>`, `<nav>`, and `<main>` consistently.
-    - Check heading hierarchy (H1 -> H2 -> H3).
-- [ ] **Image Optimization**
-    - Add `alt` text attribute to `ProductImage` model and UI.
-    - Implement responsive images using `srcset` or modern formats (WebP/AVIF).
-    - Ensure images are lazy-loaded except for the LCP element.
+- [x] **Semantic HTML Audit**
+    - [x] Ensure only one `<h1>` per page (Product Title on detail page, Category Name on catalog).
+    - [x] Use `<header>`, `<footer>`, `<nav>`, and `<main>` consistently.
+    - [x] Check heading hierarchy (H1 -> H2 -> H3).
+- [x] **Image Optimization**
+    - [x] Add `alt` text attribute to `ProductImage` model and UI.
+    - [x] Implement lazy loading for images (completed in Performance section).
+    - [ ] Implement responsive images using `srcset` or modern formats (WebP/AVIF).
 
 ## 3. Structured Data (Schema.org)
 - [x] **Product Schema**

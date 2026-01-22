@@ -6,6 +6,9 @@
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
         
+        <!-- Canonical URL -->
+        <link rel="canonical" href="{{ url()->current() }}">
+        
         <meta name="description" content="@yield('meta_description', $page['props']['meta']['description'] ?? '')">
         
         <!-- Open Graph / Facebook -->

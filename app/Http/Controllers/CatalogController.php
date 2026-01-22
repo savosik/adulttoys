@@ -93,6 +93,7 @@ class CatalogController extends Controller
             'products' => $products,
             'subCategories' => $subCategories,
             'brands' => $brands,
+            'currentCategory' => $categoryModel,
             'meta' => [
                 'title' => $categoryModel?->meta_title ?? $categoryModel?->name ?? 'Каталог товаров',
                 'description' => $categoryModel?->meta_description ?? ($categoryModel ? "Купить интимные товары из категории {$categoryModel->name} в Минске." : 'Каталог интимных товаров с доставкой по всей Беларуси.'),
