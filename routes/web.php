@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\CatalogController;
-use App\Models\Faq;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [CatalogController::class, 'index'])->name('catalog');
+Route::get('/category/{category:slug}', [CatalogController::class, 'index'])->name('category.show');
 
 Route::get('/about', function () {
     return Inertia::render('About', [
@@ -15,7 +15,8 @@ Route::get('/about', function () {
 
 Route::get('/search/suggestions', [CatalogController::class, 'suggestions'])->name('search.suggestions');
 Route::get('/product/{product:slug}', [CatalogController::class, 'show'])->name('product.show');
-Route::get('/cart', [CatalogController::class, 'cart'])->name('cart');
+
+Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 

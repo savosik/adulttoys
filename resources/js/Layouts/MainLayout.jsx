@@ -219,6 +219,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const handleSearchSubmit = (e) => {
         e?.preventDefault();
         setShowSuggestions(false);
+        // Search is always global for better UX
         if (searchQuery.trim()) {
             router.get('/', { search: searchQuery }, { 
                 preserveState: false, 
@@ -246,7 +247,8 @@ const MainLayout = ({ children, filters: propsFilters }) => {
 
     const handleSort = (value) => {
         setShowSortDropdown(false);
-        router.get('/', { ...filters, sort: value }, { 
+        const url = filters.category ? `/category/${filters.category}` : '/';
+        router.get(url, { ...filters, category: undefined, sort: value }, { 
             preserveState: true, 
             preserveScroll: true,
             replace: true 
@@ -453,7 +455,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                             return (
                                 <Link
                                     key={cat.id}
-                                    href={`/?category=${cat.slug}`}
+                                    href={`/category/${cat.slug}`}
                                     className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${
                                         isActive
                                             ? 'bg-red-50 text-red-700'

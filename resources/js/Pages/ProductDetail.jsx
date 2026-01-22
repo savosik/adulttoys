@@ -22,7 +22,8 @@ const ProductDetail = ({ product, categories, filters = {} }) => {
         if (filters.sort) params.set('sort', filters.sort);
         
         const queryString = params.toString();
-        return queryString ? `/?${queryString}` : '/';
+        const baseUrl = filters.category ? `/category/${filters.category}` : '/';
+        return queryString ? `${baseUrl}?${queryString}` : baseUrl;
     })();
 
     return (

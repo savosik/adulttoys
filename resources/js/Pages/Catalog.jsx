@@ -84,8 +84,11 @@ const Catalog = (props) => {
         
         // Sync with URL
         const subCategoryParam = Array.from(newSelected).join(',');
-        router.get('/', { 
+        const url = filters.category ? `/category/${filters.category}` : '/';
+        
+        router.get(url, { 
             ...filters, 
+            category: undefined, // It's in the path now
             sub_category: subCategoryParam || undefined 
         }, { 
             preserveState: true, 
