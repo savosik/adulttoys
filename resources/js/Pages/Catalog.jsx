@@ -55,8 +55,6 @@ const Catalog = (props) => {
     const [items, setItems] = useState(products?.data || []);
     const [isLoading, setIsLoading] = useState(false);
     const [showAllSubCategories, setShowAllSubCategories] = useState(false);
-    const [showScrollTop, setShowScrollTop] = useState(false);
-    const [showSortDropdown, setShowSortDropdown] = useState(false);
     
     // Sub-category state (multi-select)
     const [selectedSubCategories, setSelectedSubCategories] = useState(new Set(
@@ -104,9 +102,7 @@ const Catalog = (props) => {
     const [isListening, setIsListening] = useState(false);
     const searchRef = useRef(null);
     const recognitionRef = useRef(null);
-    const sortDropdownRef = useRef(null);
     const loadMoreRef = useRef(null);
-    const scrollRef = useRef(null);
 
     const sortOptions = [
         { label: 'Сначала новые', value: 'latest' },
@@ -223,8 +219,7 @@ const Catalog = (props) => {
             {/* Content Area */}
             <main 
                 ref={scrollRef}
-                onScroll={handleScroll}
-                className="flex-1 overflow-y-auto content-scroll relative"
+                className="relative"
             >
                 <div className="p-4">
                         {/* Multi-select Tags UX */}
@@ -481,16 +476,6 @@ const Catalog = (props) => {
                             )}
                         </div>
                     </div>
-
-                    {/* Back to Top Button */}
-                    <button
-                        onClick={scrollToTop}
-                        className={`fixed bottom-24 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-50 border border-gray-100 ${
-                            showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
-                        }`}
-                    >
-                        <Icons.ArrowUp className="w-6 h-6 text-red-700" />
-                    </button>
             </main>
             </>
         </MainLayout>

@@ -41,7 +41,7 @@ const AccordionItem = ({ question, answer, children, isOpen, onClick }) => {
 
 const About = ({ faqs }) => {
     const { url } = usePage();
-    const [openId, setOpenId] = useState(null);
+    const [openId, setOpenId] = useState('delivery'); // Open delivery by default if no hash
     const [isWeAreHere, setIsWeAreHere] = useState(false);
 
     const toggleItem = (id) => {
@@ -50,7 +50,16 @@ const About = ({ faqs }) => {
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-        setIsWeAreHere(params.get('section') === 'we-are-here');
+        const section = params.get('section');
+        setIsWeAreHere(section === 'we-are-here');
+        
+        // Handle scrolling to sections if specified
+        if (section) {
+            const element = document.getElementById(section);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
     }, [url]);
 
     const howToGetImages = [
@@ -63,7 +72,7 @@ const About = ({ faqs }) => {
         <MainLayout>
             <Head title={isWeAreHere ? "Мы здесь" : "О нас и FAQ"} />
             
-            <div className="flex-1 overflow-y-auto content-scroll bg-white pb-20">
+            <div className="bg-white pb-20">
                 <div className="max-w-4xl mx-auto px-4 py-12">
                     {isWeAreHere ? (
                         <section className="animate-fadeIn">
@@ -155,6 +164,63 @@ const About = ({ faqs }) => {
 
                             <section className="animate-fadeIn" style={{ animationDelay: '0.1s' }}>
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                                    <div id="delivery">
+                                        <AccordionItem
+                                            question="Доставка"
+                                            isOpen={openId === 'delivery'}
+                                            onClick={() => toggleItem('delivery')}
+                                        >
+                                            <div className="space-y-4 text-sm leading-relaxed">
+                                                <div className="p-4 bg-red-50 rounded-xl border border-red-100">
+                                                    <p className="font-bold text-red-800">Доставка по Минску:</p>
+                                                    <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                        <li>При заказе до 19:00 — <span className="font-bold">день в день</span>.</li>
+                                                        <li>Бесплатная доставка при заказе от 100 BYN.</li>
+                                                        <li>Стоимость доставки заказов до 100 BYN — 10 BYN.</li>
+                                                    </ul>
+                                                </div>
+                                                <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                                    <p className="font-bold text-gray-800">Доставка по Беларуси:</p>
+                                                    <ul className="list-disc ml-5 mt-2 space-y-1">
+                                                        <li>Европочта (до отделения) — 2-4 дня.</li>
+                                                        <li>Белпочта (наложенный платеж) — 3-5 дней.</li>
+                                                        <li>Курьерская служба — 1-2 дня.</li>
+                                                    </ul>
+                                                </div>
+                                                <p className="text-gray-500 italic">Все заказы упаковываются в непрозрачную упаковку без опознавательных знаков.</p>
+                                            </div>
+                                        </AccordionItem>
+                                    </div>
+
+                                    <div id="payment">
+                                        <AccordionItem
+                                            question="Оплата"
+                                            isOpen={openId === 'payment'}
+                                            onClick={() => toggleItem('payment')}
+                                        >
+                                            <div className="space-y-4 text-sm leading-relaxed">
+                                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                    <li className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl">
+                                                        <div className="w-8 h-8 bg-green-50 rounded-full flex items-center justify-center text-green-600 font-bold">BYN</div>
+                                                        <span>Наличными курьеру</span>
+                                                    </li>
+                                                    <li className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl">
+                                                        <div className="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 font-bold">💳</div>
+                                                        <span>Картой через терминал</span>
+                                                    </li>
+                                                    <li className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl">
+                                                        <div className="w-8 h-8 bg-orange-50 rounded-full flex items-center justify-center text-orange-600 font-bold">🔗</div>
+                                                        <span>Онлайн на сайте (ЕРИП)</span>
+                                                    </li>
+                                                    <li className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl">
+                                                        <div className="w-8 h-8 bg-purple-50 rounded-full flex items-center justify-center text-purple-600 font-bold">🏷️</div>
+                                                        <span>Карты рассрочки (Халва, Черепаха)</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </AccordionItem>
+                                    </div>
+
                                     {faqs.map((faq) => (
                                         <AccordionItem
                                             key={faq.id}

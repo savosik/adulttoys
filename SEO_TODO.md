@@ -51,17 +51,17 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - [x] Add "Related Products" section on product pages.
     - [x] Ensure breadcrumbs are clickable and follow a logical path.
     - [ ] Link to categories from the home page (Sidebar already exists).
-- [ ] **FAQ Content**
-    - Enhance the `About` page with a robust FAQ section (already started, but ensure it's crawlable).
+- [x] **FAQ Content**
+    - [x] Enhance the `About` page with a robust FAQ section (Added Delivery and Payment logic).
 
 ## 5. E-commerce Specifics (Yandex Focus)
-- [ ] **Commercial Factors**
-    - Ensure physical address, phone number, and working hours are in the footer.
-    - Clear "Delivery" and "Payment" information pages/sections.
-- [ ] **Assortment Signals**
-    - Ensure category pages show a good number of products and have pagination.
-- [ ] **Social Media Links**
-    - Add links to verified social media profiles in the footer.
+- [x] **Commercial Factors**
+    - [x] Ensure physical address, phone number, and working hours are in the footer.
+    - [x] Clear "Delivery" and "Payment" information pages/sections.
+- [x] **Assortment Signals**
+    - [x] Ensure category pages show a good number of products and have pagination (handled by `CatalogController`).
+- [x] **Social Media Links**
+    - [x] Add links to verified social media profiles in the footer.
 
 ## 6. Performance & Core Web Vitals
 - [ ] **Optimize LCP (Largest Contentful Paint)**

@@ -145,7 +145,7 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
             </div>
 
             {/* Content Area */}
-            <main className="flex-1 overflow-y-auto content-scroll bg-gray-50">
+            <main className="bg-gray-50">
                 <div className="p-4 pb-32">
                     {/* Single column layout for all screens */}
                     <div className="w-full space-y-6">

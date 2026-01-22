@@ -150,12 +150,14 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const [searchQuery, setSearchQuery] = useState(filters.search || '');
     const [suggestions, setSuggestions] = useState({ products: [], categories: [] });
     const [showSuggestions, setShowSuggestions] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [showCallModal, setShowCallModal] = useState(false);
     const searchRef = useRef(null);
     const recognitionRef = useRef(null);
     const sortDropdownRef = useRef(null);
+    const contentRef = useRef(null);
 
     const sortOptions = [
         { label: 'Сначала новые', value: 'latest' },
@@ -277,6 +279,18 @@ const MainLayout = ({ children, filters: propsFilters }) => {
             preserveState: true, 
             preserveScroll: true,
             replace: true 
+        });
+    };
+
+    const handleScroll = (e) => {
+        const scrollTop = e.target.scrollTop;
+        setShowScrollTop(scrollTop > 500);
+    };
+
+    const scrollToTop = () => {
+        contentRef.current?.scrollTo({
+            top: 0,
+            behavior: 'smooth'
         });
     };
 
@@ -518,7 +532,11 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 </aside>
 
                 {/* Main Content */}
-                <div className="flex-1 flex flex-col overflow-hidden">
+                <div 
+                    ref={contentRef}
+                    onScroll={handleScroll}
+                    className="flex-1 flex flex-col overflow-y-auto content-scroll"
+                >
                     {/* Sort & Search Header */}
                     {!['Cart', 'Favorites', 'ProductDetail'].includes(component) && (
                     <div className="bg-white shadow-sm flex-shrink-0 sticky top-0 z-20">
@@ -678,6 +696,83 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     </div>
                     )}
                     {children}
+                    
+                    {/* Desktop Footer (Yandex Commercial Factors) */}
+                    {!['Cart', 'Favorites'].includes(component) && (
+                        <footer className="bg-white border-t border-gray-100 mt-12 pb-32 pt-12 px-6 flex-shrink-0">
+                            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-1.5 h-8 bg-red-500 rounded-full"></div>
+                                        <img src="/logo.svg" alt="A-toys" className="h-8 w-auto" />
+                                    </div>
+                                    <p className="text-xs text-gray-500 leading-relaxed">
+                                        Ваш надежный партнер в мире интимных товаров с 2019 года. Мы гарантируем полную анонимность и высокое качество продукции.
+                                    </p>
+                                    <div className="flex gap-4">
+                                        <a href="https://vk.com" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
+                                            <span className="text-[10px] font-bold">VK</span>
+                                        </a>
+                                        <a href="https://instagram.com" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-pink-500 hover:bg-pink-50 transition-all">
+                                            <span className="text-[10px] font-bold">IG</span>
+                                        </a>
+                                        <a href="https://t.me" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-all">
+                                            <span className="text-[10px] font-bold">TG</span>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6">Покупателям</h4>
+                                    <ul className="space-y-3">
+                                        <li><Link href="/about?section=delivery" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Доставка</Link></li>
+                                        <li><Link href="/about?section=payment" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Оплата</Link></li>
+                                        <li><Link href="/about" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Вопросы и ответы</Link></li>
+                                        <li><Link href="/about?section=we-are-here" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Мы на карте</Link></li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6">Контакты</h4>
+                                    <ul className="space-y-4">
+                                        <li className="flex gap-3">
+                                            <Icons.Phone className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                            <div>
+                                                <a href="tel:+375295008990" className="text-sm font-bold text-gray-900 block tracking-tight">+375 (29) 500-89-90</a>
+                                                <span className="text-[10px] text-gray-400">Ежедневно 10:00 - 20:00</span>
+                                            </div>
+                                        </li>
+                                        <li className="flex gap-3">
+                                            <Icons.MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
+                                            <span className="text-sm text-gray-500 leading-tight">г. Минск, ул. Тимирязева, 123/2 (ТЦ "Град")</span>
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6">Информация</h4>
+                                    <p className="text-[10px] text-gray-400 leading-relaxed">
+                                        ООО "Адалт Тойс", УНП 192825568. <br />
+                                        Зарегистрировано в Торговом реестре РБ 12.05.2019. <br />
+                                        Свидетельство о гос. регистрации выдано Мингорисполкомом.
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="max-w-7xl mx-auto border-t border-gray-50 mt-12 pt-8 text-center">
+                                <p className="text-[10px] text-gray-300">© 2019-{new Date().getFullYear()} A-Toys. Все права защищены. 18+</p>
+                            </div>
+                        </footer>
+                    )}
+
+                    {/* Back to Top Button */}
+                    <button
+                        onClick={scrollToTop}
+                        className={`fixed bottom-24 right-6 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-300 z-[60] border border-gray-100 ${
+                            showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
+                        }`}
+                    >
+                        <Icons.ArrowUp className="w-6 h-6 text-red-700" />
+                    </button>
                 </div>
             </div>
 
