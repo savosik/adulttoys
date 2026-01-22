@@ -84,7 +84,7 @@ const Catalog = (props) => {
         
         // Sync with URL
         const subCategoryParam = Array.from(newSelected).join(',');
-        router.get('/catalog', { 
+        router.get('/', { 
             ...filters, 
             sub_category: subCategoryParam || undefined 
         }, { 
@@ -295,7 +295,7 @@ const Catalog = (props) => {
                                     if (filters.sort) params.set('sort', filters.sort);
                                     
                                     const queryString = params.toString();
-                                    return `/product/${product.id}${queryString ? '?' + queryString : ''}`;
+                                    return `/product/${product.slug}${queryString ? '?' + queryString : ''}`;
                                 })();
 
                                 return (
@@ -459,7 +459,7 @@ const Catalog = (props) => {
                                     Попробуйте изменить запрос или сбросить фильтры
                                 </p>
                                 <button
-                                    onClick={() => router.get('/catalog')}
+                                    onClick={() => router.get('/')}
                                     className="mt-6 px-6 py-2 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 transition-colors"
                                 >
                                     Сбросить все

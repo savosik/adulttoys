@@ -3,12 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
     use Searchable;
     protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($product) {
+            if (!$product->slug) {
+                $product->slug = Str::slug($product->name);
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     protected $casts = [
         'novelty' => 'boolean',

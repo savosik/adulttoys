@@ -3,12 +3,29 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Laravel\Scout\Searchable;
 
 class Category extends Model
 {
     use Searchable;
     protected $guarded = [];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($category) {
+            if (!$category->slug) {
+                $category->slug = Str::slug($category->name);
+            }
+        });
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     protected $appends = ['icon_url'];
 

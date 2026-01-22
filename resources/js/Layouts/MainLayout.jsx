@@ -449,11 +449,11 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                         {categories.map(cat => {
                             if (cat.id === 2) console.log('Category 2 data:', cat);
                             const Icon = getCategoryIcon(cat.name);
-                            const isActive = selectedCategory == cat.id || selectedCategory == cat.name;
+                            const isActive = selectedCategory == cat.id || selectedCategory == cat.name || selectedCategory == cat.slug;
                             return (
                                 <Link
                                     key={cat.id}
-                                    href={`/?category=${cat.id}`}
+                                    href={`/?category=${cat.slug}`}
                                     className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${
                                         isActive
                                             ? 'bg-red-50 text-red-700'

@@ -46,6 +46,7 @@ class HandleInertiaRequests extends Middleware
                 ->get()
                 ->map(fn($c) => [
                     'id' => $c->id,
+                    'slug' => $c->slug,
                     'name' => $c->name,
                     'icon' => $c->icon,
                     'icon_url' => $c->icon_url,

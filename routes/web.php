@@ -14,9 +14,8 @@ Route::get('/about', function () {
 })->name('about');
 
 Route::get('/search/suggestions', [CatalogController::class, 'suggestions'])->name('search.suggestions');
-Route::get('/product/{product}', [CatalogController::class, 'show'])->name('product.show');
-
-Route::get('/dashboard', function () {
+Route::get('/product/{product:slug}', [CatalogController::class, 'show'])->name('product.show');
+Route::get('/cart', [CatalogController::class, 'cart'])->name('cart');
     return Inertia::render('Dashboard');
 })->name('dashboard');
 

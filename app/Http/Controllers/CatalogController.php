@@ -45,10 +45,10 @@ class CatalogController extends Controller
                     return;
                 }
 
-                $category = Category::find($categoryId);
+                $category = Category::where('id', $categoryId)->orWhere('slug', $categoryId)->first();
                 if ($category) {
-                    $categoryIds = Category::where('id', $categoryId)
-                        ->orWhere('parent_id', $categoryId)
+                    $categoryIds = Category::where('id', $category->id)
+                        ->orWhere('parent_id', $category->id)
                         ->pluck('id');
                     
                     $subCategoryIds = Category::whereIn('parent_id', $categoryIds)->pluck('id');
@@ -81,9 +81,12 @@ class CatalogController extends Controller
 
         $subCategories = [];
         if ($request->category) {
-            $subCategories = Category::where('parent_id', $request->category)
-                ->withCount('products')
-                ->get();
+            $category = Category::where('id', $request->category)->orWhere('slug', $request->category)->first();
+            if ($category) {
+                $subCategories = Category::where('parent_id', $category->id)
+                    ->withCount('products')
+                    ->get();
+            }
         }
 
         return Inertia::render('Catalog', [
@@ -127,7 +130,7 @@ class CatalogController extends Controller
                 'name' => $p->name,
                 'price' => $p->price,
                 'image' => $p->image_main,
-                'url' => route('product.show', $p->id),
+                'url' => route('product.show', $p->slug),
                 'reviews_count' => $p->reviews_count,
                 'reviews_avg_rating' => $p->reviews_avg_rating,
             ]);
@@ -139,7 +142,7 @@ class CatalogController extends Controller
                 'id' => $c->id,
                 'name' => $c->name,
                 'icon_url' => $c->icon_url,
-                'url' => route('catalog', ['category' => $c->id]),
+                'url' => route('catalog', ['category' => $c->slug]),
             ]);
 
         return response()->json([
