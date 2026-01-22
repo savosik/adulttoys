@@ -1,0 +1,109 @@
+# SEO-First Implementation TODO List
+
+This document provides a comprehensive roadmap for transforming the e-commerce platform into an SEO-first website, optimized for Google and Yandex.
+
+## 1. Technical Foundation & URLs
+- [ ] **Implement Slugs for Products & Categories**
+    - Add `slug` column to `products` and `categories` tables.
+    - Update models to use `getRouteKeyName()` and automatically generate slugs from names.
+    - Migrate existing data to have unique slugs.
+    - Update routes in `web.php` to use `{product:slug}` and `{category:slug}`.
+- [ ] **Canonical Tags**
+    - Add logic to `app.blade.php` or a shared Inertia prop to include `<link rel="canonical" href="...">` for every page to prevent duplicate content issues.
+- [ ] **SSL & HTTPS Redirection**
+    - Ensure all traffic is forced to HTTPS (standard but critical).
+- [ ] **WWW vs Non-WWW**
+    - Decide on a preferred domain and set up 301 redirects.
+
+## 2. On-Page SEO & Metadata
+- [ ] **Dynamic Meta Tags System**
+    - Add `meta_title` and `meta_description` fields to `Product`, `Category`, and `Faq` models.
+    - Create a helper or service to generate default meta tags if specific ones are missing (e.g., "Buy {product_name} at {app_name}").
+- [ ] **OpenGraph & Twitter Cards**
+    - Implement OG tags (title, description, image, url) in `app.blade.php`.
+    - Ensure product images are used as OG images on product detail pages.
+- [ ] **Semantic HTML Audit**
+    - Ensure only one `<h1>` per page (Product Title on detail page, Category Name on catalog).
+    - Use `<header>`, `<footer>`, `<nav>`, and `<main>` consistently.
+    - Check heading hierarchy (H1 -> H2 -> H3).
+- [ ] **Image Optimization**
+    - Add `alt` text attribute to `ProductImage` model and UI.
+    - Implement responsive images using `srcset` or modern formats (WebP/AVIF).
+    - Ensure images are lazy-loaded except for the LCP element.
+
+## 3. Structured Data (Schema.org)
+- [ ] **Product Schema**
+    - Add JSON-LD to `ProductDetail.jsx` including: name, image, description, SKU, brand, and `offers` (price, currency, availability).
+- [ ] **Review & Rating Schema**
+    - Include `aggregateRating` and individual `review` snippets in the Product schema.
+- [ ] **BreadcrumbList Schema**
+    - Implement breadcrumbs UI and corresponding JSON-LD to help search engines understand site hierarchy.
+- [ ] **Organization & Local Business Schema**
+    - Add site-wide JSON-LD for the company info, especially important for Yandex commercial factors.
+
+## 4. Content & Interlinking
+- [ ] **Sitemap Generation**
+    - Create a dynamic `sitemap.xml` using a package like `spatie/laravel-sitemap`.
+    - Include all products, categories, and static pages (About, FAQ).
+- [ ] **Robots.txt**
+    - Create a `public/robots.txt` file with proper directives and a link to the sitemap.
+- [ ] **Internal Linking Strategy**
+    - Add "Related Products" section on product pages.
+    - Ensure breadcrumbs are clickable and follow a logical path.
+    - Link to categories from the home page.
+- [ ] **FAQ Content**
+    - Enhance the `About` page with a robust FAQ section (already started, but ensure it's crawlable).
+
+## 5. E-commerce Specifics (Yandex Focus)
+- [ ] **Commercial Factors**
+    - Ensure physical address, phone number, and working hours are in the footer.
+    - Clear "Delivery" and "Payment" information pages/sections.
+- [ ] **Assortment Signals**
+    - Ensure category pages show a good number of products and have pagination.
+- [ ] **Social Media Links**
+    - Add links to verified social media profiles in the footer.
+
+## 6. Performance & Core Web Vitals
+- [ ] **Optimize LCP (Largest Contentful Paint)**
+    - Preload the main product image on detail pages.
+    - Minimize render-blocking CSS/JS.
+- [ ] **Improve FID/INP**
+    - Audit heavy React components.
+    - Ensure event listeners are efficient.
+- [ ] **Reduce CLS (Cumulative Layout Shift)**
+    - Set explicit width/height for images and icons.
+    - Reserve space for dynamic content (like reviews).
+
+## 7. Analytics & Monitoring
+- [ ] **Google Search Console & Yandex Webmaster**
+    - Verify site ownership.
+    - Submit sitemap.
+- [ ] **SEO Monitoring**
+    - Implement a tool or script to check for 404 errors and broken links.
+- [ ] **Performance Tracking**
+    - Set up Lighthouse CI or similar to track performance metrics over time.
+
+## 8. SEO "Tricks" & Advanced Tactics (The "Cheatsheet")
+- [ ] **CTR Hijacking with "Power Words"**
+    - Use numbers, brackets, and high-conversion words in Meta Titles (e.g., "Best {Product} [2026 Price] - Buy Now").
+    - Add Emoji to Meta Descriptions (check Yandex/Google support per region) to stand out in SERP.
+- [ ] **Internal PageRank Sculpting**
+    - Identify "Money Pages" (high-margin products) and link to them aggressively from the Footer and Home Page.
+    - Use descriptive anchor text instead of "Read more".
+- [ ] **"Phantom" Category Pages**
+    - Create dynamic landing pages for specific search queries that aren't in your main menu (e.g., "Smartphones under 500 BYN", "Red Electronics").
+- [ ] **Review Keyword Injection**
+    - Prompt users to include specific product attributes in their reviews (e.g., "How does the *battery life* of this *laptop* feel?").
+- [ ] **Snippet "Stealing" with Microdata**
+    - Implement `FAQPage` schema on product pages to occupy more vertical space in search results.
+    - Add `PriceRange` to local schema to attract price-sensitive users.
+- [ ] **Zero-Volume Keyword Targeting**
+    - Research ultra-long-tail queries that SEO tools often miss but users actually type.
+- [ ] **Competitor "Broken Link" Building**
+    - Find broken links on competitor sites and reach out to the source to suggest your relevant product instead.
+- [ ] **Behavioral Signal Boosting (Yandex)**
+    - Implement "Add to Compare" or "Save for Later" features to increase "Time on Site" and "Depth of Visit".
+    - Use a "Sticky" cart or "Quick View" to reduce bounce rate on mobile.
+- [ ] **Image Search Domination**
+    - Use descriptive filenames for images (e.g., `iphone-15-pro-max-black.webp` instead of `IMG_123.jpg`).
+    - Add images to the XML Sitemap.

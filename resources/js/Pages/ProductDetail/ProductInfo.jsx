@@ -12,10 +12,15 @@ const Icons = {
     MessageCircle: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
     ),
+    Truck: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v9Z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+    ),
 };
 
 // Product Title Component
 export const ProductTitle = ({ product }) => {
+    const defaultDescription = 'Высококачественный продукт, выполненный из экологически чистых материалов. Идеально подходит для ежедневного использования. Продуманный дизайн и надежность делают этот товар отличным выбором.';
+    
     return (
         <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100">
             <div className="p-6">
@@ -29,9 +34,31 @@ export const ProductTitle = ({ product }) => {
                         <span className="text-xs text-gray-400">({product.reviews_count || 0})</span>
                     </div>
                 </div>
-                <h1 className="text-2xl font-bold text-gray-900 leading-tight">
+                <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
                     {product.name}
                 </h1>
+                
+                <div className="text-sm text-gray-600 leading-relaxed">
+                    {product.description || defaultDescription}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export const ImporterInfo = () => {
+    return (
+        <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
+            <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 bg-red-50 p-2 rounded-xl">
+                    <Icons.Truck className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Импортер в Республику Беларусь</div>
+                    <div className="text-sm text-gray-700 leading-relaxed font-medium">
+                        ООО "Адалт Тойс", УНП 192825568, Республика Беларусь г. Минск Центральный район пр-т Победителей 57 оф. 16Н
+                    </div>
+                </div>
             </div>
         </div>
     );

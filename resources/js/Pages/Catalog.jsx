@@ -129,6 +129,39 @@ const Catalog = (props) => {
     const cart = useStore((state) => state.cart);
     const chatQueue = useStore((state) => state.chatQueue);
 
+    // Event handlers to prevent link navigation
+    const handleAddToCart = (e, product) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (product.stock > 0) {
+            addToCart(product);
+        }
+    };
+    
+    const handleIncrementCart = (e, productId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        incrementCartQuantity(productId);
+    };
+    
+    const handleDecrementCart = (e, productId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        decrementCartQuantity(productId);
+    };
+
+    const handleToggleFavorite = (e, product) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFavorite(product);
+    };
+
+    const handleAddToChat = (e, product) => {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleChatQueue(product);
+    };
+
     // Sync items when products prop changes
     useEffect(() => {
         if (!products) return;
@@ -194,14 +227,18 @@ const Catalog = (props) => {
                         {/* Multi-select Tags UX */}
                         {subCategories.length > 0 && (
                             <div className="mb-6">
-                                <div className={`flex flex-wrap gap-2 transition-all duration-500 ease-in-out overflow-hidden ${!showAllSubCategories ? 'max-h-[120px]' : 'max-h-[2000px]'}`}>
-                                    {subCategories.map((category) => {
+                                <div className="flex flex-wrap gap-2">
+                                    {subCategories.map((category, index) => {
                                         const isActive = selectedSubCategories.has(String(category.id));
+                                        const isHidden = !showAllSubCategories && index >= 5;
+                                        
                                         return (
                                             <button 
                                                 key={category.id}
                                                 onClick={() => toggleSubCategory(category.id)}
-                                                className={`px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all border text-left leading-none flex items-center gap-1.5 break-words flex-shrink-0 max-w-[180px] sm:max-w-none ${
+                                                className={`px-3 py-1.5 rounded-lg text-[9px] font-bold transition-all border text-left leading-none items-center gap-1.5 break-words flex-shrink-0 max-w-[180px] sm:max-w-none ${
+                                                    isHidden ? 'hidden' : 'flex'
+                                                } ${
                                                     isActive 
                                                         ? 'bg-red-700 text-white border-red-700 shadow-sm' 
                                                         : 'bg-white border-gray-200 text-gray-500 hover:border-red-300'
@@ -218,7 +255,7 @@ const Catalog = (props) => {
                                     })}
                                 </div>
                                 
-                                {subCategories.length > 8 && (
+                                {subCategories.length > 5 && (
                                     <button 
                                         onClick={() => setShowAllSubCategories(!showAllSubCategories)}
                                         className="w-full mt-4 py-2 bg-gray-50/50 rounded-xl text-red-500 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-gray-100 hover:text-red-700 transition-all border border-transparent hover:border-gray-200"
@@ -376,7 +413,7 @@ const Catalog = (props) => {
                                                                     <Icons.ShoppingCart className="w-4 h-4" />
                                                                     <span className="text-sm">
                                                                         <span className="xs:hidden">купить</span>
-                                                                        <span className="hidden xs:inline">сегодня</span>
+                                                                        <span className="hidden xs:inline">{new Date().getHours() < 19 ? 'сегодня' : 'завтра'}</span>
                                                                     </span>
                                                                 </>
                                                             ) : (

@@ -2,8 +2,7 @@ import React from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link } from '@inertiajs/react';
 import ProductImageGallery from './ProductDetail/ProductImageGallery';
-import { ProductTitle, ProductActions } from './ProductDetail/ProductInfo';
-import ProductDescription from './ProductDetail/ProductDescription';
+import { ProductTitle, ProductActions, ImporterInfo } from './ProductDetail/ProductInfo';
 import ProductSpecifications from './ProductDetail/ProductSpecifications';
 import ProductReviews from './ProductDetail/ProductReviews';
 
@@ -23,7 +22,7 @@ const ProductDetail = ({ product, categories, filters = {} }) => {
         if (filters.sort) params.set('sort', filters.sort);
         
         const queryString = params.toString();
-        return queryString ? `/catalog?${queryString}` : '/catalog';
+        return queryString ? `/?${queryString}` : '/';
     })();
 
     return (
@@ -51,11 +50,11 @@ const ProductDetail = ({ product, categories, filters = {} }) => {
                         {/* Image Gallery */}
                         <ProductImageGallery product={product} />
                         
-                        {/* Product Title */}
+                        {/* Product Title & Description */}
                         <ProductTitle product={product} />
                         
-                        {/* Description */}
-                        <ProductDescription description={product.description} />
+                        {/* Importer Info */}
+                        <ImporterInfo />
                         
                         {/* Specifications */}
                         <ProductSpecifications parameters={product.parameters} />

@@ -7,6 +7,44 @@ const useStore = create(
             // Cart state
             cart: [],
             
+            // Delivery method state
+            deliveryMethod: 'pickup', // pickup, courier, post
+            
+            // Courier delivery form data
+            courierDelivery: {
+                address: '',
+                phone: '',
+                mapLat: null,
+                mapLng: null,
+                comment: ''
+            },
+            
+            // Courier delivery validation
+            courierDeliveryErrors: {
+                address: '',
+                phone: ''
+            },
+            
+            // Post delivery form data
+            postDelivery: {
+                postalCode: '',
+                region: '',
+                city: '',
+                house: '',
+                apartment: '',
+                phone: ''
+            },
+            
+            // Post delivery validation
+            postDeliveryErrors: {
+                postalCode: '',
+                region: '',
+                city: '',
+                house: '',
+                apartment: '',
+                phone: ''
+            },
+            
             // Favorites state
             favorites: [],
             
@@ -162,6 +200,220 @@ const useStore = create(
             
             getChatQueueCount: () => {
                 return get().chatQueue.length;
+            },
+            
+            // Delivery actions
+            setDeliveryMethod: (method) => {
+                set({ deliveryMethod: method });
+            },
+            
+            getDeliveryCost: () => {
+                const { deliveryMethod } = get();
+                const total = get().getCartTotal();
+                
+                switch (deliveryMethod) {
+                    case 'pickup':
+                        return 0;
+                    case 'courier':
+                        return total >= 100 ? 0 : 15;
+                    case 'post':
+                        return total >= 200 ? 0 : 20;
+                    default:
+                        return 0;
+                }
+            },
+            
+            getOrderTotal: () => {
+                return get().getCartTotal() + get().getDeliveryCost();
+            },
+            
+            // Courier delivery actions
+            setCourierDeliveryData: (data) => {
+                const newData = { ...get().courierDelivery, ...data };
+                set({ courierDelivery: newData });
+                
+                // Validate changed fields
+                const errors = { ...get().courierDeliveryErrors };
+                
+                if ('address' in data) {
+                    if (!data.address || data.address.trim().length < 10) {
+                        errors.address = 'Адрес должен содержать минимум 10 символов';
+                    } else {
+                        errors.address = '';
+                    }
+                }
+                
+                if ('phone' in data) {
+                    const phoneRegex = /^\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
+                    if (!data.phone) {
+                        errors.phone = 'Телефон обязателен для заполнения';
+                    } else if (!phoneRegex.test(data.phone)) {
+                        errors.phone = 'Формат: +375 (29) 123-45-67';
+                    } else {
+                        errors.phone = '';
+                    }
+                }
+                
+                set({ courierDeliveryErrors: errors });
+            },
+            
+            validateCourierDelivery: () => {
+                const { courierDelivery } = get();
+                const errors = {};
+                
+                if (!courierDelivery.address || courierDelivery.address.trim().length < 10) {
+                    errors.address = 'Адрес должен содержать минимум 10 символов';
+                }
+                
+                const phoneRegex = /^\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
+                if (!courierDelivery.phone) {
+                    errors.phone = 'Телефон обязателен для заполнения';
+                } else if (!phoneRegex.test(courierDelivery.phone)) {
+                    errors.phone = 'Формат: +375 (29) 123-45-67';
+                }
+                
+                set({ courierDeliveryErrors: errors });
+                return Object.keys(errors).length === 0;
+            },
+            
+            clearCourierDeliveryData: () => {
+                set({
+                    courierDelivery: {
+                        address: '',
+                        phone: '',
+                        mapLat: null,
+                        mapLng: null,
+                        comment: ''
+                    },
+                    courierDeliveryErrors: {
+                        address: '',
+                        phone: ''
+                    }
+                });
+            },
+            
+            // Post delivery actions
+            setPostDeliveryData: (data) => {
+                const newData = { ...get().postDelivery, ...data };
+                set({ postDelivery: newData });
+                
+                // Validate changed fields
+                const errors = { ...get().postDeliveryErrors };
+                
+                if ('postalCode' in data) {
+                    const postalCodeRegex = /^\d{6}$/;
+                    if (!data.postalCode) {
+                        errors.postalCode = 'Индекс обязателен';
+                    } else if (!postalCodeRegex.test(data.postalCode)) {
+                        errors.postalCode = 'Индекс должен содержать 6 цифр';
+                    } else {
+                        errors.postalCode = '';
+                    }
+                }
+                
+                if ('region' in data) {
+                    if (!data.region || data.region.trim().length < 3) {
+                        errors.region = 'Укажите район (минимум 3 символа)';
+                    } else {
+                        errors.region = '';
+                    }
+                }
+                
+                if ('city' in data) {
+                    if (!data.city || data.city.trim().length < 2) {
+                        errors.city = 'Укажите населенный пункт (минимум 2 символа)';
+                    } else {
+                        errors.city = '';
+                    }
+                }
+                
+                if ('house' in data) {
+                    if (!data.house || data.house.trim().length === 0) {
+                        errors.house = 'Укажите номер дома';
+                    } else {
+                        errors.house = '';
+                    }
+                }
+                
+                if ('apartment' in data) {
+                    if (!data.apartment || data.apartment.trim().length === 0) {
+                        errors.apartment = 'Укажите номер квартиры';
+                    } else {
+                        errors.apartment = '';
+                    }
+                }
+                
+                if ('phone' in data) {
+                    const phoneRegex = /^\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
+                    if (!data.phone) {
+                        errors.phone = 'Телефон обязателен';
+                    } else if (!phoneRegex.test(data.phone)) {
+                        errors.phone = 'Формат: +375 (29) 123-45-67';
+                    } else {
+                        errors.phone = '';
+                    }
+                }
+                
+                set({ postDeliveryErrors: errors });
+            },
+            
+            validatePostDelivery: () => {
+                const { postDelivery } = get();
+                const errors = {};
+                
+                const postalCodeRegex = /^\d{6}$/;
+                if (!postDelivery.postalCode) {
+                    errors.postalCode = 'Индекс обязателен';
+                } else if (!postalCodeRegex.test(postDelivery.postalCode)) {
+                    errors.postalCode = 'Индекс должен содержать 6 цифр';
+                }
+                
+                if (!postDelivery.region || postDelivery.region.trim().length < 3) {
+                    errors.region = 'Укажите район (минимум 3 символа)';
+                }
+                
+                if (!postDelivery.city || postDelivery.city.trim().length < 2) {
+                    errors.city = 'Укажите населенный пункт (минимум 2 символа)';
+                }
+                
+                if (!postDelivery.house || postDelivery.house.trim().length === 0) {
+                    errors.house = 'Укажите номер дома';
+                }
+                
+                if (!postDelivery.apartment || postDelivery.apartment.trim().length === 0) {
+                    errors.apartment = 'Укажите номер квартиры';
+                }
+                
+                const phoneRegex = /^\+375\s?\(?\d{2}\)?\s?\d{3}[-\s]?\d{2}[-\s]?\d{2}$/;
+                if (!postDelivery.phone) {
+                    errors.phone = 'Телефон обязателен';
+                } else if (!phoneRegex.test(postDelivery.phone)) {
+                    errors.phone = 'Формат: +375 (29) 123-45-67';
+                }
+                
+                set({ postDeliveryErrors: errors });
+                return Object.keys(errors).length === 0;
+            },
+            
+            clearPostDeliveryData: () => {
+                set({
+                    postDelivery: {
+                        postalCode: '',
+                        region: '',
+                        city: '',
+                        house: '',
+                        apartment: '',
+                        phone: ''
+                    },
+                    postDeliveryErrors: {
+                        postalCode: '',
+                        region: '',
+                        city: '',
+                        house: '',
+                        apartment: '',
+                        phone: ''
+                    }
+                });
             }
         }),
         {
@@ -169,7 +421,10 @@ const useStore = create(
             partialize: (state) => ({
                 cart: state.cart,
                 favorites: state.favorites,
-                chatQueue: state.chatQueue
+                chatQueue: state.chatQueue,
+                deliveryMethod: state.deliveryMethod,
+                courierDelivery: state.courierDelivery,
+                postDelivery: state.postDelivery
             })
         }
     )

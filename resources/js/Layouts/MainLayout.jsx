@@ -3,6 +3,7 @@ import { Link, usePage, router } from '@inertiajs/react';
 import axios from 'axios';
 import useStore from '@/store/useStore';
 import Toast from '@/components/Toast';
+import TypingText from '@/components/TypingText';
 
 // Simplified SVG Icons to mimic lucide-react
 const Icons = {
@@ -126,6 +127,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
+    const [showCallModal, setShowCallModal] = useState(false);
     const searchRef = useRef(null);
     const recognitionRef = useRef(null);
     const sortDropdownRef = useRef(null);
@@ -199,7 +201,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 const transcript = event.results[0][0].transcript;
                 setSearchQuery(transcript);
                 setIsListening(false);
-                router.get('/catalog', { search: transcript }, { 
+                router.get('/', { search: transcript }, { 
                     preserveState: false, 
                     preserveScroll: false, 
                     replace: false 
@@ -218,13 +220,13 @@ const MainLayout = ({ children, filters: propsFilters }) => {
         e?.preventDefault();
         setShowSuggestions(false);
         if (searchQuery.trim()) {
-            router.get('/catalog', { search: searchQuery }, { 
+            router.get('/', { search: searchQuery }, { 
                 preserveState: false, 
                 preserveScroll: false, 
                 replace: false 
             });
         } else {
-            router.get('/catalog', { search: undefined }, { 
+            router.get('/', { search: undefined }, { 
                 preserveState: false, 
                 preserveScroll: false, 
                 replace: false 
@@ -244,7 +246,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
 
     const handleSort = (value) => {
         setShowSortDropdown(false);
-        router.get('/catalog', { ...filters, sort: value }, { 
+        router.get('/', { ...filters, sort: value }, { 
             preserveState: true, 
             preserveScroll: true,
             replace: true 
@@ -320,32 +322,108 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 }
             `}</style>
 
+            {/* Call Modal */}
+            {showCallModal && (
+                <div 
+                    className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={() => setShowCallModal(false)}
+                >
+                    <div 
+                        className="bg-white rounded-3xl w-full max-w-xs overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="p-8 text-center">
+                            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                <Icons.Phone className="w-8 h-8 text-red-500" />
+                            </div>
+                            
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Наш номер</h3>
+                            <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                                Мы работаем ежедневно<br />
+                                <span className="font-semibold text-gray-900">с 10:00 до 20:00</span>
+                            </p>
+                            
+                            <div className="text-2xl font-bold text-gray-900 mb-8 tracking-tight">
+                                +375 (29) 500-89-90
+                            </div>
+                            
+                            <div className="grid gap-3">
+                                <a 
+                                    href="tel:+375295008990"
+                                    className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-red-200 active:scale-95 flex items-center justify-center gap-2"
+                                >
+                                    <Icons.Phone className="w-5 h-5" />
+                                    Позвонить
+                                </a>
+                                <button 
+                                    onClick={() => setShowCallModal(false)}
+                                    className="w-full py-4 text-gray-400 font-medium hover:text-gray-600 transition-colors"
+                                >
+                                    Отмена
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <header className="bg-white border-b border-gray-200 z-50 flex-shrink-0">
                 <div className="px-4">
                     <div className="flex items-center justify-between h-16">
-                        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-                            <img src="/logo.svg" alt="A-toys" className="h-9 w-auto" />
-                        </Link>
+                        <div className="flex items-center gap-4 flex-1 min-w-0">
+                            <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+                                <div className="w-1.5 h-8 bg-red-500 rounded-full"></div>
+                                <img src="/logo.svg" alt="A-toys" className="h-9 w-auto" />
+                            </Link>
+                            <div className="min-w-0 h-10 flex items-start pt-2.5 overflow-hidden">
+                                <TypingText phrases={[
+                                    "Продаем интимные товары с 2019 года",
+                                    "Более 30 собственных товарных марок 18+",
+                                    "Импортер интимных товаров в Беларусь",
+                                    "Все товары в наличии на складе в Минске",
+                                    "Посетите Склад шоурум г. Минск, Победителей 57"
+                                ]} />
+                            </div>
+                        </div>
                         
                         <div className="flex items-stretch h-full">
-                            <a href="https://yandex.by/maps/-/CHe9n0p-" target="_blank" className="flex flex-col items-center justify-center gap-1 px-3 md:px-6 hover:bg-gray-50 transition-colors border-l border-gray-100">
-                                <Icons.MapPin className="w-5 h-5 text-gray-400" />
-                                <span className="text-[10px] font-medium text-gray-500">Мы здесь</span>
-                            </a>
-                            <Link 
-                                href="/about" 
-                                className={`flex flex-col items-center justify-center gap-1 px-3 md:px-6 transition-colors border-l border-gray-100 ${
-                                    isAboutPage ? 'bg-red-50 text-red-600' : 'hover:bg-gray-50 text-gray-500'
-                                }`}
+                            {(() => {
+                                const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+                                const section = params.get('section');
+                                const isWeAreHereActive = isAboutPage && section === 'we-are-here';
+                                const isAboutActive = isAboutPage && !section;
+
+                                return (
+                                    <>
+                                        <Link 
+                                            href="/about?section=we-are-here" 
+                                            className={`flex flex-col items-center justify-center gap-1 px-3 md:px-6 transition-colors border-l border-gray-100 ${
+                                                isWeAreHereActive ? 'bg-red-50 text-red-600' : 'hover:bg-gray-50 text-gray-500'
+                                            }`}
+                                        >
+                                            <Icons.MapPin className={`w-5 h-5 ${isWeAreHereActive ? 'text-red-500' : 'text-gray-400'}`} />
+                                            <span className={`text-[10px] font-medium ${isWeAreHereActive ? 'text-red-600' : 'text-gray-500'}`}>Мы здесь</span>
+                                        </Link>
+                                        <Link 
+                                            href="/about" 
+                                            className={`flex flex-col items-center justify-center gap-1 px-3 md:px-6 transition-colors border-l border-gray-100 ${
+                                                isAboutActive ? 'bg-red-50 text-red-600' : 'hover:bg-gray-50 text-gray-500'
+                                            }`}
+                                        >
+                                            <Icons.HelpCircle className={`w-5 h-5 ${isAboutActive ? 'text-red-500' : 'text-gray-400'}`} />
+                                            <span className={`text-[10px] font-medium ${isAboutActive ? 'text-red-600' : 'text-gray-500'}`}>Инфо</span>
+                                        </Link>
+                                    </>
+                                );
+                            })()}
+                            <button 
+                                onClick={() => setShowCallModal(true)}
+                                className="flex flex-col items-center justify-center gap-1 px-3 md:px-6 hover:bg-gray-50 transition-colors border-l border-gray-100"
                             >
-                                <Icons.HelpCircle className={`w-5 h-5 ${isAboutPage ? 'text-red-500' : 'text-gray-400'}`} />
-                                <span className={`text-[10px] font-medium ${isAboutPage ? 'text-red-600' : 'text-gray-500'}`}>О нас</span>
-                            </Link>
-                            <a href="tel:+375295008990" className="flex flex-col items-center justify-center gap-1 px-3 md:px-6 hover:bg-gray-50 transition-colors border-l border-gray-100">
                                 <Icons.Phone className="w-5 h-5 text-gray-400" />
                                 <span className="text-[10px] font-medium text-gray-500">Позвонить</span>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -356,10 +434,10 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 <aside className="w-20 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto sidebar-scroll">
                     <nav className="py-2">
                         <Link
-                            href="/catalog"
+                            href="/"
                             className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${
                                 !selectedCategory
-                                    ? 'bg-red-50 text-red-700 border-r-2 border-red-500'
+                                    ? 'bg-red-50 text-red-700'
                                     : 'text-gray-600 hover:bg-gray-50'
                             }`}
                         >
@@ -375,24 +453,26 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                             return (
                                 <Link
                                     key={cat.id}
-                                    href={`/catalog?category=${cat.id}`}
+                                    href={`/?category=${cat.id}`}
                                     className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${
                                         isActive
-                                            ? 'bg-red-50 text-red-700 border-r-2 border-red-500'
+                                            ? 'bg-red-50 text-red-700'
                                             : 'text-gray-600 hover:bg-gray-50'
                                     }`}
                                     title={cat.name}
                                 >
                                     {cat.icon ? (
-                                        <img 
-                                            src={cat.icon_url || `/storage/${cat.icon}`} 
-                                            alt={cat.name} 
-                                            className="w-10 h-10 flex-shrink-0 object-contain mb-1" 
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = '/icons/package.svg'; // Fallback if image fails
-                                            }}
-                                        />
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mb-1 overflow-hidden relative">
+                                            <img 
+                                                src={cat.icon_url || `/storage/${cat.icon}`} 
+                                                alt={cat.name} 
+                                                className="w-full h-full object-contain mix-blend-multiply relative z-10"
+                                                onError={(e) => {
+                                                    e.target.onerror = null;
+                                                    e.target.src = '/icons/package.svg'; // Fallback if image fails
+                                                }}
+                                            />
+                                        </div>
                                     ) : (
                                         <Icon className="w-5 h-5 flex-shrink-0" />
                                     )}
@@ -408,6 +488,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 {/* Main Content */}
                 <div className="flex-1 flex flex-col overflow-hidden">
                     {/* Sort & Search Header */}
+                    {!['Cart', 'Favorites', 'ProductDetail'].includes(component) && (
                     <div className="bg-white shadow-sm flex-shrink-0 sticky top-0 z-20">
                         <div className="px-4 py-3">
                             <div className="flex items-center gap-4">
@@ -563,6 +644,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                             </div>
                         </div>
                     </div>
+                    )}
                     {children}
                 </div>
             </div>

@@ -530,7 +530,7 @@ const Favorites = () => {
                                                                     <Icons.ShoppingCart className="w-4 h-4" />
                                                                     <span className="text-sm">
                                                                         <span className="xs:hidden">купить</span>
-                                                                        <span className="hidden xs:inline">сегодня</span>
+                                                                        <span className="hidden xs:inline">{new Date().getHours() < 19 ? 'сегодня' : 'завтра'}</span>
                                                                     </span>
                                                                 </>
                                                             ) : (

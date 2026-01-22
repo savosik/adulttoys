@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
 
-const AccordionItem = ({ question, answer, isOpen, onClick }) => {
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
+const AccordionItem = ({ question, answer, children, isOpen, onClick }) => {
     return (
         <div className="border-b border-gray-200">
             <button
@@ -24,8 +31,8 @@ const AccordionItem = ({ question, answer, isOpen, onClick }) => {
                 </svg>
             </button>
             {isOpen && (
-                <div className="px-6 pb-4 text-gray-600 animate-fadeIn">
-                    <p className="whitespace-pre-line">{answer}</p>
+                <div className="px-6 pb-6 text-gray-600 animate-fadeIn">
+                    {children ? children : <p className="whitespace-pre-line">{answer}</p>}
                 </div>
             )}
         </div>
@@ -33,42 +40,139 @@ const AccordionItem = ({ question, answer, isOpen, onClick }) => {
 };
 
 const About = ({ faqs }) => {
+    const { url } = usePage();
     const [openId, setOpenId] = useState(null);
+    const [isWeAreHere, setIsWeAreHere] = useState(false);
 
     const toggleItem = (id) => {
         setOpenId(openId === id ? null : id);
     };
 
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        setIsWeAreHere(params.get('section') === 'we-are-here');
+    }, [url]);
+
+    const howToGetImages = [
+        'https://placehold.co/800x600/e5e7eb/6b7280?text=Как+добраться+1',
+        'https://placehold.co/800x600/e5e7eb/6b7280?text=Как+добраться+2',
+        'https://placehold.co/800x600/e5e7eb/6b7280?text=Как+добраться+3',
+    ];
+
     return (
         <MainLayout>
-            <Head title="О нас и FAQ" />
+            <Head title={isWeAreHere ? "Мы здесь" : "О нас и FAQ"} />
             
-            <div className="flex-1 overflow-y-auto content-scroll bg-white">
+            <div className="flex-1 overflow-y-auto content-scroll bg-white pb-20">
                 <div className="max-w-4xl mx-auto px-4 py-12">
-                    <section className="mb-12 px-4">
-                        <p className="text-xl text-gray-600 max-w-2xl leading-relaxed">
-                            Добро пожаловать в наш интернет-магазин. Мы стремимся предоставлять лучшие товары и качественный сервис. Наша миссия — сделать ваши покупки удобными и приятными.
-                        </p>
-                    </section>
-
-                    <section>
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                            {faqs.map((faq) => (
-                                <AccordionItem
-                                    key={faq.id}
-                                    question={faq.question}
-                                    answer={faq.answer}
-                                    isOpen={openId === faq.id}
-                                    onClick={() => toggleItem(faq.id)}
-                                />
-                            ))}
-                            {faqs.length === 0 && (
-                                <div className="p-8 text-center text-gray-500 italic">
-                                    На данный момент вопросов и ответов нет.
+                    {isWeAreHere ? (
+                        <section className="animate-fadeIn">
+                            <h1 className="text-3xl font-bold text-gray-900 mb-8 px-4 flex items-center gap-4">
+                                <div className="w-2 h-10 bg-red-500 rounded-full"></div>
+                                Мы здесь
+                            </h1>
+                            
+                            <div className="space-y-12">
+                                <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 h-64 md:h-[500px] relative bg-gray-50 mx-4">
+                                    <iframe 
+                                        src="https://yandex.ru/map-widget/v1/-/CHe9n0p-" 
+                                        width="100%" 
+                                        height="100%" 
+                                        frameBorder="0"
+                                        title="Yandex Map"
+                                    ></iframe>
                                 </div>
-                            )}
-                        </div>
-                    </section>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
+                                    <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 flex items-start gap-5">
+                                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-md flex-shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Наш адрес</h4>
+                                            <p className="text-gray-900 font-bold text-xl leading-tight">г. Минск, ул. Тимирязева, 123/2</p>
+                                            <p className="text-gray-500 text-base mt-1">ТЦ "Град", павильон 123</p>
+                                        </div>
+                                    </div>
+                                    <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 flex items-start gap-5">
+                                        <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-md flex-shrink-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Телефон</h4>
+                                            <a href="tel:+375295008990" className="text-gray-900 font-bold text-xl hover:text-red-600 transition-colors tracking-tight">+375 (29) 500-89-90</a>
+                                            <p className="text-gray-500 text-base mt-1">Ежедневно с 10:00 до 20:00</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="px-4">
+                                    <div className="rounded-3xl overflow-hidden border border-gray-100 shadow-lg bg-gray-50 p-3">
+                                        <Swiper
+                                            modules={[Navigation, Pagination]}
+                                            spaceBetween={16}
+                                            slidesPerView={1}
+                                            navigation
+                                            pagination={{ clickable: true }}
+                                            breakpoints={{
+                                                640: { slidesPerView: 2 },
+                                                1024: { slidesPerView: 3 }
+                                            }}
+                                            className="rounded-2xl"
+                                        >
+                                            {howToGetImages.map((src, index) => (
+                                                <SwiperSlide key={index}>
+                                                    <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-white border border-gray-100 group">
+                                                        <img 
+                                                            src={src} 
+                                                            alt={`Как добраться ${index + 1}`}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                        />
+                                                    </div>
+                                                </SwiperSlide>
+                                            ))}
+                                        </Swiper>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    ) : (
+                        <>
+                            <section className="mb-12 px-4 animate-fadeIn">
+                                <h1 className="text-3xl font-bold text-gray-900 mb-8 flex items-center gap-4">
+                                    <div className="w-2 h-10 bg-red-500 rounded-full"></div>
+                                    Информация
+                                </h1>
+                                <p className="text-xl text-gray-600 max-w-2xl leading-relaxed">
+                                    Добро пожаловать в наш интернет-магазин. Мы стремимся предоставлять лучшие товары и качественный сервис. Наша миссия — сделать ваши покупки удобными и приятными.
+                                </p>
+                            </section>
+
+                            <section className="animate-fadeIn" style={{ animationDelay: '0.1s' }}>
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                                    {faqs.map((faq) => (
+                                        <AccordionItem
+                                            key={faq.id}
+                                            question={faq.question}
+                                            answer={faq.answer}
+                                            isOpen={openId === faq.id}
+                                            onClick={() => toggleItem(faq.id)}
+                                        />
+                                    ))}
+                                    {faqs.length === 0 && (
+                                        <div className="p-8 text-center text-gray-500 italic">
+                                            На данный момент вопросов и ответов нет.
+                                        </div>
+                                    )}
+                                </div>
+                            </section>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -79,6 +183,12 @@ const About = ({ faqs }) => {
                 }
                 .animate-fadeIn {
                     animation: fadeIn 0.3s ease-out forwards;
+                }
+                .swiper-button-next, .swiper-button-prev {
+                    color: #ef4444 !important;
+                }
+                .swiper-pagination-bullet-active {
+                    background: #ef4444 !important;
                 }
             `}</style>
         </MainLayout>
