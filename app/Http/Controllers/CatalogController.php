@@ -106,12 +106,21 @@ class CatalogController extends Controller
 
     public function show(Request $request, Product $product)
     {
-        $product->load(['brand', 'category', 'additionalImages', 'parameters', 'reviews']);
+        $product->load(['brand', 'category.parent', 'additionalImages', 'parameters', 'reviews']);
         $product->loadCount('reviews');
         $product->reviews_avg_rating = $product->reviews()->avg('rating');
 
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('stock', '>', 0)
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->limit(4)
+            ->get();
+
         return Inertia::render('ProductDetail', [
             'product' => $product,
+            'relatedProducts' => $relatedProducts,
             'meta' => [
                 'title' => $product->meta_title ?? $product->name,
                 'description' => $product->meta_description ?? Str::limit(strip_tags($product->description), 160),

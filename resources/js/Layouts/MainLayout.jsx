@@ -102,6 +102,31 @@ const getCategoryIcon = (name = '') => {
 const MainLayout = ({ children, filters: propsFilters }) => {
     const { categories = [], filters: pageFilters = {}, cart: pageCart = [], chatQueue: pageChatQueue = [], appName } = usePage().props;
     const { component, url } = usePage();
+
+    // Schema.org Organization Data
+    const organizationSchema = {
+        "@context": "https://schema.org",
+        "@type": "Store",
+        "name": "A-Toys",
+        "url": window.location.origin,
+        "logo": `${window.location.origin}/logo.svg`,
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+375-29-500-89-90",
+            "contactType": "customer service",
+            "areaServed": "BY",
+            "availableLanguage": "Russian"
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "пр-т Победителей 57 оф. 16Н",
+            "addressLocality": "Минск",
+            "addressRegion": "Минская область",
+            "postalCode": "220035",
+            "addressCountry": "BY"
+        }
+    };
+
     // Use filters from props (ProductDetail) or from page props (Catalog)
     const filters = propsFilters || pageFilters;
     const selectedCategory = filters.category;
@@ -257,6 +282,11 @@ const MainLayout = ({ children, filters: propsFilters }) => {
 
     return (
         <div className="h-screen bg-gray-50 flex flex-col overflow-hidden font-sans">
+            <Head>
+                <script type="application/ld+json">
+                    {JSON.stringify(organizationSchema)}
+                </script>
+            </Head>
             <Toast />
             <style>{`
                 .sidebar-scroll::-webkit-scrollbar {

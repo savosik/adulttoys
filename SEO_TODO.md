@@ -17,12 +17,12 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - Decide on a preferred domain and set up 301 redirects.
 
 ## 2. On-Page SEO & Metadata
-- [ ] **Dynamic Meta Tags System**
-    - Add `meta_title` and `meta_description` fields to `Product`, `Category`, and `Faq` models.
-    - Create a helper or service to generate default meta tags if specific ones are missing (e.g., "Buy {product_name} at {app_name}").
-- [ ] **OpenGraph & Twitter Cards**
-    - Implement OG tags (title, description, image, url) in `app.blade.php`.
-    - Ensure product images are used as OG images on product detail pages.
+- [x] **Dynamic Meta Tags System**
+    - [x] Add `meta_title` and `meta_description` fields to `Product`, `Category`, and `Faq` models.
+    - [x] Create a helper or service to generate default meta tags if specific ones are missing.
+- [x] **OpenGraph & Twitter Cards**
+    - [x] Implement OG tags (title, description, image, url) in `app.blade.php`.
+    - [x] Ensure product images are used as OG images on product detail pages.
 - [ ] **Semantic HTML Audit**
     - Ensure only one `<h1>` per page (Product Title on detail page, Category Name on catalog).
     - Use `<header>`, `<footer>`, `<nav>`, and `<main>` consistently.
@@ -33,25 +33,24 @@ This document provides a comprehensive roadmap for transforming the e-commerce p
     - Ensure images are lazy-loaded except for the LCP element.
 
 ## 3. Structured Data (Schema.org)
-- [ ] **Product Schema**
-    - Add JSON-LD to `ProductDetail.jsx` including: name, image, description, SKU, brand, and `offers` (price, currency, availability).
-- [ ] **Review & Rating Schema**
-    - Include `aggregateRating` and individual `review` snippets in the Product schema.
-- [ ] **BreadcrumbList Schema**
-    - Implement breadcrumbs UI and corresponding JSON-LD to help search engines understand site hierarchy.
-- [ ] **Organization & Local Business Schema**
-    - Add site-wide JSON-LD for the company info, especially important for Yandex commercial factors.
+- [x] **Product Schema**
+    - [x] Add JSON-LD to `ProductDetail.jsx` including: name, image, description, SKU, brand, and `offers` (price, currency, availability).
+- [x] **Review & Rating Schema**
+    - [x] Include `aggregateRating` and individual `review` snippets in the Product schema.
+- [x] **BreadcrumbList Schema**
+    - [x] Implement breadcrumbs UI and corresponding JSON-LD to help search engines understand site hierarchy.
+- [x] **Organization & Local Business Schema**
+    - [x] Add site-wide JSON-LD for the company info, especially important for Yandex commercial factors.
 
 ## 4. Content & Interlinking
-- [ ] **Sitemap Generation**
-    - Create a dynamic `sitemap.xml` using a package like `spatie/laravel-sitemap`.
-    - Include all products, categories, and static pages (About, FAQ).
-- [ ] **Robots.txt**
-    - Create a `public/robots.txt` file with proper directives and a link to the sitemap.
-- [ ] **Internal Linking Strategy**
-    - Add "Related Products" section on product pages.
-    - Ensure breadcrumbs are clickable and follow a logical path.
-    - Link to categories from the home page.
+- [x] **Sitemap Generation**
+    - [x] Create a dynamic `sitemap.xml` including all products and categories.
+- [x] **Robots.txt**
+    - [x] Create a `public/robots.txt` file with proper directives and a link to the sitemap.
+- [x] **Internal Linking Strategy**
+    - [x] Add "Related Products" section on product pages.
+    - [x] Ensure breadcrumbs are clickable and follow a logical path.
+    - [ ] Link to categories from the home page (Sidebar already exists).
 - [ ] **FAQ Content**
     - Enhance the `About` page with a robust FAQ section (already started, but ensure it's crawlable).
 

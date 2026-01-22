@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: http://localhost:8000/sitemap.xml
+
+# Prevent indexing of specific patterns
+Disallow: /search/suggestions
+Disallow: /cart
+Disallow: /favorites
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register

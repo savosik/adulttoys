@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/', [CatalogController::class, 'index'])->name('catalog');
 Route::get('/category/{category:slug}', [CatalogController::class, 'index'])->name('category.show');
 
