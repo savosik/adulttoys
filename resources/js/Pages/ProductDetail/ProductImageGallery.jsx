@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Navigation } from 'swiper/modules';
-import { generateResponsiveImageProps } from '@/helpers/imageHelper';
+import { generateResponsiveImageProps, getThumbnailUrl } from '@/helpers/imageHelper';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -11,7 +12,7 @@ import 'swiper/css/navigation';
 const ProductImageGallery = ({ product }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    
+
     const images = [product.image_main, ...(product.additional_images || []).map(img => img.url)].filter(Boolean);
     const hasImages = images.length > 0;
 
@@ -38,9 +39,9 @@ const ProductImageGallery = ({ product }) => {
                 <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
                     <Swiper
                         modules={[Pagination, Navigation]}
-                        pagination={{ 
+                        pagination={{
                             clickable: true,
-                            dynamicBullets: true 
+                            dynamicBullets: true
                         }}
                         navigation={true}
                         spaceBetween={12}
@@ -83,13 +84,13 @@ const ProductImageGallery = ({ product }) => {
                         {hasImages ? (
                             images.map((img, idx) => (
                                 <SwiperSlide key={idx}>
-                                    <div 
-                                        className="relative w-full overflow-hidden bg-gray-50 cursor-pointer hover:opacity-90 transition-opacity" 
-                                        style={{aspectRatio: '3/4'}}
+                                    <div
+                                        className="relative w-full overflow-hidden bg-gray-50 cursor-pointer hover:opacity-90 transition-opacity"
+                                        style={{ aspectRatio: '3/4' }}
                                         onClick={() => openModal(idx)}
                                     >
                                         <img
-                                            {...generateResponsiveImageProps(img, `${product.name} - ${idx + 1}`, {
+                                            {...generateResponsiveImageProps(getThumbnailUrl(img), `${product.name} - ${idx + 1}`, {
                                                 loading: idx === 0 ? "eager" : "lazy",
                                                 fetchpriority: idx === 0 ? "high" : "auto",
                                                 width: 400,
@@ -111,7 +112,7 @@ const ProductImageGallery = ({ product }) => {
                             ))
                         ) : (
                             <SwiperSlide>
-                                <div className="relative w-full overflow-hidden bg-gray-50" style={{aspectRatio: '3/4'}}>
+                                <div className="relative w-full overflow-hidden bg-gray-50" style={{ aspectRatio: '3/4' }}>
                                     <img
                                         {...generateResponsiveImageProps('https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image', 'No Image', {
                                             loading: "eager",
@@ -131,9 +132,9 @@ const ProductImageGallery = ({ product }) => {
             </div>
 
             {/* Fullscreen Modal */}
-            {isModalOpen && (
-                <div 
-                    className="fixed inset-0 z-[100] bg-black bg-opacity-95 flex items-center justify-center"
+            {isModalOpen && createPortal(
+                <div
+                    className="fixed inset-0 z-[9999] bg-black bg-opacity-95 flex items-center justify-center animate-in fade-in duration-200"
                     onClick={closeModal}
                 >
                     {/* Close button */}
@@ -142,8 +143,8 @@ const ProductImageGallery = ({ product }) => {
                         onClick={closeModal}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
                         </svg>
                     </button>
 
@@ -157,13 +158,13 @@ const ProductImageGallery = ({ product }) => {
                             }}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="15 18 9 12 15 6"/>
+                                <polyline points="15 18 9 12 15 6" />
                             </svg>
                         </button>
                     )}
 
                     {/* Image */}
-                    <div 
+                    <div
                         className="max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center p-4"
                         onClick={(e) => e.stopPropagation()}
                     >
@@ -184,7 +185,7 @@ const ProductImageGallery = ({ product }) => {
                             }}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="9 18 15 12 9 6"/>
+                                <polyline points="9 18 15 12 9 6" />
                             </svg>
                         </button>
                     )}
@@ -193,7 +194,8 @@ const ProductImageGallery = ({ product }) => {
                     <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-4 py-2 rounded-full text-sm">
                         {currentImageIndex + 1} / {images.length}
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </>
     );

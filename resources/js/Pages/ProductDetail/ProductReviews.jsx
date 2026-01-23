@@ -7,7 +7,7 @@ const ProductReviews = ({ reviews = [] }) => {
                 <h3 className="font-bold text-base text-gray-900">Отзывы</h3>
                 <button className="text-red-600 text-xs font-semibold">Все ({reviews.length})</button>
             </div>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {reviews.length > 0 ? (
                     reviews.map((review) => (
                         <div key={review.id} className="bg-gray-50 p-4 rounded-xl">

@@ -111,12 +111,23 @@ class CatalogController extends Controller
         $product->loadCount('reviews');
         $product->reviews_avg_rating = $product->reviews()->avg('rating');
 
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        // Get parent category (second level)
+        $parentCategoryId = $product->category->parent_id 
+            ? $product->category->parent_id 
+            : $product->category_id;
+
+        $relatedProducts = Product::where('brand_id', $product->brand_id)
             ->where('id', '!=', $product->id)
             ->where('stock', '>', 0)
+            ->where(function($query) use ($parentCategoryId) {
+                $query->where('category_id', $parentCategoryId)
+                    ->orWhereHas('category', function($q) use ($parentCategoryId) {
+                        $q->where('parent_id', $parentCategoryId);
+                    });
+            })
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
-            ->limit(4)
+            ->limit(12)
             ->get();
 
         return Inertia::render('ProductDetail', [

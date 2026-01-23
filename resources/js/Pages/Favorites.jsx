@@ -14,28 +14,28 @@ import 'swiper/css/navigation';
 // Simplified SVG Icons
 const Icons = {
     Heart: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
     ),
     ShoppingCart: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
     ),
     MessageCircle: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
     ),
     Package: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.27 6.96 8.73 5.05 8.73-5.05"/><path d="M12 22.08V12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" /><path d="m3.27 6.96 8.73 5.05 8.73-5.05" /><path d="M12 22.08V12" /></svg>
     ),
     Search: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
     ),
     Mic: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" x2="12" y1="19" y2="22" /></svg>
     ),
     Tag: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" /><path d="M7 7h.01" /></svg>
     ),
     ArrowUpDown: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m21 16-4 4-4-4" /><path d="M17 20V4" /><path d="m3 8 4-4 4 4" /><path d="M7 4v16" /></svg>
     ),
 };
 
@@ -172,13 +172,13 @@ const Favorites = () => {
             addToCart(product);
         }
     };
-    
+
     const handleIncrementCart = (e, productId) => {
         e.preventDefault();
         e.stopPropagation();
         incrementCartQuantity(productId);
     };
-    
+
     const handleDecrementCart = (e, productId) => {
         e.preventDefault();
         e.stopPropagation();
@@ -198,9 +198,9 @@ const Favorites = () => {
     };
 
     return (
-        <MainLayout>
+        <>
             <Head title="Избранное" />
-            
+
             {/* Search Header */}
             <div className="bg-white shadow-sm flex-shrink-0 sticky top-0 z-20">
                 <div className="px-4 py-3">
@@ -220,11 +220,10 @@ const Favorites = () => {
                                 <button
                                     type="button"
                                     onClick={toggleVoiceInput}
-                                    className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all ${
-                                        isListening 
-                                            ? 'bg-red-500 text-white animate-pulse' 
-                                            : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
-                                    }`}
+                                    className={`absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full transition-all ${isListening
+                                        ? 'bg-red-500 text-white animate-pulse'
+                                        : 'text-gray-400 hover:text-red-600 hover:bg-gray-200'
+                                        }`}
                                 >
                                     <Icons.Mic className="w-4 h-4" />
                                 </button>
@@ -267,7 +266,7 @@ const Favorites = () => {
                                                         stock: 1
                                                     };
                                                     const isProductFavorite = isFavorite(prod.id);
-                                                    
+
                                                     return (
                                                         <div key={prod.id} className="flex items-center gap-2 px-3 py-2 hover:bg-red-50 rounded-lg transition-colors group">
                                                             <Link
@@ -292,16 +291,15 @@ const Favorites = () => {
                                                                     </div>
                                                                 </div>
                                                             </Link>
-                                                            
+
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.preventDefault();
                                                                     e.stopPropagation();
                                                                     toggleFavorite(productData);
                                                                 }}
-                                                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
-                                                                    isProductFavorite ? 'bg-red-50' : 'bg-gray-100 hover:bg-gray-200'
-                                                                }`}
+                                                                className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isProductFavorite ? 'bg-red-50' : 'bg-gray-100 hover:bg-gray-200'
+                                                                    }`}
                                                             >
                                                                 <Icons.Heart className={`w-4 h-4 ${isProductFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
                                                             </button>
@@ -322,7 +320,7 @@ const Favorites = () => {
                         </div>
 
                         <div className="relative flex-shrink-0" ref={sortDropdownRef}>
-                            <button 
+                            <button
                                 onClick={() => setShowSortDropdown(!showSortDropdown)}
                                 className={`p-2 rounded-lg transition-colors ${showSortDropdown ? 'bg-gray-200' : 'hover:bg-gray-100'}`}
                             >
@@ -338,11 +336,10 @@ const Favorites = () => {
                                         <button
                                             key={option.value}
                                             onClick={() => handleSort(option.value)}
-                                            className={`w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center justify-between ${
-                                                currentSort === option.value 
-                                                    ? 'text-red-700 font-bold bg-red-50' 
-                                                    : 'text-gray-600 hover:bg-gray-50'
-                                            }`}
+                                            className={`w-full px-4 py-2.5 text-left text-sm transition-colors flex items-center justify-between ${currentSort === option.value
+                                                ? 'text-red-700 font-bold bg-red-50'
+                                                : 'text-gray-600 hover:bg-gray-50'
+                                                }`}
                                         >
                                             <span>{option.label}</span>
                                             {currentSort === option.value && (
@@ -367,7 +364,7 @@ const Favorites = () => {
                         )}
                     </div>
                     {favorites.length > 0 && (
-                        <button 
+                        <button
                             type="button"
                             onClick={(e) => {
                                 e.preventDefault();
@@ -380,11 +377,10 @@ const Favorites = () => {
                                     setIsClearing(false);
                                 }
                             }}
-                            className={`text-sm transition-colors font-medium px-3 py-1 rounded-lg ${
-                                isClearing 
-                                    ? 'bg-red-500 text-white hover:bg-red-600' 
-                                    : 'text-gray-400 hover:text-red-500'
-                            }`}
+                            className={`text-sm transition-colors font-medium px-3 py-1 rounded-lg ${isClearing
+                                ? 'bg-red-500 text-white hover:bg-red-600'
+                                : 'text-gray-400 hover:text-red-500'
+                                }`}
                         >
                             {isClearing ? 'Уверены? Нажмите ещё раз' : 'Очистить всё'}
                         </button>
@@ -404,7 +400,7 @@ const Favorites = () => {
                             <p className="text-gray-500 text-center mb-6 max-w-sm">
                                 Добавляйте понравившиеся товары, чтобы не потерять их
                             </p>
-                            <Link 
+                            <Link
                                 href="/catalog"
                                 className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
                             >
@@ -412,21 +408,21 @@ const Favorites = () => {
                             </Link>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-6 gap-4">
                             {sortedFavorites.map((product) => {
                                 const images = [
                                     product.image_main,
                                     ...(product.additional_images || []).map(img => img.url)
                                 ].filter(Boolean);
-                                
+
                                 if (images.length === 0) {
                                     images.push('https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image');
                                 }
 
                                 return (
-                                    <Link 
-                                        key={product.id} 
-                                        href={`/product/${product.id}`}
+                                    <Link
+                                        key={product.id}
+                                        href={`/product/${product.slug}`}
                                         className="bg-white rounded-2xl overflow-hidden shadow-sm group border border-gray-100 flex flex-col cursor-pointer hover:shadow-md transition-shadow"
                                     >
                                         <div className="relative aspect-[2/3] overflow-hidden bg-gray-50">
@@ -453,12 +449,12 @@ const Favorites = () => {
                                                 </div>
                                             )}
                                         </div>
-                                        
+
                                         <div className="p-3">
                                             <h3 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2 min-h-[2.5rem]">
                                                 {product.name}
                                             </h3>
-                                            
+
                                             <div className="flex items-center gap-1 mb-2">
                                                 <span className="text-yellow-500 text-sm">★</span>
                                                 <span className="text-xs text-gray-600">{Number(product.reviews_avg_rating || 0).toFixed(1)}</span>
@@ -478,19 +474,19 @@ const Favorites = () => {
 
                                             <div className="flex gap-2">
                                                 {/* Favorites Button */}
-                                                <button 
+                                                <button
                                                     onClick={(e) => handleToggleFavorite(e, product)}
                                                     className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors bg-red-50 border border-red-200"
                                                 >
-                                                    <Icons.Heart 
-                                                        className="w-5 h-5 transition-all fill-red-500 stroke-red-500" 
+                                                    <Icons.Heart
+                                                        className="w-5 h-5 transition-all fill-red-500 stroke-red-500"
                                                     />
                                                 </button>
-                                                
+
                                                 {/* Add to Cart Button */}
                                                 {(() => {
                                                     const cartItem = cart.find(item => item.id === product.id);
-                                                    
+
                                                     if (cartItem) {
                                                         // Quantity selector
                                                         return (
@@ -513,16 +509,15 @@ const Favorites = () => {
                                                             </div>
                                                         );
                                                     }
-                                                    
+
                                                     // Regular add to cart button
                                                     return (
-                                                        <button 
+                                                        <button
                                                             onClick={(e) => handleAddToCart(e, product)}
-                                                            className={`flex-1 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${
-                                                                product.stock <= 0
+                                                            className={`flex-1 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${product.stock <= 0
                                                                 ? 'bg-gray-200 text-gray-500'
                                                                 : 'bg-red-500 hover:bg-red-600 text-white'
-                                                            }`}
+                                                                }`}
                                                             disabled={product.stock <= 0}
                                                         >
                                                             {product.stock > 0 ? (
@@ -539,24 +534,22 @@ const Favorites = () => {
                                                         </button>
                                                     );
                                                 })()}
-                                                
+
                                                 {/* Chat Button */}
                                                 {(() => {
                                                     const isInChat = chatQueue.some(item => item.id === product.id);
                                                     return (
-                                                        <button 
+                                                        <button
                                                             onClick={(e) => handleAddToChat(e, product)}
-                                                            className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${
-                                                                isInChat
+                                                            className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isInChat
                                                                 ? 'bg-red-50 border border-red-200'
                                                                 : 'bg-gray-100 hover:bg-gray-200'
-                                                            }`}
+                                                                }`}
                                                         >
-                                                            <Icons.MessageCircle className={`w-5 h-5 transition-all ${
-                                                                isInChat
+                                                            <Icons.MessageCircle className={`w-5 h-5 transition-all ${isInChat
                                                                 ? 'fill-red-500 stroke-red-500'
                                                                 : 'text-gray-600'
-                                                            }`} />
+                                                                }`} />
                                                         </button>
                                                     );
                                                 })()}
@@ -569,8 +562,10 @@ const Favorites = () => {
                     )}
                 </div>
             </main>
-        </MainLayout>
+        </>
     );
 };
+
+Favorites.layout = page => <MainLayout children={page} />;
 
 export default Favorites;

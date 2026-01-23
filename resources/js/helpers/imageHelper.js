@@ -54,7 +54,7 @@ export const generatePictureSources = (imageUrl) => {
     if (!imageUrl) return [];
 
     const baseName = imageUrl.substring(0, imageUrl.lastIndexOf('.'));
-    
+
     return [
         {
             srcSet: `${baseName}.avif`,
@@ -85,4 +85,17 @@ export const toWebP = (url) => {
 export const toAVIF = (url) => {
     if (!url) return '';
     return url.replace(/\.(jpg|jpeg|png)$/i, '.avif');
+};
+
+/**
+ * Get thumbnail URL for an image
+ * Adds _thumb before extension
+ * @param {string} url - Original image URL
+ * @returns {string} Thumbnail URL
+ */
+export const getThumbnailUrl = (url) => {
+    if (!url) return '';
+    const lastDotIndex = url.lastIndexOf('.');
+    if (lastDotIndex === -1) return url;
+    return url.substring(0, lastDotIndex) + '_thumb' + url.substring(lastDotIndex);
 };

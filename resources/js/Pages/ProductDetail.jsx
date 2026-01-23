@@ -3,12 +3,13 @@ import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link } from '@inertiajs/react';
 import ProductImageGallery from './ProductDetail/ProductImageGallery';
 import { ProductTitle, ProductActions, ImporterInfo } from './ProductDetail/ProductInfo';
+import ProductCard from '@/Components/ProductCard';
 import ProductSpecifications from './ProductDetail/ProductSpecifications';
 import ProductReviews from './ProductDetail/ProductReviews';
 
 // Icon for back button
 const ChevronLeftIcon = (props) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m15 18-6-6 6-6"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m15 18-6-6 6-6" /></svg>
 );
 
 const ProductDetail = ({ product, relatedProducts = [], categories, filters = {} }) => {
@@ -20,7 +21,7 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
         if (filters.brand) params.set('brand', filters.brand);
         if (filters.search) params.set('search', filters.search);
         if (filters.sort) params.set('sort', filters.sort);
-        
+
         const queryString = params.toString();
         const baseUrl = filters.category ? `/category/${filters.category}` : '/';
         return queryString ? `${baseUrl}?${queryString}` : baseUrl;
@@ -111,10 +112,10 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                     {JSON.stringify(breadcrumbSchema)}
                 </script>
             </Head>
-            
+
             {/* Header / Back Link */}
             <div className="bg-white shadow-sm flex-shrink-0 sticky top-0 z-10">
-                <div className="px-4 py-3 max-w-7xl mx-auto flex items-center justify-between">
+                <div className="px-4 py-3 w-full flex items-center justify-between">
                     <Link
                         href={backUrl}
                         className="flex items-center gap-2 hover:text-red-600 transition-colors text-gray-900"
@@ -129,17 +130,17 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                         <span>/</span>
                         {product.category?.parent && (
                             <>
-                                <Link href={`/category/${product.category.parent.slug}`} className="hover:text-red-600 transition-colors max-w-[100px] truncate">{product.category.parent.name}</Link>
+                                <Link href={`/category/${product.category.parent.slug}`} className="hover:text-red-600 transition-colors max-w-[100px] md:max-w-[150px] lg:max-w-[250px] truncate">{product.category.parent.name}</Link>
                                 <span>/</span>
                             </>
                         )}
                         {product.category && (
                             <>
-                                <Link href={`/category/${product.category.slug}`} className="hover:text-red-600 transition-colors max-w-[100px] truncate">{product.category.name}</Link>
+                                <Link href={`/category/${product.category.slug}`} className="hover:text-red-600 transition-colors max-w-[100px] md:max-w-[150px] lg:max-w-[250px] truncate">{product.category.name}</Link>
                                 <span>/</span>
                             </>
                         )}
-                        <span className="text-gray-900 max-w-[100px] truncate">{product.name}</span>
+                        <span className="text-gray-900 max-w-[100px] md:max-w-[150px] lg:max-w-[250px] truncate">{product.name}</span>
                     </nav>
                 </div>
             </div>
@@ -151,16 +152,19 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                     <div className="w-full space-y-6">
                         {/* Image Gallery */}
                         <ProductImageGallery product={product} />
-                        
-                        {/* Product Title & Description */}
-                        <ProductTitle product={product} />
-                        
+
+                        {/* Title + Specifications Grid */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Product Title & Description */}
+                            <ProductTitle product={product} />
+
+                            {/* Specifications */}
+                            <ProductSpecifications parameters={product.parameters} />
+                        </div>
+
                         {/* Importer Info */}
                         <ImporterInfo />
-                        
-                        {/* Specifications */}
-                        <ProductSpecifications parameters={product.parameters} />
-                        
+
                         {/* Reviews */}
                         <ProductReviews reviews={product.reviews} />
 
@@ -168,19 +172,9 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                         {relatedProducts.length > 0 && (
                             <div className="w-full space-y-4">
                                 <h2 className="text-xl font-bold text-gray-900">Похожие товары</h2>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-6 gap-4">
                                     {relatedProducts.map(item => (
-                                        <Link 
-                                            key={item.id}
-                                            href={`/product/${item.slug}`}
-                                            className="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex flex-col gap-2"
-                                        >
-                                            <div className="aspect-square bg-gray-50 rounded-lg overflow-hidden">
-                                                <img src={item.image_main} className="w-full h-full object-cover" alt={item.name} />
-                                            </div>
-                                            <h3 className="text-sm font-medium text-gray-900 line-clamp-2 min-h-[2.5rem]">{item.name}</h3>
-                                            <div className="text-red-600 font-bold">{new Intl.NumberFormat('ru-RU').format(item.price)} BYN</div>
-                                        </Link>
+                                        <ProductCard key={item.id} product={item} />
                                     ))}
                                 </div>
                             </div>

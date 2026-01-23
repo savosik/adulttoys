@@ -2,10 +2,11 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import react from '@vitejs/plugin-react';
 
-export default defineConfig({
+export default defineConfig(({ isSsrBuild }) => ({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.jsx'],
+            input: ['resources/js/app.jsx'],
+            ssr: 'resources/js/ssr.jsx',
             refresh: true,
         }),
         react(),
@@ -25,6 +26,7 @@ export default defineConfig({
     build: {
         // Production optimizations
         minify: 'terser',
+        cssMinify: true,
         terserOptions: {
             compress: {
                 drop_console: true, // Remove console.logs in production
@@ -34,7 +36,7 @@ export default defineConfig({
         // Code splitting for better caching
         rollupOptions: {
             output: {
-                manualChunks: {
+                manualChunks: isSsrBuild ? undefined : {
                     // Split vendor chunks
                     'vendor-react': ['react', 'react-dom'],
                     'vendor-inertia': ['@inertiajs/react'],
@@ -44,7 +46,7 @@ export default defineConfig({
         },
         // Increase chunk size warning limit
         chunkSizeWarningLimit: 1000,
-        // Enable CSS code splitting
-        cssCodeSplit: true,
+        // Disable CSS code splitting to prevent FOUC - keep all CSS in one file
+        cssCodeSplit: false,
     },
-});
+}));

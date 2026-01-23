@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: http://localhost:8000/sitemap.xml
+Sitemap: https://YOUR_DOMAIN/sitemap.xml
 
 # Prevent indexing of specific patterns
 Disallow: /search/suggestions

@@ -1,0 +1,57 @@
+{
+  "node_modules/laravel-vite-plugin/inertia-helpers/index.js": [],
+  "resources/js/Layouts/MainLayout.jsx": [
+    "/build/assets/MainLayout-Dw2FxwLe.js"
+  ],
+  "resources/js/Pages/About.jsx": [
+    "/build/assets/About-DZMVfID3.js",
+    "/build/assets/pagination-BTcU6I39.css"
+  ],
+  "resources/js/Pages/Cart.jsx": [
+    "/build/assets/Cart-DdJBZEUg.js"
+  ],
+  "resources/js/Pages/Catalog.jsx": [
+    "/build/assets/Catalog-CP0JabXr.js",
+    "/build/assets/pagination-BTcU6I39.css"
+  ],
+  "resources/js/Pages/Dashboard.jsx": [
+    "/build/assets/Dashboard-B64Z-IDB.js"
+  ],
+  "resources/js/Pages/Favorites.jsx": [
+    "/build/assets/Favorites-BEx_2XZB.js",
+    "/build/assets/pagination-BTcU6I39.css"
+  ],
+  "resources/js/Pages/ProductDetail.jsx": [
+    "/build/assets/ProductDetail-UdDcukHw.js",
+    "/build/assets/pagination-BTcU6I39.css"
+  ],
+  "resources/js/Pages/ProductDetail/ProductImageGallery.jsx": [
+    "/build/assets/ProductImageGallery-MvTPhjOc.js",
+    "/build/assets/pagination-BTcU6I39.css"
+  ],
+  "resources/js/Pages/ProductDetail/ProductInfo.jsx": [
+    "/build/assets/ProductInfo-w0uDJ4xe.js"
+  ],
+  "resources/js/Pages/ProductDetail/ProductReviews.jsx": [
+    "/build/assets/ProductReviews-BanbjGx_.js"
+  ],
+  "resources/js/Pages/ProductDetail/ProductSpecifications.jsx": [
+    "/build/assets/ProductSpecifications-DlqylQYv.js"
+  ],
+  "resources/js/Pages/Welcome.jsx": [
+    "/build/assets/Welcome-JFgbJ1ED.js"
+  ],
+  "resources/js/components/Toast.jsx": [
+    "/build/assets/MainLayout-Dw2FxwLe.js"
+  ],
+  "resources/js/components/TypingText.jsx": [
+    "/build/assets/MainLayout-Dw2FxwLe.js"
+  ],
+  "resources/js/helpers/imageHelper.js": [
+    "/build/assets/imageHelper-DZyBmji8.js"
+  ],
+  "resources/js/ssr.jsx": [],
+  "resources/js/store/useStore.js": [
+    "/build/assets/useStore-DzKPy6C4.js"
+  ]
+}

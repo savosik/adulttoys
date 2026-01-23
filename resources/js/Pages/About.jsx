@@ -42,7 +42,8 @@ const AccordionItem = ({ question, answer, children, isOpen, onClick }) => {
 const About = ({ faqs }) => {
     const { url } = usePage();
     const [openId, setOpenId] = useState('delivery'); // Open delivery by default if no hash
-    const [isWeAreHere, setIsWeAreHere] = useState(false);
+    // Parse URL on server and client to determine section
+    const isWeAreHere = url.includes('section=we-are-here');
 
     const toggleItem = (id) => {
         setOpenId(openId === id ? null : id);
@@ -51,8 +52,7 @@ const About = ({ faqs }) => {
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
         const section = params.get('section');
-        setIsWeAreHere(section === 'we-are-here');
-        
+
         // Handle scrolling to sections if specified
         if (section) {
             const element = document.getElementById(section);
@@ -101,15 +101,25 @@ const About = ({ faqs }) => {
     ];
 
     return (
-        <MainLayout>
+        <>
             <Head title={isWeAreHere ? "Мы здесь" : "О нас и FAQ"}>
+                <meta name="description" content="Интернет-магазин интимных товаров A-Toys. Доставка по Минску и всей Беларуси. Анонимно, качественно, быстро." />
+
+                {/* Open Graph */}
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content={isWeAreHere ? "Мы здесь - A-toys" : "О нас и FAQ - A-toys"} />
+                <meta property="og:description" content="Интернет-магазин интимных товаров A-Toys. Доставка по Минску и всей Беларуси. Анонимно, качественно, быстро." />
+                <meta property="og:url" content={window.location.href} />
+                <meta property="og:site_name" content="A-toys" />
+                <meta property="og:image" content={window.location.origin + '/logo.svg'} />
+
                 {!isWeAreHere && (
                     <script type="application/ld+json">
                         {JSON.stringify(faqSchema)}
                     </script>
                 )}
             </Head>
-            
+
             <div className="bg-white pb-20">
                 <div className="max-w-4xl mx-auto px-4 py-12">
                     {isWeAreHere ? (
@@ -118,18 +128,18 @@ const About = ({ faqs }) => {
                                 <div className="w-2 h-10 bg-red-500 rounded-full"></div>
                                 Мы здесь
                             </h1>
-                            
+
                             <div className="space-y-12">
                                 <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-200 h-64 md:h-[500px] relative bg-gray-50 mx-4">
-                                    <iframe 
-                                        src="https://yandex.ru/map-widget/v1/-/CHe9n0p-" 
-                                        width="100%" 
-                                        height="100%" 
+                                    <iframe
+                                        src="https://yandex.ru/map-widget/v1/-/CHe9n0p-"
+                                        width="100%"
+                                        height="100%"
                                         frameBorder="0"
                                         title="Yandex Map"
                                     ></iframe>
                                 </div>
-                                
+
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
                                     <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 flex items-start gap-5">
                                         <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center shadow-md flex-shrink-0">
@@ -175,8 +185,8 @@ const About = ({ faqs }) => {
                                             {howToGetImages.map((src, index) => (
                                                 <SwiperSlide key={index}>
                                                     <div className="aspect-[4/3] overflow-hidden rounded-2xl bg-white border border-gray-100 group">
-                                                        <img 
-                                                            src={src} 
+                                                        <img
+                                                            src={src}
                                                             alt={`Как добраться ${index + 1}`}
                                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                                         />
@@ -295,8 +305,10 @@ const About = ({ faqs }) => {
                     background: #ef4444 !important;
                 }
             `}</style>
-        </MainLayout>
+        </>
     );
 };
+
+About.layout = page => <MainLayout children={page} />;
 
 export default About;

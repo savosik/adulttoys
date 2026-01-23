@@ -7,20 +7,20 @@ const Icons = {
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
     ),
     ShoppingCart: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
     ),
     MessageCircle: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
     ),
     Truck: (props) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v9Z"/><circle cx="7" cy="18" r="2"/><circle cx="17" cy="18" r="2"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" /><path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-5l-4-4h-3v9Z" /><circle cx="7" cy="18" r="2" /><circle cx="17" cy="18" r="2" /></svg>
     ),
 };
 
 // Product Title Component
 export const ProductTitle = ({ product }) => {
     const defaultDescription = 'Высококачественный продукт, выполненный из экологически чистых материалов. Идеально подходит для ежедневного использования. Продуманный дизайн и надежность делают этот товар отличным выбором.';
-    
+
     return (
         <div className="w-full bg-white rounded-2xl shadow-sm border border-gray-100">
             <div className="p-6">
@@ -37,10 +37,11 @@ export const ProductTitle = ({ product }) => {
                 <h1 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
                     {product.name}
                 </h1>
-                
-                <div className="text-sm text-gray-600 leading-relaxed">
-                    {product.description || defaultDescription}
-                </div>
+
+                <div
+                    className="prose prose-sm prose-red max-w-none text-gray-600 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: product.description_html || product.description || defaultDescription }}
+                />
             </div>
         </div>
     );
@@ -124,53 +125,48 @@ export const ProductActions = ({ product }) => {
                             </button>
                         </div>
                     ) : (
-                        <button 
+                        <button
                             onClick={() => product.stock > 0 && addToCart(product)}
-                            className={`flex-1 h-12 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                                product.stock <= 0
-                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                : 'bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl'
-                            }`}
+                            className={`flex-1 h-12 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${product.stock <= 0
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl'
+                                }`}
                             disabled={product.stock <= 0}
                         >
-                        <Icons.ShoppingCart className="w-5 h-5" />
-                        <span className="text-sm">{product.stock <= 0 ? 'Нет в наличии' : 'В корзину'}</span>
+                            <Icons.ShoppingCart className="w-5 h-5" />
+                            <span className="text-sm">{product.stock <= 0 ? 'Нет в наличии' : 'В корзину'}</span>
+                        </button>
+                    )}
+
+                    {/* Favorites Button */}
+                    <button
+                        onClick={() => toggleFavorite(product)}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${isProductFavorite
+                                ? 'bg-red-50 border-red-200'
+                                : 'bg-white border-gray-200 hover:border-gray-300'
+                            }`}
+                    >
+                        <Icons.Heart className={`w-5 h-5 transition-all ${isProductFavorite
+                                ? 'fill-red-500 stroke-red-500'
+                                : 'text-gray-600'
+                            }`} />
                     </button>
-                )}
-                
-                {/* Favorites Button */}
-                <button 
-                    onClick={() => toggleFavorite(product)}
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${
-                        isProductFavorite 
-                        ? 'bg-red-50 border-red-200' 
-                        : 'bg-white border-gray-200 hover:border-gray-300'
-                    }`}
-                >
-                        <Icons.Heart className={`w-5 h-5 transition-all ${
-                                isProductFavorite 
-                                ? 'fill-red-500 stroke-red-500' 
+
+                    {/* Chat Button */}
+                    <button
+                        onClick={() => toggleChatQueue(product)}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${isInChatQueue
+                                ? 'bg-red-50 border-red-200'
+                                : 'bg-white border-gray-200 hover:border-gray-300'
+                            }`}
+                    >
+                        <Icons.MessageCircle className={`w-5 h-5 transition-all ${isInChatQueue
+                                ? 'fill-red-500 stroke-red-500'
                                 : 'text-gray-600'
-                        }`} />
-                </button>
-                
-                {/* Chat Button */}
-                <button 
-                    onClick={() => toggleChatQueue(product)}
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${
-                        isInChatQueue
-                        ? 'bg-red-50 border-red-200'
-                        : 'bg-white border-gray-200 hover:border-gray-300'
-                    }`}
-                >
-                        <Icons.MessageCircle className={`w-5 h-5 transition-all ${
-                                isInChatQueue 
-                                ? 'fill-red-500 stroke-red-500' 
-                                : 'text-gray-600'
-                        }`} />
-                </button>
+                            }`} />
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
     );
 };
