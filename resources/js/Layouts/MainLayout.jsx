@@ -603,42 +603,103 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                                                                     stock: 1
                                                                 };
 
-                                                                return (
-                                                                    <div key={prod.id} className="flex items-center gap-2 px-3 py-2 hover:bg-red-50 rounded-lg transition-colors group">
-                                                                        <Link
-                                                                            href={prod.url}
-                                                                            onClick={() => setShowSuggestions(false)}
-                                                                            className="flex items-center gap-3 flex-1 min-w-0"
-                                                                        >
-                                                                            <div className="w-10 h-10 bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
-                                                                                <img src={prod.image || 'https://placehold.co/100x100?text=No+Image'} alt="" className="w-full h-full object-cover" />
-                                                                            </div>
-                                                                            <div className="flex-1 min-w-0">
-                                                                                <div className="text-sm font-medium text-gray-900 truncate">{prod.name}</div>
-                                                                                <div className="flex items-center gap-2 mt-0.5">
-                                                                                    <div className="text-xs text-red-600 font-bold">{new Intl.NumberFormat('ru-RU').format(prod.price)} BYN</div>
-                                                                                    {prod.reviews_count > 0 && (
-                                                                                        <div className="flex items-center gap-0.5 text-[10px] text-gray-400">
-                                                                                            <span className="text-yellow-500">★</span>
-                                                                                            <span>{Number(prod.reviews_avg_rating).toFixed(1)}</span>
-                                                                                            <span>({prod.reviews_count})</span>
-                                                                                        </div>
-                                                                                    )}
-                                                                                </div>
-                                                                            </div>
-                                                                        </Link>
+                                                                const cartItem = cart.find(item => item.id === prod.id);
+                                                                const isInChat = chatQueue.some(item => item.id === prod.id);
 
-                                                                        <button
-                                                                            onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                e.stopPropagation();
-                                                                                toggleFavorite(productData);
-                                                                            }}
-                                                                            className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isFavorite(prod.id) ? 'bg-red-50' : 'bg-gray-100 hover:bg-gray-200'
-                                                                                }`}
-                                                                        >
-                                                                            <Icons.Heart className={`w-4 h-4 ${isFavorite(prod.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
-                                                                        </button>
+                                                                return (
+                                                                    <div key={prod.id} className="px-3 py-2 hover:bg-red-50 rounded-lg transition-colors">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <Link
+                                                                                href={prod.url}
+                                                                                onClick={() => setShowSuggestions(false)}
+                                                                                className="flex items-center gap-3 flex-1 min-w-0"
+                                                                            >
+                                                                                <div className="w-10 aspect-[2/3] bg-gray-50 rounded-lg overflow-hidden border border-gray-100 flex-shrink-0">
+                                                                                    <img src={prod.image || 'https://placehold.co/100x100?text=No+Image'} alt="" className="w-full h-full object-cover" />
+                                                                                </div>
+                                                                                <div className="flex-1 min-w-0">
+                                                                                    <div className="text-sm font-medium text-gray-900 truncate">{prod.name}</div>
+                                                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                                                        <div className="text-xs text-red-600 font-bold">{new Intl.NumberFormat('ru-RU').format(prod.price)} BYN</div>
+                                                                                        {prod.reviews_count > 0 && (
+                                                                                            <div className="flex items-center gap-0.5 text-[10px] text-gray-400">
+                                                                                                <span className="text-yellow-500">★</span>
+                                                                                                <span>{Number(prod.reviews_avg_rating).toFixed(1)}</span>
+                                                                                                <span>({prod.reviews_count})</span>
+                                                                                            </div>
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </Link>
+
+                                                                            <div className="flex items-center gap-1.5 flex-shrink-0">
+                                                                                {/* Favorites Button */}
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        e.stopPropagation();
+                                                                                        toggleFavorite(productData);
+                                                                                    }}
+                                                                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isFavorite(prod.id) ? 'bg-red-50 border border-red-200' : 'bg-gray-100 hover:bg-gray-200'}`}
+                                                                                >
+                                                                                    <Icons.Heart className={`w-4 h-4 ${isFavorite(prod.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+                                                                                </button>
+
+                                                                                {/* Cart Button */}
+                                                                                {cartItem ? (
+                                                                                    <div className="flex items-center gap-1 bg-green-600 rounded-lg overflow-hidden h-8">
+                                                                                        <button
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                e.stopPropagation();
+                                                                                                decrementCartQuantity(prod.id);
+                                                                                            }}
+                                                                                            className="w-8 h-8 flex items-center justify-center hover:bg-green-700 transition-colors text-white font-bold text-sm"
+                                                                                        >
+                                                                                            −
+                                                                                        </button>
+                                                                                        <div className="px-2 text-center text-white font-bold text-xs min-w-[20px]">
+                                                                                            {cartItem.quantity}
+                                                                                        </div>
+                                                                                        <button
+                                                                                            onClick={(e) => {
+                                                                                                e.preventDefault();
+                                                                                                e.stopPropagation();
+                                                                                                incrementCartQuantity(prod.id);
+                                                                                            }}
+                                                                                            className="w-8 h-8 flex items-center justify-center hover:bg-green-700 transition-colors text-white font-bold text-sm"
+                                                                                        >
+                                                                                            +
+                                                                                        </button>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <button
+                                                                                        onClick={(e) => {
+                                                                                            e.preventDefault();
+                                                                                            e.stopPropagation();
+                                                                                            if (productData.stock > 0) {
+                                                                                                addToCart(productData);
+                                                                                            }
+                                                                                        }}
+                                                                                        className="w-8 h-8 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                                                                                    >
+                                                                                        <Icons.ShoppingCart className="w-4 h-4 text-gray-600" />
+                                                                                    </button>
+                                                                                )}
+
+                                                                                {/* Chat Button */}
+                                                                                <button
+                                                                                    onClick={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        e.stopPropagation();
+                                                                                        toggleChatQueue(productData);
+                                                                                    }}
+                                                                                    className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${isInChat ? 'bg-red-50 border border-red-200' : 'bg-gray-100 hover:bg-gray-200'}`}
+                                                                                >
+                                                                                    <Icons.MessageCircle className={`w-4 h-4 ${isInChat ? 'fill-red-500 stroke-red-500' : 'text-gray-600'}`} />
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 );
                                                             })}
@@ -697,15 +758,19 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     {/* Desktop Footer (Yandex Commercial Factors) */}
                     {!['Cart', 'Favorites'].includes(component) && (
                         <footer className="bg-white border-t border-gray-100 mt-12 pb-32 pt-12 px-6 flex-shrink-0">
-                            <div className="mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
-                                <div className="space-y-4">
+                            <div className="mx-auto max-w-4xl">
+                                <div className="flex flex-col items-center space-y-6">
                                     <div className="flex items-center gap-3">
                                         <div className="w-1.5 h-8 bg-red-500 rounded-full"></div>
                                         <img src="/logo.svg" alt="A-toys" className="h-8 w-auto" />
                                     </div>
-                                    <p className="text-xs text-gray-500 leading-relaxed">
-                                        Ваш надежный партнер в мире интимных товаров с 2019 года. Мы гарантируем полную анонимность и высокое качество продукции.
+
+                                    <p className="text-xs text-gray-500 leading-relaxed text-center">
+                                        ООО "Адалт Тойс", УНП 192825568. <br />
+                                        Зарегистрировано в Торговом реестре РБ 12.05.2019. <br />
+                                        Свидетельство о гос. регистрации выдано Мингорисполкомом.
                                     </p>
+
                                     <div className="flex gap-4">
                                         <a href="https://vk.com" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
                                             <span className="text-[10px] font-bold">VK</span>
@@ -717,45 +782,19 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                                             <span className="text-[10px] font-bold">TG</span>
                                         </a>
                                     </div>
-                                </div>
 
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6">Покупателям</h4>
-                                    <ul className="space-y-3">
-                                        <li><Link href="/about?section=delivery" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Доставка</Link></li>
-                                        <li><Link href="/about?section=payment" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Оплата</Link></li>
-                                        <li><Link href="/about" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Вопросы и ответы</Link></li>
-                                        <li><Link href="/about?section=we-are-here" className="text-sm text-gray-500 hover:text-red-600 transition-colors">Мы на карте</Link></li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6">Контакты</h4>
-                                    <ul className="space-y-4">
-                                        <li className="flex gap-3">
-                                            <Icons.Phone className="w-4 h-4 text-red-500 flex-shrink-0" />
-                                            <div>
-                                                <a href="tel:+375295008990" className="text-sm font-bold text-gray-900 block tracking-tight">+375 (29) 500-89-90</a>
-                                                <span className="text-[10px] text-gray-400">Ежедневно 10:00 - 20:00</span>
-                                            </div>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <Icons.MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
-                                            <span className="text-sm text-gray-500 leading-tight">г. Минск, ул. Тимирязева, 123/2 (ТЦ "Град")</span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-6">Информация</h4>
-                                    <p className="text-[10px] text-gray-400 leading-relaxed">
-                                        ООО "Адалт Тойс", УНП 192825568. <br />
-                                        Зарегистрировано в Торговом реестре РБ 12.05.2019. <br />
-                                        Свидетельство о гос. регистрации выдано Мингорисполкомом.
-                                    </p>
+                                    <nav className="flex items-center gap-2 text-sm text-gray-500">
+                                        <Link href="/about?section=delivery" className="hover:text-red-600 transition-colors">Доставка</Link>
+                                        <span className="text-gray-300">|</span>
+                                        <Link href="/about?section=payment" className="hover:text-red-600 transition-colors">Оплата</Link>
+                                        <span className="text-gray-300">|</span>
+                                        <Link href="/about" className="hover:text-red-600 transition-colors">Вопросы и ответы</Link>
+                                        <span className="text-gray-300">|</span>
+                                        <Link href="/about?section=we-are-here" className="hover:text-red-600 transition-colors">Как нас найти</Link>
+                                    </nav>
                                 </div>
                             </div>
-                            <div className="mx-auto border-t border-gray-50 mt-12 pt-8 text-center">
+                            <div className="mx-auto border-t border-gray-50 mt-8 pt-6 text-center">
                                 <p className="text-[10px] text-gray-300">© 2019-{new Date().getFullYear()} A-Toys. Все права защищены. 18+</p>
                             </div>
                         </footer>
