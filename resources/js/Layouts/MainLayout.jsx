@@ -345,7 +345,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     scrollbar-color: #cbd5e1 transparent;
                     direction: rtl;
                 }
-                .sidebar-scroll > nav {
+                .sidebar-scroll > * {
                     direction: ltr;
                 }
                 .content-scroll::-webkit-scrollbar {
@@ -612,7 +612,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                                                                 <img
                                                                     src={cat.icon_url || `/storage/${cat.icon}`}
                                                                     alt=""
-                                                                    className="w-full h-full object-contain mix-blend-multiply"
+                                                                    className={`w-full h-full object-contain ${isSelected ? 'mix-blend-multiply' : ''}`}
                                                                     onError={(e) => {
                                                                         e.target.style.display = 'none';
                                                                     }}
@@ -784,20 +784,23 @@ const MainLayout = ({ children, filters: propsFilters }) => {
 
             <div className="flex flex-1 overflow-hidden">
                 {/* Sidebar */}
-                <aside className="w-20 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto sidebar-scroll">
-                    <nav className="py-2">
-                        <button
-                            onClick={() => setShowMenuPanel(true)}
-                            className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${showMenuPanel
-                                ? 'bg-red-50 text-red-700'
-                                : 'text-gray-600 hover:bg-gray-50'
-                                }`}
-                        >
-                            <Icons.Menu className="w-5 h-5 flex-shrink-0" />
-                            <span className="text-[9px] font-medium leading-tight text-center break-all line-clamp-2 max-w-full overflow-hidden">
-                                Меню
-                            </span>
-                        </button>
+                <aside className="w-20 md:w-40 lg:w-52 bg-white border-r border-gray-200 flex-shrink-0 flex flex-col">
+                    {/* Fixed Catalog Button - matches search header height */}
+                    <button
+                        onClick={() => setShowMenuPanel(true)}
+                        className={`w-full flex flex-col md:flex-row items-center md:items-center justify-center gap-1 md:gap-2 px-1 md:px-2 h-16 flex-shrink-0 border-b border-gray-100 shadow-sm transition-colors ${showMenuPanel
+                            ? 'bg-red-50 text-red-700'
+                            : 'text-gray-600 hover:bg-gray-50'
+                            }`}
+                    >
+                        <Icons.Menu className="w-5 h-5 flex-shrink-0" />
+                        <span className="text-[9px] md:text-xs font-bold leading-tight text-center md:text-left">
+                            Каталог
+                        </span>
+                    </button>
+
+                    {/* Scrollable Categories */}
+                    <nav className="flex-1 overflow-y-auto sidebar-scroll py-2">
                         {categories.flatMap(cat => cat.children || []).map(cat => {
                             const Icon = getCategoryIcon(cat.name);
                             const isActive = selectedCategory == cat.id || selectedCategory == cat.name || selectedCategory == cat.slug;
@@ -805,30 +808,37 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                                 <Link
                                     key={cat.id}
                                     href={`/category/${cat.slug}`}
-                                    className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${isActive
+                                    className={`w-full flex flex-col md:flex-row items-center gap-1 md:gap-2 px-1 md:px-2 py-3 transition-colors ${isActive
                                         ? 'bg-red-50 text-red-700'
                                         : 'text-gray-600 hover:bg-gray-50'
                                         }`}
                                     title={cat.name}
                                 >
+                                    {/* ICON BLOCK */}
                                     {cat.icon ? (
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center mb-1 overflow-hidden relative">
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
                                             <img
                                                 src={cat.icon_url || `/storage/${cat.icon}`}
                                                 alt={cat.name}
-                                                className="w-full h-full object-contain mix-blend-multiply relative z-10"
+                                                className={`w-full h-full object-contain relative z-10 ${isActive ? 'mix-blend-multiply' : ''}`}
                                                 onError={(e) => {
                                                     e.target.onerror = null;
-                                                    e.target.src = '/icons/package.svg'; // Fallback if image fails
+                                                    e.target.src = '/icons/package.svg';
                                                 }}
                                             />
                                         </div>
                                     ) : (
-                                        Icon && typeof Icon === 'function' ? <Icon className="w-5 h-5 flex-shrink-0" /> : <Icons.Package className="w-5 h-5 flex-shrink-0" />
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
+                                            {Icon && typeof Icon === 'function' ? <Icon className="w-5 h-5" /> : <Icons.Package className="w-5 h-5" />}
+                                        </div>
                                     )}
-                                    <span className="text-[9px] font-medium leading-tight text-center break-all line-clamp-2 max-w-full overflow-hidden">
-                                        {cat.name}
-                                    </span>
+
+                                    {/* TEXT BLOCK */}
+                                    <div className="flex-1 min-w-0 w-full md:w-auto">
+                                        <p className="text-[9px] font-medium leading-tight text-center md:text-left line-clamp-2">
+                                            {cat.name}
+                                        </p>
+                                    </div>
                                 </Link>
                             );
                         })}

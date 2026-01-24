@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\CategoryIconController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,3 +26,5 @@ Route::get('/dashboard', function () {
 
 Route::get('/favorites', [CatalogController::class, 'favorites'])->name('favorites');
 Route::get('/cart', [CatalogController::class, 'cart'])->name('cart');
+
+Route::post('/api/category/set-icon', [CategoryIconController::class, 'setIcon'])->name('category.set-icon');
