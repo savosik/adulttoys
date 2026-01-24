@@ -88,6 +88,15 @@ const Icons = {
     Star: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
     ),
+    Menu: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><line x1="4" x2="20" y1="6" y2="6" /><line x1="4" x2="20" y1="12" y2="12" /><line x1="4" x2="20" y1="18" y2="18" /></svg>
+    ),
+    X: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
+    ),
+    ChevronRight: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m9 18 6-6-6-6" /></svg>
+    ),
 };
 
 const getCategoryIcon = (name = '') => {
@@ -104,7 +113,7 @@ const getCategoryIcon = (name = '') => {
 };
 
 const MainLayout = ({ children, filters: propsFilters }) => {
-    const { categories = [], filters: pageFilters = {}, cart: pageCart = [], chatQueue: pageChatQueue = [], appName } = usePage().props;
+    const { categories = [], filters: pageFilters = {}, cart: pageCart = [], chatQueue: pageChatQueue = [], appName, brands = [] } = usePage().props;
     const { component, url } = usePage();
 
     // Schema.org Organization Data
@@ -158,6 +167,10 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const [isListening, setIsListening] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
     const [showCallModal, setShowCallModal] = useState(false);
+    const [showMenuPanel, setShowMenuPanel] = useState(false);
+    const [menuActiveTab, setMenuActiveTab] = useState('categories');
+    const [activeCategory, setActiveCategory] = useState(null);
+    const [expandedMobileCategory, setExpandedMobileCategory] = useState(null);
     const searchRef = useRef(null);
     const recognitionRef = useRef(null);
     const sortDropdownRef = useRef(null);
@@ -218,6 +231,13 @@ const MainLayout = ({ children, filters: propsFilters }) => {
 
         return () => clearTimeout(delayDebounceFn);
     }, [searchQuery, filters.search]);
+
+    // Set default active category
+    useEffect(() => {
+        if (categories.length > 0 && !activeCategory) {
+            setActiveCategory(categories[0]);
+        }
+    }, [categories]);
 
     // Speech recognition
     useEffect(() => {
@@ -417,6 +437,291 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 </div>
             )}
 
+            {/* Menu Panel */}
+            {showMenuPanel && (
+                <div className="fixed inset-0 z-[100] flex justify-center items-start pt-4 sm:pt-24 px-2 sm:px-4 pb-4">
+                    {/* Backdrop */}
+                    <div
+                        className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+                        onClick={() => setShowMenuPanel(false)}
+                    />
+
+                    {/* Panel */}
+                    <div className="relative w-full max-w-5xl bg-white shadow-2xl rounded-2xl flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[85vh] overflow-hidden animate-in zoom-in-95 duration-200">
+                        {/* Header Tabs */}
+                        <div className="flex items-center justify-between px-6 pt-4 border-b border-gray-100">
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setMenuActiveTab('categories')}
+                                    className={`pb-4 text-sm font-bold transition-all relative ${menuActiveTab === 'categories'
+                                        ? 'text-red-600'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                >
+                                    По категориям
+                                    {menuActiveTab === 'categories' && (
+                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 rounded-t-full"></div>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setMenuActiveTab('brands')}
+                                    className={`pb-4 text-sm font-bold transition-all relative ${menuActiveTab === 'brands'
+                                        ? 'text-red-600'
+                                        : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                >
+                                    По брендам
+                                    {menuActiveTab === 'brands' && (
+                                        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 rounded-t-full"></div>
+                                    )}
+                                </button>
+                            </div>
+                            <button
+                                onClick={() => setShowMenuPanel(false)}
+                                className="p-2 -mr-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors mb-2"
+                            >
+                                <Icons.X className="w-6 h-6" />
+                            </button>
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1 overflow-y-auto">
+                            {menuActiveTab === 'categories' ? (
+                                <>
+                                    {/* Mobile Accordion Layout */}
+                                    <div className="md:hidden h-full overflow-y-auto content-scroll">
+                                        <div className="p-4 space-y-2">
+                                            <Link
+                                                href="/"
+                                                onClick={() => setShowMenuPanel(false)}
+                                                className="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl text-gray-700 font-medium"
+                                            >
+                                                <Icons.LayoutGrid className="w-5 h-5 text-red-500" />
+                                                Все категории
+                                            </Link>
+
+                                            {categories.map((cat) => {
+                                                const Icon = getCategoryIcon(cat.name);
+                                                const isExpanded = expandedMobileCategory === cat.id;
+
+                                                return (
+                                                    <div key={cat.id} className="bg-gray-50 rounded-xl overflow-hidden">
+                                                        <button
+                                                            onClick={() => setExpandedMobileCategory(isExpanded ? null : cat.id)}
+                                                            className="w-full flex items-center gap-3 px-4 py-3 text-left"
+                                                        >
+                                                            {cat.icon ? (
+                                                                <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center p-1.5 overflow-hidden flex-shrink-0">
+                                                                    <img
+                                                                        src={cat.icon_url || `/storage/${cat.icon}`}
+                                                                        alt=""
+                                                                        className="w-full h-full object-contain"
+                                                                    />
+                                                                </div>
+                                                            ) : (
+                                                                <div className="w-8 h-8 rounded-lg bg-white text-gray-500 flex items-center justify-center flex-shrink-0">
+                                                                    {Icon && typeof Icon === 'function' ? (
+                                                                        <Icon className="w-5 h-5" />
+                                                                    ) : (
+                                                                        <Icons.Package className="w-5 h-5" />
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                            <span className={`flex-1 text-sm font-medium ${isExpanded ? 'text-red-600' : 'text-gray-700'}`}>
+                                                                {cat.name}
+                                                            </span>
+                                                            <Icons.ChevronRight className={`w-5 h-5 text-gray-400 transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`} />
+                                                        </button>
+
+                                                        {isExpanded && cat.children && cat.children.length > 0 && (
+                                                            <div className="px-4 pb-4 pt-1 space-y-1 bg-white/50">
+                                                                <Link
+                                                                    href={`/category/${cat.slug}`}
+                                                                    onClick={() => setShowMenuPanel(false)}
+                                                                    className="block px-3 py-2 text-sm text-red-600 font-medium rounded-lg hover:bg-red-50"
+                                                                >
+                                                                    Все в «{cat.name}»
+                                                                </Link>
+                                                                {cat.children.map(child => (
+                                                                    <div key={child.id}>
+                                                                        <Link
+                                                                            href={`/category/${child.slug}`}
+                                                                            onClick={() => setShowMenuPanel(false)}
+                                                                            className="block px-3 py-2 text-sm font-medium text-gray-800 rounded-lg hover:bg-gray-100"
+                                                                        >
+                                                                            {child.name}
+                                                                        </Link>
+                                                                        {child.children && child.children.length > 0 && (
+                                                                            <div className="ml-4 space-y-0.5">
+                                                                                {child.children.map(subChild => (
+                                                                                    <Link
+                                                                                        key={subChild.id}
+                                                                                        href={`/category/${subChild.slug}`}
+                                                                                        onClick={() => setShowMenuPanel(false)}
+                                                                                        className="block px-3 py-1.5 text-xs text-gray-500 rounded hover:text-red-600"
+                                                                                    >
+                                                                                        {subChild.name}
+                                                                                    </Link>
+                                                                                ))}
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+
+                                    {/* Desktop Two-Column Layout */}
+                                    <div className="hidden md:flex h-full">
+                                        {/* Sidebar (Left Column) */}
+                                        <div className="w-64 md:w-72 bg-gray-50/50 border-r border-gray-100 overflow-y-auto p-3 space-y-1 content-scroll">
+                                            <Link
+                                                href="/"
+                                                onClick={() => setShowMenuPanel(false)}
+                                                className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all ${!selectedCategory && !activeCategory
+                                                    ? 'bg-white shadow text-red-600 font-bold'
+                                                    : 'text-gray-600 hover:bg-white hover:shadow-sm'
+                                                    }`}
+                                            >
+                                                <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center">
+                                                    <Icons.LayoutGrid className="w-5 h-5" />
+                                                </div>
+                                                <span className="text-sm">Все категории</span>
+                                            </Link>
+
+                                            {categories.map((cat) => {
+                                                const Icon = getCategoryIcon(cat.name);
+                                                const isSelected = activeCategory?.id === cat.id;
+
+                                                return (
+                                                    <button
+                                                        key={cat.id}
+                                                        onClick={() => setActiveCategory(cat)}
+                                                        onMouseEnter={() => setActiveCategory(cat)}
+                                                        className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all text-left ${isSelected
+                                                            ? 'bg-white shadow text-red-600 font-bold'
+                                                            : 'text-gray-600 hover:bg-white hover:shadow-sm'
+                                                            }`}
+                                                    >
+                                                        {cat.icon ? (
+                                                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center p-1.5 overflow-hidden flex-shrink-0">
+                                                                <img
+                                                                    src={cat.icon_url || `/storage/${cat.icon}`}
+                                                                    alt=""
+                                                                    className="w-full h-full object-contain mix-blend-multiply"
+                                                                    onError={(e) => {
+                                                                        e.target.style.display = 'none';
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        ) : (
+                                                            <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center flex-shrink-0">
+                                                                {Icon && typeof Icon === 'function' ? (
+                                                                    <Icon className="w-5 h-5" />
+                                                                ) : (
+                                                                    <Icons.Package className="w-5 h-5" />
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        <span className="text-sm leading-tight flex-1">{cat.name}</span>
+                                                        {isSelected && <Icons.ChevronRight className="w-4 h-4" />}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Main Content (Right Column) */}
+                                        <div className="flex-1 overflow-y-auto p-6 lg:p-8 bg-white content-scroll">
+                                            {activeCategory ? (
+                                                <div className="animate-in fade-in slide-in-from-left-2 duration-300">
+                                                    <div className="flex items-center gap-4 mb-8">
+                                                        <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-tight">
+                                                            {activeCategory.name}
+                                                        </h2>
+                                                        <Link
+                                                            href={`/category/${activeCategory.slug}`}
+                                                            onClick={() => setShowMenuPanel(false)}
+                                                            className="px-4 py-1.5 bg-red-50 text-red-600 rounded-full text-xs font-bold hover:bg-red-100 transition-colors"
+                                                        >
+                                                            Смотреть все
+                                                        </Link>
+                                                    </div>
+
+                                                    <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
+                                                        {activeCategory.children && activeCategory.children.length > 0 ? (
+                                                            activeCategory.children.map((child) => (
+                                                                <div key={child.id} className="break-inside-avoid">
+                                                                    <Link
+                                                                        href={`/category/${child.slug}`}
+                                                                        onClick={() => setShowMenuPanel(false)}
+                                                                        className="font-bold text-gray-900 hover:text-red-600 transition-colors block mb-2 text-[15px]"
+                                                                    >
+                                                                        {child.name}
+                                                                    </Link>
+                                                                    {child.children && child.children.length > 0 && (
+                                                                        <div className="space-y-1 mb-3">
+                                                                            {child.children.map(subChild => (
+                                                                                <Link
+                                                                                    key={subChild.id}
+                                                                                    href={`/category/${subChild.slug}`}
+                                                                                    onClick={() => setShowMenuPanel(false)}
+                                                                                    className="block text-sm text-gray-500 hover:text-red-600 transition-colors pl-1"
+                                                                                >
+                                                                                    {subChild.name}
+                                                                                </Link>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))
+                                                        ) : (
+                                                            <div className="text-gray-500 italic">Нет подкатегорий</div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                                                    <Icons.LayoutGrid className="w-16 h-16 mb-4 opacity-50" />
+                                                    <p>Выберите категорию</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="h-full overflow-y-auto p-4 md:p-6 bg-white content-scroll">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+                                        {brands.map((brand) => (
+                                            <Link
+                                                key={brand.id}
+                                                href={`/?brand=${brand.id}`}
+                                                onClick={() => setShowMenuPanel(false)}
+                                                className="group p-3 md:p-4 bg-gray-50 rounded-xl border border-transparent hover:border-red-200 hover:bg-red-50 hover:shadow-sm transition-all text-center flex flex-col items-center gap-2 md:gap-3"
+                                            >
+                                                <div className="w-10 h-10 md:w-12 md:h-12 bg-white rounded-full flex items-center justify-center text-gray-400 group-hover:text-red-500 shadow-sm transition-colors">
+                                                    <Icons.Tag className="w-5 h-5 md:w-6 md:h-6" />
+                                                </div>
+                                                <div>
+                                                    <div className="font-bold text-gray-900 text-xs md:text-sm mb-0.5">{brand.name}</div>
+                                                    <div className="text-[9px] md:text-[10px] text-gray-500 group-hover:text-red-500/80 uppercase font-bold tracking-wider">
+                                                        {brand.products_count} тов.
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )
+            }
+
             {/* Header */}
             <header className="bg-white border-b border-gray-200 z-50 flex-shrink-0">
                 <div className="px-4">
@@ -481,20 +786,19 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                 {/* Sidebar */}
                 <aside className="w-20 bg-white border-r border-gray-200 flex-shrink-0 overflow-y-auto sidebar-scroll">
                     <nav className="py-2">
-                        <Link
-                            href="/"
-                            className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${!selectedCategory
+                        <button
+                            onClick={() => setShowMenuPanel(true)}
+                            className={`w-full flex flex-col items-center gap-1 px-2 py-3 transition-colors ${showMenuPanel
                                 ? 'bg-red-50 text-red-700'
                                 : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                         >
-                            <Icons.Home className="w-5 h-5 flex-shrink-0" />
+                            <Icons.Menu className="w-5 h-5 flex-shrink-0" />
                             <span className="text-[9px] font-medium leading-tight text-center break-all line-clamp-2 max-w-full overflow-hidden">
-                                Все
+                                Меню
                             </span>
-                        </Link>
-                        {categories.map(cat => {
-                            if (cat.id === 2) console.log('Category 2 data:', cat);
+                        </button>
+                        {categories.flatMap(cat => cat.children || []).map(cat => {
                             const Icon = getCategoryIcon(cat.name);
                             const isActive = selectedCategory == cat.id || selectedCategory == cat.name || selectedCategory == cat.slug;
                             return (
@@ -853,7 +1157,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     </div>
                 </div>
             </nav>
-        </div>
+        </div >
     );
 };
 
