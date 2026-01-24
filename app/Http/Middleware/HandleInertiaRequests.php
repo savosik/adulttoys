@@ -45,9 +45,15 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'message' => fn () => $request->session()->get('message')
             ],
-            'categories' => \App\Models\Category::whereNotNull('parent_id')
-                ->whereIn('parent_id', \App\Models\Category::whereNull('parent_id')->select('id'))
+            'categories' => \App\Models\Category::whereNull('parent_id')
+                ->with(['children' => function($query) {
+                    $query->withCount('products')
+                        ->with(['children' => function($q) {
+                            $q->withCount('products');
+                        }]);
+                }])
                 ->withCount('products')
+                ->orderBy('name', 'asc')
                 ->get()
                 ->map(fn($c) => [
                     'id' => $c->id,
@@ -56,6 +62,27 @@ class HandleInertiaRequests extends Middleware
                     'icon' => $c->icon,
                     'icon_url' => $c->icon_url,
                     'products_count' => $c->products_count,
+                    'children' => $c->children->map(fn($child) => [
+                        'id' => $child->id,
+                        'slug' => $child->slug,
+                        'name' => $child->name,
+                        'products_count' => $child->products_count,
+                        'children' => $child->children->map(fn($subChild) => [
+                            'id' => $subChild->id,
+                            'slug' => $subChild->slug,
+                            'name' => $subChild->name,
+                            'products_count' => $subChild->products_count,
+                        ]),
+                    ]),
+                ]),
+            'brands' => \App\Models\Brand::withCount('products')
+                ->orderBy('name', 'asc')
+                ->get()
+                ->map(fn($b) => [
+                    'id' => $b->id,
+                    'name' => $b->name,
+                    'slug' => $b->slug,
+                    'products_count' => $b->products_count,
                 ]),
             'filters' => [
                 'search' => $request->query('search'),

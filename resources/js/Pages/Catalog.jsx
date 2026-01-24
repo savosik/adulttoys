@@ -43,7 +43,7 @@ const Icons = {
 };
 
 const Catalog = (props) => {
-    const { products, categories, subCategories = [], filters, currentCategory = null } = props;
+    const { products, categories, subCategories = [], filters, currentCategory = null, currentBrand = null } = props;
 
     // Zustand store
     const [items, setItems] = useState(products?.data || []);
@@ -242,8 +242,16 @@ const Catalog = (props) => {
                 <div className="p-4">
                     {/* Page Heading (H1 for SEO) */}
                     <h1 className="sr-only">
-                        {currentCategory ? currentCategory.name : filters.search ? `Поиск: ${filters.search}` : 'Каталог товаров'}
+                        {currentCategory ? currentCategory.name : currentBrand ? `Товары бренда ${currentBrand.name}` : filters.search ? `Поиск: ${filters.search}` : 'Каталог товаров'}
                     </h1>
+
+                    {/* Visible Brand Header */}
+                    {currentBrand && (
+                        <div className="mb-6">
+                            <h2 className="text-2xl font-bold text-gray-900">{currentBrand.name}</h2>
+                            <p className="text-sm text-gray-500 mt-1">Все товары бренда</p>
+                        </div>
+                    )}
 
                     {/* Multi-select Tags UX */}
                     {subCategories.length > 0 && (
@@ -339,12 +347,12 @@ const Catalog = (props) => {
                 </div>
 
                 {/* SEO Text */}
-                {currentCategory?.description && (
+                {(currentCategory?.description || currentBrand?.description) && (
                     <div className="bg-gray-50 border-t border-gray-100 mt-12 py-12">
                         <div className="container mx-auto px-4 max-w-4xl">
                             <section
                                 className="prose prose-red prose-sm sm:prose-base max-w-none text-gray-600"
-                                dangerouslySetInnerHTML={{ __html: currentCategory.description }}
+                                dangerouslySetInnerHTML={{ __html: currentCategory?.description || currentBrand?.description }}
                             />
                         </div>
                     </div>

@@ -60,6 +60,9 @@ class CatalogController extends Controller
                 
                 $query->whereIn('category_id', $allIds);
             })
+            ->when($request->brand, function ($query, $brandId) {
+                $query->where('brand_id', $brandId);
+            })
             ->when($request->sort, function ($query, $sort) {
                 switch ($sort) {
                     case 'price_asc': $query->orderBy('price', 'asc'); break;
@@ -78,9 +81,7 @@ class CatalogController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $brands = Brand::withCount('products')
-            ->limit(10)
-            ->get();
+
 
         $subCategories = [];
         if ($categoryModel) {
@@ -92,7 +93,7 @@ class CatalogController extends Controller
         return Inertia::render('Catalog', [
             'products' => $products,
             'subCategories' => $subCategories,
-            'brands' => $brands,
+
             'currentCategory' => $categoryModel,
             'meta' => [
                 'title' => $categoryModel?->meta_title ?? $categoryModel?->name ?? 'Каталог товаров',
@@ -102,6 +103,47 @@ class CatalogController extends Controller
                 $request->only(['sub_category', 'brand', 'search', 'sort']),
                 ['category' => $categoryModel?->slug]
             ),
+        ]);
+    }
+
+    public function brandIndex(Request $request, Brand $brand)
+    {
+        $products = Product::query()
+            ->with(['brand', 'category', 'additionalImages', 'parameters'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
+            ->where('brand_id', $brand->id)
+            ->where('stock', '>', 0)
+            ->when($request->sort, function ($query, $sort) {
+                switch ($sort) {
+                    case 'price_asc': $query->orderBy('price', 'asc'); break;
+                    case 'price_desc': $query->orderBy('price', 'desc'); break;
+                    case 'stock_desc': $query->orderBy('stock', 'desc'); break;
+                    case 'name_asc': $query->orderBy('name', 'asc'); break;
+                    case 'name_desc': $query->orderBy('name', 'desc'); break;
+                    case 'hit': $query->orderBy('hit', 'desc'); break;
+                    case 'novelty': $query->orderBy('novelty', 'desc'); break;
+                    case 'latest': $query->orderBy('created_at', 'desc'); break;
+                    default: $query->orderBy('price', 'desc'); break;
+                }
+            }, fn($q) => $q->orderBy('price', 'desc'))
+            ->paginate(12)
+            ->withQueryString();
+
+        return Inertia::render('Catalog', [
+            'products' => $products,
+            'subCategories' => [],
+            'currentBrand' => [
+                'id' => $brand->id,
+                'name' => $brand->name,
+                'slug' => $brand->slug,
+                'description' => $brand->description,
+            ],
+            'meta' => [
+                'title' => $brand->meta_title ?? "Товары бренда {$brand->name}",
+                'description' => $brand->meta_description ?? "Купить товары бренда {$brand->name} в Минске с доставкой по Беларуси.",
+            ],
+            'filters' => $request->only(['sort']),
         ]);
     }
 

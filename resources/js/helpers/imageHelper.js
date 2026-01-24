@@ -1,7 +1,72 @@
 /**
- * Image Helper Functions for Responsive Images
- * Generates srcset and handles modern image formats
+ * Image Helper Functions for Responsive Images with Thumbor
+ * Generates srcset and handles modern image formats via Thumbor service
  */
+
+// Thumbor configuration
+const THUMBOR_BASE_URL = 'https://thumbor.sex-opt.ru/unsafe';
+
+// Default thumbnail sizes
+const THUMBNAIL_SIZES = {
+    card: { width: 300, height: 450 },      // Product cards in catalog
+    gallery: { width: 400, height: 600 },   // Gallery on product detail page
+    large: { width: 900, height: 1350 },    // Larger preview
+};
+
+/**
+ * Generate Thumbor URL for an image with specified dimensions
+ * @param {string} imageUrl - Original image URL (must be absolute)
+ * @param {number} width - Target width
+ * @param {number} height - Target height
+ * @param {object} options - Additional options (filters, fitIn, etc.)
+ * @returns {string} Thumbor URL
+ */
+export const getThumborUrl = (imageUrl, width, height, options = {}) => {
+    if (!imageUrl) return '';
+
+    // Don't process placeholder images
+    if (imageUrl.includes('placehold.co')) {
+        return imageUrl;
+    }
+
+    // Don't double-process Thumbor URLs
+    if (imageUrl.includes('thumbor.sex-opt.ru')) {
+        return imageUrl;
+    }
+
+    // For relative URLs, we can't use Thumbor (it needs absolute URLs)
+    if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) {
+        return imageUrl;
+    }
+
+    const {
+        fitIn = true,
+        filters = ['fill(white)', 'upscale()']
+    } = options;
+
+    const sizeStr = fitIn ? `fit-in/${width}x${height}` : `${width}x${height}`;
+    const filterStr = filters.length > 0 ? `filters:${filters.join(':')}` : '';
+
+    // Build Thumbor URL: /unsafe/fit-in/WxH/filters:.../original_url
+    const parts = [THUMBOR_BASE_URL, sizeStr];
+    if (filterStr) parts.push(filterStr);
+    parts.push(imageUrl);
+
+    return parts.join('/');
+};
+
+/**
+ * Get thumbnail URL for an image (for product cards)
+ * @param {string} url - Original image URL
+ * @param {string} size - Size preset: 'card', 'gallery', 'large'
+ * @returns {string} Thumbnail URL via Thumbor
+ */
+export const getThumbnailUrl = (url, size = 'card') => {
+    if (!url) return '';
+
+    const sizeConfig = THUMBNAIL_SIZES[size] || THUMBNAIL_SIZES.card;
+    return getThumborUrl(url, sizeConfig.width, sizeConfig.height);
+};
 
 /**
  * Generate responsive image attributes
@@ -22,22 +87,15 @@ export const generateResponsiveImageProps = (imageUrl, altText = '', options = {
         };
     }
 
-    // Remove domain for cleaner URLs (assuming same domain)
-    const cleanUrl = imageUrl.replace(/^https?:\/\/[^\/]+/, '');
-
-    // Generate WebP version URL (assuming server can serve WebP)
-    const webpUrl = cleanUrl.replace(/\.(jpg|jpeg|png)$/i, '.webp');
-
     return {
         src: imageUrl,
-        srcSet: `${webpUrl} 1x, ${webpUrl} 2x`,
         sizes: options.sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
         alt: altText,
         loading: options.loading || 'lazy',
         width: options.width || 400,
         height: options.height || 400,
         className: options.className || '',
-        // Modern image formats with fallback
+        // Modern image optimization hints
         style: {
             contentVisibility: 'auto',
             containIntrinsicSize: `${options.width || 400}px ${options.height || 400}px`
@@ -87,15 +145,3 @@ export const toAVIF = (url) => {
     return url.replace(/\.(jpg|jpeg|png)$/i, '.avif');
 };
 
-/**
- * Get thumbnail URL for an image
- * Adds _thumb before extension
- * @param {string} url - Original image URL
- * @returns {string} Thumbnail URL
- */
-export const getThumbnailUrl = (url) => {
-    if (!url) return '';
-    const lastDotIndex = url.lastIndexOf('.');
-    if (lastDotIndex === -1) return url;
-    return url.substring(0, lastDotIndex) + '_thumb' + url.substring(lastDotIndex);
-};

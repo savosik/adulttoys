@@ -698,7 +698,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                                         {brands.map((brand) => (
                                             <Link
                                                 key={brand.id}
-                                                href={`/?brand=${brand.id}`}
+                                                href={`/brand/${brand.slug}`}
                                                 onClick={() => setShowMenuPanel(false)}
                                                 className="group p-3 md:p-4 bg-gray-50 rounded-xl border border-transparent hover:border-red-200 hover:bg-red-50 hover:shadow-sm transition-all text-center flex flex-col items-center gap-2 md:gap-3"
                                             >

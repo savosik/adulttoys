@@ -8,6 +8,7 @@ use Inertia\Inertia;
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/', [CatalogController::class, 'index'])->name('catalog');
 Route::get('/category/{category:slug}', [CatalogController::class, 'index'])->name('category.show');
+Route::get('/brand/{brand:slug}', [CatalogController::class, 'brandIndex'])->name('brand.show');
 
 Route::get('/about', function () {
     return Inertia::render('About', [
