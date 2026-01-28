@@ -1,21 +1,39 @@
 import React from 'react';
 
 const ProductSpecifications = ({ parameters }) => {
+    const [isExpanded, setIsExpanded] = React.useState(false);
+
     if (!parameters || parameters.length === 0) {
         return null;
     }
 
+    // Always show at least 3 items, otherwise 30%
+    const initialCount = Math.max(3, Math.ceil(parameters.length * 0.3));
+    const displayedParams = isExpanded ? parameters : parameters.slice(0, initialCount);
+    const hasMore = parameters.length > initialCount;
+
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 className="font-bold text-base text-gray-900 mb-3">Характеристики</h3>
-            <div className="bg-gray-50 rounded-xl p-4 space-y-2">
-                {parameters.map((param, idx) => (
-                    <div key={idx} className="flex justify-between text-sm py-1">
+            <div className="bg-gray-50 rounded-xl p-4 grid grid-cols-1 lg:grid-cols-2 lg:gap-x-12 gap-y-1">
+                {displayedParams.map((param, idx) => (
+                    <div key={idx} className="flex justify-between text-sm py-1 border-b border-gray-100 last:border-0 lg:[&:nth-last-child(-n+2)]:border-0">
                         <span className="text-gray-600">{param.name}</span>
-                        <span className="font-semibold text-gray-900">{param.value}</span>
+                        <span className="font-semibold text-gray-900 text-right ml-4">{param.value}</span>
                     </div>
                 ))}
             </div>
+
+            {hasMore && (
+                <div className="mt-3 text-center">
+                    <button
+                        onClick={() => setIsExpanded(!isExpanded)}
+                        className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
+                    >
+                        {isExpanded ? 'Скрыть' : `Показать все (${parameters.length})`}
+                    </button>
+                </div>
+            )}
         </div>
     );
 };

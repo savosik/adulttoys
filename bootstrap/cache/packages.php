@@ -24,6 +24,18 @@
       0 => 'Laravel\\Mcp\\Server\\McpServiceProvider',
     ),
   ),
+  'laravel/reverb' => 
+  array (
+    'aliases' => 
+    array (
+      'Output' => 'Laravel\\Reverb\\Output',
+    ),
+    'providers' => 
+    array (
+      0 => 'Laravel\\Reverb\\ApplicationManagerServiceProvider',
+      1 => 'Laravel\\Reverb\\ReverbServiceProvider',
+    ),
+  ),
   'laravel/roster' => 
   array (
     'providers' => 
@@ -64,6 +76,19 @@
     'providers' => 
     array (
       0 => 'Carbon\\Laravel\\ServiceProvider',
+    ),
+  ),
+  'neuron-core/neuron-laravel' => 
+  array (
+    'aliases' => 
+    array (
+      'AIProvider' => 'NeuronAI\\Laravel\\Facades\\AIProvider',
+      'VectorStore' => 'NeuronAI\\Laravel\\Facades\\VectorStore',
+      'EmbeddingProvider' => 'NeuronAI\\Laravel\\Facades\\EmbeddingProvider',
+    ),
+    'providers' => 
+    array (
+      0 => 'NeuronAI\\Laravel\\NeuronAIServiceProvider',
     ),
   ),
   'nunomaduro/collision' => 

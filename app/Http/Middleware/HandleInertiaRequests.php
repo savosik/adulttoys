@@ -49,11 +49,13 @@ class HandleInertiaRequests extends Middleware
                 ->with(['children' => function($query) {
                     $query->withCount('products')
                         ->with(['children' => function($q) {
-                            $q->withCount('products');
-                        }]);
+                            $q->withCount('products')
+                              ->orderBy('sort_order');
+                        }])
+                        ->orderBy('sort_order');
                 }])
                 ->withCount('products')
-                ->orderBy('name', 'asc')
+                ->orderBy('sort_order')
                 ->get()
                 ->map(fn($c) => [
                     'id' => $c->id,
@@ -79,6 +81,21 @@ class HandleInertiaRequests extends Middleware
                         ]),
                     ]),
                 ]),
+            'sidebarCategories' => \App\Models\Category::whereHas('parent', fn($q) => $q->whereNull('parent_id'))
+                 ->when(request('category_hide') !== '1', function($query) {
+                     $query->where('is_hidden', false);
+                 })
+                 ->orderBy('sort_order')
+                 ->get()
+                 ->map(fn($c) => [
+                     'id' => $c->id,
+                     'slug' => $c->slug,
+                     'name' => $c->name,
+                     'icon' => $c->icon,
+                     'icon_url' => $c->icon_url,
+                     'sort_order' => $c->sort_order,
+                     'is_hidden' => $c->is_hidden,
+                 ]),
             'brands' => \App\Models\Brand::withCount('products')
                 ->orderBy('name', 'asc')
                 ->get()

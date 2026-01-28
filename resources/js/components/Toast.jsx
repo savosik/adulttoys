@@ -10,7 +10,7 @@ const Toast = () => {
             // Check if cart count increased
             const prevCartCount = prevState.getCartCount();
             const currentCartCount = state.getCartCount();
-            
+
             if (currentCartCount > prevCartCount) {
                 setToast({
                     type: 'cart',
@@ -18,11 +18,11 @@ const Toast = () => {
                     icon: '🛒'
                 });
             }
-            
+
             // Check if favorites changed
             const prevFavCount = prevState.getFavoritesCount();
             const currentFavCount = state.getFavoritesCount();
-            
+
             if (currentFavCount > prevFavCount) {
                 setToast({
                     type: 'favorite',
@@ -36,11 +36,11 @@ const Toast = () => {
                     icon: '💔'
                 });
             }
-            
+
             // Check if chat queue changed
             const prevChatCount = prevState.getChatQueueCount();
             const currentChatCount = state.getChatQueueCount();
-            
+
             if (currentChatCount > prevChatCount) {
                 setToast({
                     type: 'chat',
@@ -52,6 +52,18 @@ const Toast = () => {
                     type: 'chat-remove',
                     message: 'Удалено из чата',
                     icon: '🚫'
+                });
+            }
+
+            // Check for explicit notifications
+            const prevNotification = prevState.notification;
+            const currentNotification = state.notification;
+
+            if (currentNotification && currentNotification !== prevNotification) {
+                setToast({
+                    type: currentNotification.type,
+                    message: currentNotification.message,
+                    icon: currentNotification.type === 'success' ? '✅' : 'ℹ️'
                 });
             }
         });
@@ -73,13 +85,12 @@ const Toast = () => {
 
     return (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[100] pointer-events-none animate-in fade-in slide-in-from-top-2 duration-300">
-            <div className={`px-4 py-3 rounded-xl shadow-2xl border flex items-center gap-3 ${
-                toast.type === 'cart' 
-                    ? 'bg-red-700 border-red-600 text-white' 
+            <div className={`px-4 py-3 rounded-xl shadow-2xl border flex items-center gap-3 ${toast.type === 'cart'
+                    ? 'bg-red-700 border-red-600 text-white'
                     : toast.type === 'chat'
-                    ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-500 text-white'
-                    : 'bg-white border-gray-200 text-gray-900'
-            }`}>
+                        ? 'bg-gradient-to-br from-red-400 to-red-600 border-red-500 text-white'
+                        : 'bg-white border-gray-200 text-gray-900'
+                }`}>
                 <span className="text-2xl">{toast.icon}</span>
                 <span className="font-medium text-sm">{toast.message}</span>
             </div>

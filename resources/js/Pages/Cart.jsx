@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { IMaskInput } from 'react-imask';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link, router } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import axios from 'axios';
+import MapModal from '@/Components/MapModal';
 import useStore from '@/store/useStore';
+import OrderSuccessModal from '@/Components/OrderSuccessModal';
 
 const Icons = {
     Trash2: (props) => (
@@ -53,6 +56,9 @@ const Icons = {
     Heart: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
     ),
+    Shield: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1-1z" /></svg>
+    ),
     MessageCircle: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" /></svg>
     ),
@@ -84,9 +90,22 @@ const Cart = () => {
     const chatQueue = useStore((state) => state.chatQueue);
     const toggleChatQueue = useStore((state) => state.toggleChatQueue);
 
+    // Delivery state
+    const pickupDelivery = useStore((state) => state.pickupDelivery);
+    const setPickupDeliveryData = useStore((state) => state.setPickupDeliveryData);
+    const pickupDeliveryErrors = useStore((state) => state.pickupDeliveryErrors);
+    const validatePickupDelivery = useStore((state) => state.validatePickupDelivery);
+
+    const clearCourierDeliveryData = useStore((state) => state.clearCourierDeliveryData);
+    const clearPostDeliveryData = useStore((state) => state.clearPostDeliveryData);
+    const clearPickupDeliveryData = useStore((state) => state.clearPickupDeliveryData);
+
     // Sorting state
     const [currentSort, setCurrentSort] = useState('latest');
     const [showSortDropdown, setShowSortDropdown] = useState(false);
+    const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const [successOrderId, setSuccessOrderId] = useState(null);
     const sortDropdownRef = useRef(null);
 
     const sortOptions = [
@@ -167,7 +186,7 @@ const Cart = () => {
                 const transcript = event.results[0][0].transcript;
                 setSearchQuery(transcript);
                 setIsListening(false);
-                router.get('/catalog', { search: transcript });
+                router.get('/', { search: transcript });
             };
 
             recognitionRef.current.onerror = () => setIsListening(false);
@@ -189,7 +208,7 @@ const Cart = () => {
     const handleSearchSubmit = (e) => {
         e?.preventDefault();
         if (searchQuery.trim()) {
-            router.get('/catalog', { search: searchQuery });
+            router.get('/', { search: searchQuery });
         }
     };
 
@@ -213,63 +232,18 @@ const Cart = () => {
     };
 
     const handleCourierInputChange = (field, value) => {
-        // Apply phone mask
-        if (field === 'phone') {
-            value = formatPhoneNumber(value);
-        }
         setCourierDeliveryData({ [field]: value });
     };
 
+    const handlePickupInputChange = (field, value) => {
+        setPickupDeliveryData({ [field]: value });
+    };
+
     const handlePostInputChange = (field, value) => {
-        // Apply phone mask
-        if (field === 'phone') {
-            value = formatPhoneNumber(value);
-        }
         setPostDeliveryData({ [field]: value });
     };
 
-    // Phone number formatter for +375 (XX) XXX-XX-XX
-    const formatPhoneNumber = (value) => {
-        // Remove all non-digit characters except +
-        const cleaned = value.replace(/[^\d+]/g, '');
 
-        // If empty or just +, return as is
-        if (cleaned.length === 0) return '';
-        if (cleaned === '+') return '+';
-
-        // Start with +375
-        let formatted = '+375';
-
-        // Extract digits after +375
-        const digits = cleaned.replace(/^\+?375?/, '');
-
-        if (digits.length > 0) {
-            // Add opening parenthesis and first 2 digits
-            formatted += ' (' + digits.substring(0, 2);
-
-            if (digits.length >= 2) {
-                // Close parenthesis after 2 digits
-                formatted += ')';
-
-                if (digits.length > 2) {
-                    // Add space and next 3 digits
-                    formatted += ' ' + digits.substring(2, 5);
-
-                    if (digits.length > 5) {
-                        // Add dash and next 2 digits
-                        formatted += '-' + digits.substring(5, 7);
-
-                        if (digits.length > 7) {
-                            // Add dash and last 2 digits
-                            formatted += '-' + digits.substring(7, 9);
-                        }
-                    }
-                }
-            }
-        }
-
-        return formatted;
-    };
 
     const handleMapClick = (e) => {
         // This would be implemented with actual map library (e.g., Leaflet, Google Maps)
@@ -282,25 +256,103 @@ const Cart = () => {
         setCourierDeliveryData({ mapLat: marker.lat, mapLng: marker.lng });
     };
 
+    const handleOrderSubmit = async () => {
+        if (!isCheckoutFormComplete()) return;
+
+        let customerName = '';
+        let customerPhone = '';
+        let deliveryData = {};
+
+        if (deliveryMethod === 'pickup') {
+            customerName = pickupDelivery.name;
+            customerPhone = pickupDelivery.phone;
+            deliveryData = {
+                comment: pickupDelivery.comment
+            };
+        } else if (deliveryMethod === 'courier') {
+            customerName = courierDelivery.name;
+            customerPhone = courierDelivery.phone;
+            deliveryData = {
+                address: courierDelivery.address,
+                comment: courierDelivery.comment,
+                mapLat: courierDelivery.mapLat,
+                mapLng: courierDelivery.mapLng
+            };
+        } else if (deliveryMethod === 'post') {
+            customerName = postDelivery.name;
+            customerPhone = postDelivery.phone;
+            deliveryData = {
+                postalCode: postDelivery.postalCode,
+                region: postDelivery.region,
+                city: postDelivery.city,
+                house: postDelivery.house,
+                apartment: postDelivery.apartment,
+                comment: postDelivery.comment
+            };
+        }
+
+        const orderData = {
+            cart: cart.map(item => ({
+                id: item.id,
+                quantity: item.quantity,
+                price: item.price,
+                name: item.name
+            })),
+            delivery_method: deliveryMethod,
+            payment_method: 'on_receipt', // Default for now
+            customer_name: customerName,
+            customer_phone: customerPhone,
+            delivery_data: deliveryData
+        };
+
+        try {
+            const response = await axios.post('/order', orderData);
+            if (response.data.success) {
+                // Clear cart and state specific delivery data
+                clearCart();
+                clearCart();
+                // Delivery data is intentionally preserved for future orders
+
+                // Redirect or show success
+                // For now, let's just alert or redirect to catalog
+                // ideally show a success modal or page
+                setSuccessOrderId(response.data.order_id);
+                setIsSuccessModalOpen(true);
+            }
+        } catch (error) {
+            console.error('Order error:', error);
+            alert('Ошибка при оформлении заказа: ' + (error.response?.data?.message || error.message));
+        }
+    };
+
     // Check if checkout form is complete
     const isCheckoutFormComplete = () => {
-        if (deliveryMethod === 'pickup') return true;
+        if (deliveryMethod === 'pickup') {
+            return pickupDelivery.name &&
+                pickupDelivery.phone &&
+                !pickupDeliveryErrors.name &&
+                !pickupDeliveryErrors.phone;
+        }
 
         if (deliveryMethod === 'courier') {
-            return courierDelivery.address &&
+            return courierDelivery.name &&
+                courierDelivery.address &&
                 courierDelivery.address.length >= 10 &&
                 courierDelivery.phone &&
+                !courierDeliveryErrors.name &&
                 !courierDeliveryErrors.address &&
                 !courierDeliveryErrors.phone;
         }
 
         if (deliveryMethod === 'post') {
-            return postDelivery.postalCode &&
+            return postDelivery.name &&
+                postDelivery.postalCode &&
                 postDelivery.region &&
                 postDelivery.city &&
                 postDelivery.house &&
                 postDelivery.apartment &&
                 postDelivery.phone &&
+                !postDeliveryErrors.name &&
                 !postDeliveryErrors.postalCode &&
                 !postDeliveryErrors.region &&
                 !postDeliveryErrors.city &&
@@ -313,15 +365,21 @@ const Cart = () => {
     };
 
     const getMissingFieldsCount = () => {
-        if (deliveryMethod === 'pickup') return 0;
-
         let missing = 0;
+
+        if (deliveryMethod === 'pickup') {
+            if (!pickupDelivery.name) missing++;
+            if (!pickupDelivery.phone) missing++;
+        }
+
         if (deliveryMethod === 'courier') {
+            if (!courierDelivery.name) missing++;
             if (!courierDelivery.address || courierDelivery.address.length < 10) missing++;
             if (!courierDelivery.phone) missing++;
         }
 
         if (deliveryMethod === 'post') {
+            if (!postDelivery.name) missing++;
             if (!postDelivery.postalCode) missing++;
             if (!postDelivery.region) missing++;
             if (!postDelivery.city) missing++;
@@ -525,7 +583,7 @@ const Cart = () => {
             </div>
 
             <main className="flex-1 overflow-y-auto content-scroll bg-gray-50">
-                <div className="max-w-4xl mx-auto p-4 md:p-6">
+                <div className="mx-auto p-4 md:p-6">
                     {cart.length === 0 ? (
                         <div className="bg-white rounded-3xl p-12 text-center shadow-sm border border-gray-100">
                             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -536,16 +594,16 @@ const Cart = () => {
                                 Самое время добавить в неё что-нибудь интересное из нашего каталога
                             </p>
                             <Link
-                                href="/catalog"
+                                href="/"
                                 className="inline-flex items-center justify-center px-8 py-4 bg-red-500 text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 active:scale-95"
                             >
                                 Вернуться к покупкам
                             </Link>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Cart Items */}
-                            <div className="lg:col-span-2 space-y-4">
+                            <div className="lg:col-span-1 space-y-4">
                                 {sortedCart.map((item) => (
                                     <div
                                         key={item.id}
@@ -676,569 +734,309 @@ const Cart = () => {
                                         </div>
                                     )}
 
-                                    {((deliveryMethod === 'courier' && getCartTotal >= 100) ||
-                                        (deliveryMethod === 'post' && getCartTotal >= 200)) && (
-                                            <div className="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
-                                                <div className="flex items-center gap-2">
-                                                    <svg className="w-5 h-5 text-green-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                    </svg>
-                                                    <div className="flex-1">
-                                                        <div className="font-bold text-sm text-green-700">Вы получили бесплатную доставку!</div>
-                                                        <div className="text-xs text-green-600 mt-0.5">Экономия: {formatPrice(getDeliveryCost === 0 ? (deliveryMethod === 'courier' ? 15 : 20) : 0)} BYN</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-
                                     {/* Delivery Method Selection */}
                                     <div className="mb-6">
-                                        <div className="text-sm font-bold text-gray-700 mb-3">Способ доставки</div>
-                                        <div className="space-y-2">
-                                            {/* Self-pickup */}
+
+
+                                        {/* Tabs */}
+                                        <div className="flex bg-gray-100 p-1 rounded-xl mb-4">
                                             <button
                                                 onClick={() => setDeliveryMethod('pickup')}
-                                                className={`w-full p-3 rounded-xl border-2 transition-all text-left ${deliveryMethod === 'pickup'
-                                                    ? 'border-red-500 bg-red-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${deliveryMethod === 'pickup'
+                                                    ? 'bg-white text-gray-900 shadow-sm'
+                                                    : 'text-gray-500 hover:text-gray-700'
                                                     }`}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${deliveryMethod === 'pickup' ? 'bg-red-500' : 'bg-gray-100'
-                                                        }`}>
-                                                        <Icons.Package className={`w-5 h-5 ${deliveryMethod === 'pickup' ? 'text-white' : 'text-gray-600'
-                                                            }`} />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="font-bold text-sm text-gray-900">Самовывоз</div>
-                                                        <div className="text-xs text-green-600 font-bold">Бесплатно</div>
-                                                        <div className="text-[10px] text-gray-500 mt-0.5 leading-tight">
-                                                            пр-т Победителей 57, оф. 16Н
-                                                        </div>
-                                                    </div>
-                                                    {deliveryMethod === 'pickup' && (
-                                                        <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
-                                                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                <Icons.Package className="w-4 h-4" />
+                                                <span className="hidden sm:inline">Самовывоз</span>
                                             </button>
-
-                                            {/* Courier */}
                                             <button
                                                 onClick={() => setDeliveryMethod('courier')}
-                                                className={`w-full p-3 rounded-xl border-2 transition-all text-left ${deliveryMethod === 'courier'
-                                                    ? 'border-red-500 bg-red-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${deliveryMethod === 'courier'
+                                                    ? 'bg-white text-gray-900 shadow-sm'
+                                                    : 'text-gray-500 hover:text-gray-700'
                                                     }`}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${deliveryMethod === 'courier' ? 'bg-red-500' : 'bg-gray-100'
-                                                        }`}>
-                                                        <Icons.Truck className={`w-5 h-5 ${deliveryMethod === 'courier' ? 'text-white' : 'text-gray-600'
-                                                            }`} />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="font-bold text-sm text-gray-900">Курьером</div>
-                                                        <div className="text-xs text-gray-500">
-                                                            {getCartTotal >= 100 ? (
-                                                                <span className="text-green-600 font-bold">Бесплатно</span>
-                                                            ) : (
-                                                                <span className="font-bold">15 BYN</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="text-[10px] text-gray-500 mt-0.5 leading-tight">
-                                                            {new Date().getHours() < 19 ? 'Сегодня' : 'Завтра'} c 18:00 до 21:00
-                                                        </div>
-                                                    </div>
-                                                    {deliveryMethod === 'courier' && (
-                                                        <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0">
-                                                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                <Icons.Truck className="w-4 h-4" />
+                                                <span className="hidden sm:inline">Курьер</span>
                                             </button>
-
-                                            {/* Post */}
                                             <button
                                                 onClick={() => setDeliveryMethod('post')}
-                                                className={`w-full p-3 rounded-xl border-2 transition-all text-left ${deliveryMethod === 'post'
-                                                    ? 'border-red-500 bg-red-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
+                                                className={`flex-1 py-2 px-3 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 ${deliveryMethod === 'post'
+                                                    ? 'bg-white text-gray-900 shadow-sm'
+                                                    : 'text-gray-500 hover:text-gray-700'
                                                     }`}
                                             >
-                                                <div className="flex items-center gap-3">
-                                                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${deliveryMethod === 'post' ? 'bg-red-500' : 'bg-gray-100'
-                                                        }`}>
-                                                        <Icons.Mail className={`w-5 h-5 ${deliveryMethod === 'post' ? 'text-white' : 'text-gray-600'
-                                                            }`} />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="font-bold text-sm text-gray-900">Почтой</div>
-                                                        <div className="text-xs text-gray-500">
-                                                            {getCartTotal >= 200 ? (
-                                                                <span className="text-green-600 font-bold">Бесплатно</span>
-                                                            ) : (
-                                                                <span>20 BYN <span className="text-gray-400">(бесплатно от 200 BYN)</span></span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    {deliveryMethod === 'post' && (
-                                                        <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
-                                                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                                <Icons.Mail className="w-4 h-4" />
+                                                <span className="hidden sm:inline">Почта</span>
                                             </button>
                                         </div>
+
+                                        {/* Selected Method Details & Forms */}
+                                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100 transition-all">
+                                            {deliveryMethod === 'pickup' && (
+                                                <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                                                    <div className="flex items-start gap-3 mb-4">
+                                                        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                                            <Icons.MapPin className="w-4 h-4 text-red-500" />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-sm text-gray-900">Пункт выдачи</div>
+                                                            <div className="text-xs text-gray-500 mt-1">
+                                                                г. Минск, пр-т Победителей 57, оф. 16Н
+                                                                <span className="mx-2 text-gray-300">|</span>
+                                                                <button
+                                                                    onClick={() => setIsMapModalOpen(true)}
+                                                                    className="text-red-500 hover:underline bg-transparent border-0 p-0 cursor-pointer"
+                                                                >
+                                                                    Открыть на карте
+                                                                </button>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 text-xs text-gray-500 mt-1.5">
+                                                                <Icons.Clock className="w-3 h-3" />
+                                                                <span>Пн-Пт: 10:00-18:00</span>
+                                                            </div>
+                                                            <div className="text-xs text-green-600 font-bold mt-2">Бесплатно</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-3 pt-3 border-t border-gray-100">
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Ваше имя <span className="text-red-500">*</span></label>
+                                                            <input
+                                                                type="text"
+                                                                value={pickupDelivery.name}
+                                                                onChange={(e) => handlePickupInputChange('name', e.target.value)}
+                                                                placeholder="Иван Иванов"
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${pickupDeliveryErrors.name ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Телефон <span className="text-red-500">*</span></label>
+                                                            <IMaskInput
+                                                                mask="+{375} (00) 000-00-00"
+                                                                type="tel"
+                                                                value={pickupDelivery.phone}
+                                                                onAccept={(value) => handlePickupInputChange('phone', value)}
+                                                                placeholder="+375 (XX) XXX-XX-XX"
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${pickupDeliveryErrors.phone ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div className="md:col-span-2">
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Комментарий</label>
+                                                            <input
+                                                                type="text"
+                                                                value={pickupDelivery.comment}
+                                                                onChange={(e) => handlePickupInputChange('comment', e.target.value)}
+                                                                placeholder="Комментарий к заказу"
+                                                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {deliveryMethod === 'courier' && (
+                                                <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                                                    <div className="flex items-start gap-3 mb-4">
+                                                        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                                            <Icons.Truck className="w-4 h-4 text-red-500" />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-sm text-gray-900">Доставка курьером</div>
+                                                            <div className="text-xs text-gray-500 mt-1">
+                                                                {new Date().getHours() < 19 ? 'Сегодня' : 'Завтра'} c 18:00 до 21:00
+                                                            </div>
+                                                            <div className="text-xs mt-1">
+                                                                {getCartTotal >= 100 ? (
+                                                                    <span className="text-green-600 font-bold">Бесплатно</span>
+                                                                ) : (
+                                                                    <span className="text-gray-900 font-bold">15 BYN</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-3 pt-3 border-t border-gray-100">
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Ваше имя <span className="text-red-500">*</span></label>
+                                                            <input
+                                                                type="text"
+                                                                value={courierDelivery.name}
+                                                                onChange={(e) => handleCourierInputChange('name', e.target.value)}
+                                                                placeholder="Иван Иванов"
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${courierDeliveryErrors.name ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                                                                Адрес <span className="text-red-500">*</span> <span className="text-xs text-gray-400 font-normal">(Минск)</span>
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={courierDelivery.address}
+                                                                onChange={(e) => handleCourierInputChange('address', e.target.value)}
+                                                                placeholder="Улица, дом, квартира"
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${courierDeliveryErrors.address ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Телефон <span className="text-red-500">*</span></label>
+                                                            <IMaskInput
+                                                                mask="+{375} (00) 000-00-00"
+                                                                type="tel"
+                                                                value={courierDelivery.phone}
+                                                                onAccept={(value) => handleCourierInputChange('phone', value)}
+                                                                placeholder="+375 (XX) XXX-XX-XX"
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${courierDeliveryErrors.phone ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Комментарий</label>
+                                                            <input
+                                                                type="text"
+                                                                value={courierDelivery.comment}
+                                                                onChange={(e) => handleCourierInputChange('comment', e.target.value)}
+                                                                placeholder="Код домофона, этаж..."
+                                                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {deliveryMethod === 'post' && (
+                                                <div className="animate-in fade-in slide-in-from-top-1 duration-300">
+                                                    <div className="flex items-start gap-3 mb-4">
+                                                        <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                                            <Icons.Mail className="w-4 h-4 text-red-500" />
+                                                        </div>
+                                                        <div>
+                                                            <div className="font-bold text-sm text-gray-900">Отправка почтой</div>
+                                                            <div className="text-xs text-gray-500 mt-1">
+                                                                2-4 дня по Беларуси
+                                                            </div>
+                                                            <div className="text-xs mt-1">
+                                                                {getCartTotal >= 200 ? (
+                                                                    <span className="text-green-600 font-bold">Бесплатно</span>
+                                                                ) : (
+                                                                    <span className="text-gray-900 font-bold">20 BYN</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-3 pt-3 border-t border-gray-100">
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Ваше имя <span className="text-red-500">*</span></label>
+                                                            <input
+                                                                type="text"
+                                                                value={postDelivery.name}
+                                                                onChange={(e) => handlePostInputChange('name', e.target.value)}
+                                                                placeholder="Иван Иванов"
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.name ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <div>
+                                                                <label className="block text-xs font-bold text-gray-700 mb-1.5">Индекс <span className="text-red-500">*</span></label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={postDelivery.postalCode}
+                                                                    onChange={(e) => handlePostInputChange('postalCode', e.target.value)}
+                                                                    maxLength="6"
+                                                                    className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.postalCode ? 'border-red-300' : 'border-gray-200'}`}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-bold text-gray-700 mb-1.5">Район <span className="text-red-500">*</span></label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={postDelivery.region}
+                                                                    onChange={(e) => handlePostInputChange('region', e.target.value)}
+                                                                    className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.region ? 'border-red-300' : 'border-gray-200'}`}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Город / Населенный пункт <span className="text-red-500">*</span></label>
+                                                            <input
+                                                                type="text"
+                                                                value={postDelivery.city}
+                                                                onChange={(e) => handlePostInputChange('city', e.target.value)}
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.city ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div className="grid grid-cols-2 gap-3">
+                                                            <div>
+                                                                <label className="block text-xs font-bold text-gray-700 mb-1.5">Дом <span className="text-red-500">*</span></label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={postDelivery.house}
+                                                                    onChange={(e) => handlePostInputChange('house', e.target.value)}
+                                                                    className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.house ? 'border-red-300' : 'border-gray-200'}`}
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-xs font-bold text-gray-700 mb-1.5">Квартира <span className="text-red-500">*</span></label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={postDelivery.apartment}
+                                                                    onChange={(e) => handlePostInputChange('apartment', e.target.value)}
+                                                                    className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.apartment ? 'border-red-300' : 'border-gray-200'}`}
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Телефон <span className="text-red-500">*</span></label>
+                                                            <IMaskInput
+                                                                mask="+{375} (00) 000-00-00"
+                                                                type="tel"
+                                                                value={postDelivery.phone}
+                                                                onAccept={(value) => handlePostInputChange('phone', value)}
+                                                                className={`w-full px-3 py-2 bg-white border rounded-lg text-sm ${postDeliveryErrors.phone ? 'border-red-300' : 'border-gray-200'}`}
+                                                            />
+                                                        </div>
+                                                        <div>
+                                                            <label className="block text-xs font-bold text-gray-700 mb-1.5">Комментарий</label>
+                                                            <input
+                                                                type="text"
+                                                                value={postDelivery.comment}
+                                                                onChange={(e) => handlePostInputChange('comment', e.target.value)}
+                                                                placeholder="Комментарий к заказу"
+                                                                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-
-                                    {/* Pickup Location Details */}
-                                    {deliveryMethod === 'pickup' && (
-                                        <div className="mb-6 p-4 bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100">
-                                            <div className="flex items-center gap-2 mb-4">
-                                                <Icons.MapPin className="w-5 h-5 text-red-600" />
-                                                <h4 className="font-bold text-gray-900">Пункт самовывоза</h4>
-                                            </div>
-
-                                            <div className="space-y-3 mb-4">
-                                                <div className="flex gap-2">
-                                                    <Icons.MapPin className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                                                    <div className="text-sm">
-                                                        <div className="font-bold text-gray-900">г. Минск, пр-т Победителей 57,</div>
-                                                        <div className="font-bold text-gray-900">оф. 16Н</div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex gap-2">
-                                                    <Icons.Clock className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
-                                                    <div className="text-sm text-gray-700">
-                                                        <div className="font-medium">Пн-Пт: 10:00-18:00</div>
-                                                        <div className="text-xs text-gray-500 mt-0.5">Сб-Вс: выходной</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Map */}
-                                            <div className="rounded-xl overflow-hidden border border-red-200 mb-3">
-                                                <iframe
-                                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2349.8901234567!2d27.5569!3d53.9045!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46dbc57d9f0e0e0b%3A0x1234567890abcdef!2z0J_RgC3RgiDQn9C-0LHQtdC00LjRgtC10LvQtdC5IDU3LCDQnNC40L3RgdC6!5e0!3m2!1sru!2sby!4v1234567890123!5m2!1sru!2sby"
-                                                    width="100%"
-                                                    height="200"
-                                                    style={{ border: 0 }}
-                                                    allowFullScreen=""
-                                                    loading="lazy"
-                                                    referrerPolicy="no-referrer-when-downgrade"
-                                                    className="w-full"
-                                                ></iframe>
-                                            </div>
-
-                                            {/* Navigation Instructions */}
-                                            <details className="group">
-                                                <summary className="flex items-center justify-between cursor-pointer py-2 px-3 bg-white rounded-lg hover:bg-red-50 transition-colors">
-                                                    <div className="flex items-center gap-2">
-                                                        <Icons.Navigation className="w-4 h-4 text-red-500" />
-                                                        <span className="text-sm font-bold text-gray-900">Как добраться</span>
-                                                    </div>
-                                                    <svg className="w-4 h-4 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                    </svg>
-                                                </summary>
-
-                                                <div className="mt-3 space-y-3 px-3">
-                                                    <div className="bg-white rounded-lg p-3 border border-gray-100">
-                                                        <div className="font-bold text-xs text-gray-500 uppercase mb-2">🚇 На метро</div>
-                                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                                            Станция «Немига» или «Фрунзенская».
-                                                            От метро пешком 7-10 минут по проспекту Победителей.
-                                                        </p>
-                                                    </div>
-
-                                                    <div className="bg-white rounded-lg p-3 border border-gray-100">
-                                                        <div className="font-bold text-xs text-gray-500 uppercase mb-2">🚌 На транспорте</div>
-                                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                                            Автобусы: 1, 29, 44, 69, 91.
-                                                            Троллейбусы: 12, 29, 37.
-                                                            Остановка «пр-т Победителей».
-                                                        </p>
-                                                    </div>
-
-                                                    <div className="bg-white rounded-lg p-3 border border-gray-100">
-                                                        <div className="font-bold text-xs text-gray-500 uppercase mb-2">🚗 На автомобиле</div>
-                                                        <p className="text-sm text-gray-700 leading-relaxed">
-                                                            Бесплатная парковка возле здания.
-                                                            Вход со стороны двора, офис 16Н на 1-м этаже.
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Images placeholder */}
-                                                    <div className="grid grid-cols-2 gap-2">
-                                                        <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                                                            <img
-                                                                src="https://placehold.co/400x300/e5e7eb/6b7280?text=Вход+в+здание"
-                                                                alt="Вход в здание"
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        </div>
-                                                        <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden border border-gray-200">
-                                                            <img
-                                                                src="https://placehold.co/400x300/e5e7eb/6b7280?text=Офис"
-                                                                alt="Офис"
-                                                                className="w-full h-full object-cover"
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </details>
-                                        </div>
-                                    )}
-
-                                    {/* Courier Delivery Form */}
-                                    {deliveryMethod === 'courier' && (
-                                        <div className="mb-6 p-4 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl border border-blue-100">
-                                            <div className="flex items-center gap-2 mb-4">
-                                                <Icons.Truck className="w-5 h-5 text-blue-600" />
-                                                <h4 className="font-bold text-gray-900">Данные для доставки</h4>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                {/* Address Input */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Адрес в Минске <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="text"
-                                                            value={courierDelivery.address}
-                                                            onChange={(e) => handleCourierInputChange('address', e.target.value)}
-                                                            placeholder="ул. Ленина, 25"
-                                                            className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${courierDeliveryErrors.address
-                                                                ? 'border-red-300 focus:ring-red-400'
-                                                                : courierDelivery.address && courierDelivery.address.length >= 10
-                                                                    ? 'border-green-300 focus:ring-green-400'
-                                                                    : 'border-gray-200 focus:ring-blue-400'
-                                                                }`}
-                                                        />
-                                                        {courierDelivery.address && courierDelivery.address.length >= 10 && !courierDeliveryErrors.address && (
-                                                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    {courierDeliveryErrors.address && (
-                                                        <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {courierDeliveryErrors.address}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                {/* Phone Input */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Телефон для связи <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="tel"
-                                                            value={courierDelivery.phone}
-                                                            onChange={(e) => handleCourierInputChange('phone', e.target.value)}
-                                                            placeholder="+375 (29) 123-45-67"
-                                                            maxLength="19"
-                                                            className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${courierDeliveryErrors.phone
-                                                                ? 'border-red-300 focus:ring-red-400'
-                                                                : courierDelivery.phone && !courierDeliveryErrors.phone && courierDelivery.phone.length > 0
-                                                                    ? 'border-green-300 focus:ring-green-400'
-                                                                    : 'border-gray-200 focus:ring-blue-400'
-                                                                }`}
-                                                        />
-                                                        {courierDelivery.phone && !courierDeliveryErrors.phone && courierDelivery.phone.length > 0 && (
-                                                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    {courierDeliveryErrors.phone && (
-                                                        <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {courierDeliveryErrors.phone}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                {/* Comment - Optional */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Комментарий (необязательно)
-                                                    </label>
-                                                    <textarea
-                                                        value={courierDelivery.comment}
-                                                        onChange={(e) => handleCourierInputChange('comment', e.target.value)}
-                                                        placeholder="подъезд 2, домофон 25"
-                                                        rows="2"
-                                                        className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm resize-none"
-                                                    />
-                                                </div>
-
-                                                <div className="flex items-start gap-2 bg-blue-50 rounded-lg p-3 border border-blue-100">
-                                                    <svg className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                                    </svg>
-                                                    <div className="text-xs text-blue-700 leading-relaxed">
-                                                        Доставка осуществляется только по городу Минску.
-                                                        Курьер свяжется с вами за 1-2 часа до доставки.
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Post Delivery Form */}
-                                    {deliveryMethod === 'post' && (
-                                        <div className="mb-6 p-4 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl border border-green-100">
-                                            <div className="flex items-center gap-2 mb-4">
-                                                <Icons.Mail className="w-5 h-5 text-green-600" />
-                                                <h4 className="font-bold text-gray-900">Данные для отправки</h4>
-                                            </div>
-
-                                            <div className="space-y-3">
-                                                {/* Postal Code */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Индекс <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="text"
-                                                            value={postDelivery.postalCode}
-                                                            onChange={(e) => handlePostInputChange('postalCode', e.target.value)}
-                                                            placeholder="220000"
-                                                            maxLength="6"
-                                                            className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${postDeliveryErrors.postalCode
-                                                                ? 'border-red-300 focus:ring-red-400'
-                                                                : postDelivery.postalCode && postDelivery.postalCode.length === 6 && !postDeliveryErrors.postalCode
-                                                                    ? 'border-green-300 focus:ring-green-400'
-                                                                    : 'border-gray-200 focus:ring-green-400'
-                                                                }`}
-                                                        />
-                                                        {postDelivery.postalCode && postDelivery.postalCode.length === 6 && !postDeliveryErrors.postalCode && (
-                                                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    {postDeliveryErrors.postalCode && (
-                                                        <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {postDeliveryErrors.postalCode}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                {/* Region */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Район <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="text"
-                                                            value={postDelivery.region}
-                                                            onChange={(e) => handlePostInputChange('region', e.target.value)}
-                                                            placeholder="Минский район"
-                                                            className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${postDeliveryErrors.region
-                                                                ? 'border-red-300 focus:ring-red-400'
-                                                                : postDelivery.region && postDelivery.region.length >= 3 && !postDeliveryErrors.region
-                                                                    ? 'border-green-300 focus:ring-green-400'
-                                                                    : 'border-gray-200 focus:ring-green-400'
-                                                                }`}
-                                                        />
-                                                        {postDelivery.region && postDelivery.region.length >= 3 && !postDeliveryErrors.region && (
-                                                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    {postDeliveryErrors.region && (
-                                                        <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {postDeliveryErrors.region}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                {/* City/Town */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Населенный пункт <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="text"
-                                                            value={postDelivery.city}
-                                                            onChange={(e) => handlePostInputChange('city', e.target.value)}
-                                                            placeholder="г. Минск"
-                                                            className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${postDeliveryErrors.city
-                                                                ? 'border-red-300 focus:ring-red-400'
-                                                                : postDelivery.city && postDelivery.city.length >= 2 && !postDeliveryErrors.city
-                                                                    ? 'border-green-300 focus:ring-green-400'
-                                                                    : 'border-gray-200 focus:ring-green-400'
-                                                                }`}
-                                                        />
-                                                        {postDelivery.city && postDelivery.city.length >= 2 && !postDeliveryErrors.city && (
-                                                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    {postDeliveryErrors.city && (
-                                                        <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {postDeliveryErrors.city}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                {/* House and Apartment in one row */}
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    <div>
-                                                        <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                            Дом <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                        </label>
-                                                        <div className="relative">
-                                                            <input
-                                                                type="text"
-                                                                value={postDelivery.house}
-                                                                onChange={(e) => handlePostInputChange('house', e.target.value)}
-                                                                placeholder="25"
-                                                                className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${postDeliveryErrors.house
-                                                                    ? 'border-red-300 focus:ring-red-400'
-                                                                    : postDelivery.house && postDelivery.house.length > 0 && !postDeliveryErrors.house
-                                                                        ? 'border-green-300 focus:ring-green-400'
-                                                                        : 'border-gray-200 focus:ring-green-400'
-                                                                    }`}
-                                                            />
-                                                            {postDelivery.house && postDelivery.house.length > 0 && !postDeliveryErrors.house && (
-                                                                <svg className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                                </svg>
-                                                            )}
-                                                        </div>
-                                                        {postDeliveryErrors.house && (
-                                                            <p className="text-xs text-red-600 mt-1">{postDeliveryErrors.house}</p>
-                                                        )}
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                            Квартира <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                        </label>
-                                                        <div className="relative">
-                                                            <input
-                                                                type="text"
-                                                                value={postDelivery.apartment}
-                                                                onChange={(e) => handlePostInputChange('apartment', e.target.value)}
-                                                                placeholder="10"
-                                                                className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${postDeliveryErrors.apartment
-                                                                    ? 'border-red-300 focus:ring-red-400'
-                                                                    : postDelivery.apartment && postDelivery.apartment.length > 0 && !postDeliveryErrors.apartment
-                                                                        ? 'border-green-300 focus:ring-green-400'
-                                                                        : 'border-gray-200 focus:ring-green-400'
-                                                                    }`}
-                                                            />
-                                                            {postDelivery.apartment && postDelivery.apartment.length > 0 && !postDeliveryErrors.apartment && (
-                                                                <svg className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                                </svg>
-                                                            )}
-                                                        </div>
-                                                        {postDeliveryErrors.apartment && (
-                                                            <p className="text-xs text-red-600 mt-1">{postDeliveryErrors.apartment}</p>
-                                                        )}
-                                                    </div>
-                                                </div>
-
-                                                {/* Phone Input */}
-                                                <div>
-                                                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                                                        Телефон для связи <span className="text-xs text-gray-500 font-normal">(обязательно)</span>
-                                                    </label>
-                                                    <div className="relative">
-                                                        <input
-                                                            type="tel"
-                                                            value={postDelivery.phone}
-                                                            onChange={(e) => handlePostInputChange('phone', e.target.value)}
-                                                            placeholder="+375 (29) 123-45-67"
-                                                            maxLength="19"
-                                                            className={`w-full px-3 py-2.5 pr-10 border rounded-lg focus:ring-2 focus:border-transparent text-sm transition-colors ${postDeliveryErrors.phone
-                                                                ? 'border-red-300 focus:ring-red-400'
-                                                                : postDelivery.phone && !postDeliveryErrors.phone && postDelivery.phone.length > 0
-                                                                    ? 'border-green-300 focus:ring-green-400'
-                                                                    : 'border-gray-200 focus:ring-green-400'
-                                                                }`}
-                                                        />
-                                                        {postDelivery.phone && !postDeliveryErrors.phone && postDelivery.phone.length > 0 && (
-                                                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                                            </svg>
-                                                        )}
-                                                    </div>
-                                                    {postDeliveryErrors.phone && (
-                                                        <p className="text-xs text-red-600 mt-1 flex items-center gap-1">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                                                            </svg>
-                                                            {postDeliveryErrors.phone}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                <div className="flex items-start gap-2 bg-green-50 rounded-lg p-3 border border-green-100">
-                                                    <svg className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                                    </svg>
-                                                    <div className="text-xs text-green-700 leading-relaxed">
-                                                        Доставка почтой осуществляется по всей территории Беларуси.
-                                                        Срок доставки: 3-7 рабочих дней.
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
 
                                     <div className="space-y-4 mb-8">
                                         <div className="flex justify-between text-sm">
                                             <span className="text-gray-500">Товары ({getCartCount})</span>
                                             <span className="font-bold text-gray-900">{formatPrice(getCartTotal)} BYN</span>
                                         </div>
-                                        <div className="flex justify-between text-sm">
-                                            <span className="text-gray-500">Доставка</span>
-                                            {getDeliveryCost === 0 ? (
-                                                <span className="text-green-600 font-bold">Бесплатно</span>
-                                            ) : (
-                                                <span className="font-bold text-gray-900">{formatPrice(getDeliveryCost)} BYN</span>
-                                            )}
-                                        </div>
+                                        {deliveryMethod !== 'pickup' && (
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-500">Доставка</span>
+                                                {getDeliveryCost === 0 ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-gray-400 line-through text-xs">
+                                                            {deliveryMethod === 'courier' ? '15' : '20'} BYN
+                                                        </span>
+                                                        <span className="text-green-600 font-bold">Бесплатно</span>
+                                                    </div>
+                                                ) : (
+                                                    <span className="font-bold text-gray-900">{formatPrice(getDeliveryCost)} BYN</span>
+                                                )}
+                                            </div>
+                                        )}
 
                                         {/* Payment Method */}
                                         <div className="pt-3 border-t border-gray-100">
-                                            <div className="text-xs font-bold text-gray-700 mb-2">Способ оплаты</div>
+
                                             <div className="flex items-center gap-2 text-sm text-gray-600">
                                                 <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -1257,8 +1055,19 @@ const Cart = () => {
                                         </div>
                                     </div>
 
+                                    {/* Anonymity Assurance Block */}
+                                    <div className="mb-4 flex items-center gap-3 bg-gray-50 p-3 rounded-xl border border-gray-100">
+                                        <div className="flex-shrink-0">
+                                            <Icons.Shield className="w-5 h-5 text-gray-400" />
+                                        </div>
+                                        <div className="text-xs text-gray-600 font-medium leading-tight">
+                                            100% анонимно. Закрытая упаковка. Конфиденциальность покупки.
+                                        </div>
+                                    </div>
+
                                     <button
                                         disabled={!isCheckoutFormComplete()}
+                                        onClick={handleOrderSubmit}
                                         className={`w-full py-4 rounded-2xl font-bold text-lg transition-all mb-4 relative group ${isCheckoutFormComplete()
                                             ? 'bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20 active:scale-95'
                                             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1287,6 +1096,20 @@ const Cart = () => {
                     )}
                 </div>
             </main>
+
+            <MapModal
+                isOpen={isMapModalOpen}
+                onClose={() => setIsMapModalOpen(false)}
+            />
+
+            <OrderSuccessModal
+                isOpen={isSuccessModalOpen}
+                onClose={() => {
+                    setIsSuccessModalOpen(false);
+                    router.visit('/');
+                }}
+                orderId={successOrderId}
+            />
         </>
     );
 };

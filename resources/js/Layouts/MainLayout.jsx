@@ -4,7 +4,9 @@ import axios from 'axios';
 import useStore from '@/store/useStore';
 import Toast from '@/components/Toast';
 import TypingText from '@/components/TypingText';
-
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 // Simplified SVG Icons to mimic lucide-react
 const Icons = {
     Search: (props) => (
@@ -112,8 +114,97 @@ const getCategoryIcon = (name = '') => {
     return Icons.Package;
 };
 
+const SortableSidebarItem = ({ category, isActive, isSortingMode, isHidingMode, onToggleHidden }) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging,
+    } = useSortable({ id: category.id, disabled: !isSortingMode });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        zIndex: isDragging ? 50 : 'auto',
+        position: 'relative',
+        opacity: isDragging ? 0.5 : (category.is_hidden && isHidingMode ? 0.5 : 1),
+        filter: category.is_hidden && isHidingMode ? 'grayscale(100%)' : 'none',
+    };
+
+    const Icon = getCategoryIcon(category.name);
+
+    // In hiding mode, we also want to prevent navigation, so use 'div'.
+    const Tag = (isSortingMode || isHidingMode) ? 'div' : Link;
+    const tagProps = (isSortingMode || isHidingMode) ? {} : { href: `/category/${category.slug}` };
+
+    const handleClick = (e) => {
+        if (isSortingMode) {
+            e.preventDefault();
+        }
+        if (isHidingMode) {
+            e.preventDefault();
+            onToggleHidden(category);
+        }
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+            <Tag
+                {...tagProps}
+                onClick={handleClick}
+                className={`w-full flex flex-col md:flex-row items-center gap-1 md:gap-2 px-1 md:px-2 py-3 md:py-1 transition-colors border-b border-gray-100 select-none ${isActive
+                    ? 'bg-red-50 text-red-700'
+                    : 'text-gray-600 hover:bg-gray-50'
+                    } ${(isSortingMode || isHidingMode) ? 'cursor-pointer' : ''} ${isSortingMode ? 'cursor-move' : ''}`}
+                title={category.name}
+            >
+                {/* ICON BLOCK */}
+                {category.icon ? (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
+                        <img
+                            src={category.icon_url || `/storage/${category.icon}`}
+                            alt={category.name}
+                            className={`w-full h-full object-contain relative z-10 ${isActive ? 'mix-blend-multiply' : ''}`}
+                            onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = '/icons/package.svg';
+                                e.target.style.padding = '8px';
+                            }}
+                            draggable={false}
+                        />
+                        {/* Hidden Indicator Overlay */}
+                        {Boolean(category.is_hidden) && isHidingMode && (
+                            <div className="absolute inset-0 bg-gray-500/50 flex items-center justify-center z-20">
+                                <Icons.X className="w-6 h-6 text-white" />
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0 relative">
+                        {Icon && typeof Icon === 'function' ? <Icon className="w-5 h-5" /> : <Icons.Package className="w-5 h-5" />}
+                        {Boolean(category.is_hidden) && isHidingMode && (
+                            <div className="absolute inset-0 bg-gray-500/50 rounded-full flex items-center justify-center z-20">
+                                <Icons.X className="w-6 h-6 text-white" />
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* TEXT BLOCK */}
+                <div className="flex-1 min-w-0 w-full md:w-auto">
+                    <p className={`text-[9px] font-medium leading-tight text-center md:text-left line-clamp-2 ${category.is_hidden && isHidingMode ? 'line-through text-gray-400' : ''}`}>
+                        {category.name}
+                    </p>
+                </div>
+            </Tag>
+        </div>
+    );
+};
+
 const MainLayout = ({ children, filters: propsFilters }) => {
-    const { categories = [], filters: pageFilters = {}, cart: pageCart = [], chatQueue: pageChatQueue = [], appName, brands = [] } = usePage().props;
+    const { categories = [], sidebarCategories = [], filters: pageFilters = {}, cart: pageCart = [], chatQueue: pageChatQueue = [], appName, brands = [] } = usePage().props;
     const { component, url } = usePage();
 
     // Schema.org Organization Data
@@ -156,6 +247,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const incrementCartQuantity = useStore((state) => state.incrementCartQuantity);
     const decrementCartQuantity = useStore((state) => state.decrementCartQuantity);
     const toggleChatQueue = useStore((state) => state.toggleChatQueue);
+    const showNotification = useStore((state) => state.showNotification);
     const cart = useStore((state) => state.cart);
     const chatQueue = useStore((state) => state.chatQueue);
 
@@ -175,6 +267,111 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const recognitionRef = useRef(null);
     const sortDropdownRef = useRef(null);
     const contentRef = useRef(null);
+
+    // Sortable state
+    const [sidebarItems, setSidebarItems] = useState(sidebarCategories.length > 0 ? sidebarCategories : categories.flatMap(cat => cat.children || []));
+    const [isSortingMode, setIsSortingMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('category_sort') === '1';
+        }
+        return false;
+    });
+    const [isHidingMode, setIsHidingMode] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('category_hide') === '1';
+        }
+        return false;
+    });
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('category_sort')) {
+                const sortParam = params.get('category_sort');
+                const newMode = sortParam === '1';
+                setIsSortingMode(newMode);
+                // If turning on sort, turn off hide
+                if (newMode) setIsHidingMode(false);
+                localStorage.setItem('category_sort', newMode ? '1' : '0');
+                if (newMode) localStorage.setItem('category_hide', '0');
+            }
+            if (params.has('category_hide')) {
+                const hideParam = params.get('category_hide');
+                const newMode = hideParam === '1';
+                setIsHidingMode(newMode);
+                // If turning on hide, turn off sort
+                if (newMode) setIsSortingMode(false);
+                localStorage.setItem('category_hide', newMode ? '1' : '0');
+                if (newMode) localStorage.setItem('category_sort', '0');
+            }
+        }
+    }, [url]);
+
+    const handleToggleHidden = (category) => {
+        // Optimistic update
+        setSidebarItems(items => items.map(item =>
+            item.id === category.id ? { ...item, is_hidden: !item.is_hidden } : item
+        ));
+
+        axios.post('/categories/toggle-hidden', { id: category.id })
+            .then(res => {
+                showNotification('Видимость обновлена', 'success');
+            })
+            .catch(err => {
+                console.error(err);
+                // Revert
+                setSidebarItems(items => items.map(item =>
+                    item.id === category.id ? { ...item, is_hidden: !item.is_hidden } : item
+                ));
+            });
+    };
+
+    useEffect(() => {
+        if (sidebarCategories.length > 0) {
+            setSidebarItems(sidebarCategories);
+        } else {
+            setSidebarItems(categories.flatMap(cat => cat.children || []));
+        }
+    }, [sidebarCategories, categories]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8,
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
+
+    const handleDragEnd = (event) => {
+        if (!isSortingMode) return;
+        const { active, over } = event;
+
+        if (active.id !== over.id) {
+            setSidebarItems((items) => {
+                const oldIndex = items.findIndex((item) => item.id === active.id);
+                const newIndex = items.findIndex((item) => item.id === over.id);
+
+                const newItems = arrayMove(items, oldIndex, newIndex);
+
+                // Save to backend
+                const reorderedData = newItems.map((item, index) => ({
+                    id: item.id,
+                    sort_order: index
+                }));
+
+                axios.post('/categories/reorder', { categories: reorderedData })
+                    .catch(error => {
+                        console.error('Failed to save order', error);
+                        // Optional: revert state on error
+                    });
+
+                return newItems;
+            });
+        }
+    };
 
     const sortOptions = [
         { label: 'Сначала новые', value: 'latest' },
@@ -800,48 +997,32 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     </button>
 
                     {/* Scrollable Categories */}
+                    {/* Scrollable Categories */}
                     <nav className="flex-1 overflow-y-auto sidebar-scroll py-2">
-                        {categories.flatMap(cat => cat.children || []).map(cat => {
-                            const Icon = getCategoryIcon(cat.name);
-                            const isActive = selectedCategory == cat.id || selectedCategory == cat.name || selectedCategory == cat.slug;
-                            return (
-                                <Link
-                                    key={cat.id}
-                                    href={`/category/${cat.slug}`}
-                                    className={`w-full flex flex-col md:flex-row items-center gap-1 md:gap-2 px-1 md:px-2 py-3 transition-colors ${isActive
-                                        ? 'bg-red-50 text-red-700'
-                                        : 'text-gray-600 hover:bg-gray-50'
-                                        }`}
-                                    title={cat.name}
-                                >
-                                    {/* ICON BLOCK */}
-                                    {cat.icon ? (
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden relative">
-                                            <img
-                                                src={cat.icon_url || `/storage/${cat.icon}`}
-                                                alt={cat.name}
-                                                className={`w-full h-full object-contain relative z-10 ${isActive ? 'mix-blend-multiply' : ''}`}
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.src = '/icons/package.svg';
-                                                }}
-                                            />
-                                        </div>
-                                    ) : (
-                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
-                                            {Icon && typeof Icon === 'function' ? <Icon className="w-5 h-5" /> : <Icons.Package className="w-5 h-5" />}
-                                        </div>
-                                    )}
-
-                                    {/* TEXT BLOCK */}
-                                    <div className="flex-1 min-w-0 w-full md:w-auto">
-                                        <p className="text-[9px] font-medium leading-tight text-center md:text-left line-clamp-2">
-                                            {cat.name}
-                                        </p>
-                                    </div>
-                                </Link>
-                            );
-                        })}
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={handleDragEnd}
+                        >
+                            <SortableContext
+                                items={sidebarItems}
+                                strategy={verticalListSortingStrategy}
+                            >
+                                {sidebarItems.map(cat => {
+                                    const isActive = selectedCategory == cat.id || selectedCategory == cat.name || selectedCategory == cat.slug;
+                                    return (
+                                        <SortableSidebarItem
+                                            key={cat.id}
+                                            category={cat}
+                                            isActive={isActive}
+                                            isSortingMode={isSortingMode}
+                                            isHidingMode={isHidingMode}
+                                            onToggleHidden={handleToggleHidden}
+                                        />
+                                    );
+                                })}
+                            </SortableContext>
+                        </DndContext>
                     </nav>
                 </aside>
 
@@ -852,9 +1033,9 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     className="flex-1 flex flex-col overflow-y-auto content-scroll"
                 >
                     {/* Sort & Search Header */}
-                    {!['Cart', 'Favorites', 'ProductDetail'].includes(component) && (
+                    {!['Cart', 'Favorites'].includes(component) && (
                         <div className="bg-white shadow-sm flex-shrink-0 sticky top-0 z-20">
-                            <div className="px-4 py-3">
+                            <div className="px-4 py-3 min-h-[64px] flex flex-col justify-center">
                                 <div className="flex items-center gap-4">
                                     <div className="flex-1 relative" ref={searchRef}>
                                         <form onSubmit={handleSearchSubmit} className="relative">
@@ -1069,47 +1250,51 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                     )}
                     {children}
 
-                    {/* Desktop Footer (Yandex Commercial Factors) */}
                     {!['Cart', 'Favorites'].includes(component) && (
-                        <footer className="bg-white border-t border-gray-100 mt-12 pb-32 pt-12 px-6 flex-shrink-0">
-                            <div className="mx-auto max-w-4xl">
-                                <div className="flex flex-col items-center space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-1.5 h-8 bg-red-500 rounded-full"></div>
-                                        <img src="/logo.svg" alt="A-toys" className="h-8 w-auto" />
+                        <footer className="bg-white border-t border-gray-100 mt-auto">
+                            <div className="w-full px-6 md:px-12 py-6 md:py-8">
+                                {/* Top Tier: Brand & Navigation */}
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6 md:mb-8">
+                                    {/* Brand */}
+                                    <div className="flex-shrink-0">
+                                        <Link href="/" className="flex items-center gap-3 group">
+                                            <div className="w-1.5 h-6 bg-red-500 rounded-full transition-all group-hover:h-8"></div>
+                                            <img src="/logo.svg" alt="A-toys" className="h-6 w-auto opacity-100 transition-opacity" />
+                                        </Link>
                                     </div>
 
-                                    <p className="text-xs text-gray-500 leading-relaxed text-center">
-                                        ООО "Адалт Тойс", УНП 192825568. <br />
-                                        Зарегистрировано в Торговом реестре РБ 12.05.2019. <br />
-                                        Свидетельство о гос. регистрации выдано Мингорисполкомом.
-                                    </p>
-
-                                    <div className="flex gap-4">
-                                        <a href="https://vk.com" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                                            <span className="text-[10px] font-bold">VK</span>
-                                        </a>
-                                        <a href="https://instagram.com" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-pink-500 hover:bg-pink-50 transition-all">
-                                            <span className="text-[10px] font-bold">IG</span>
-                                        </a>
-                                        <a href="https://t.me" target="_blank" rel="nofollow" className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-all">
-                                            <span className="text-[10px] font-bold">TG</span>
-                                        </a>
-                                    </div>
-
-                                    <nav className="flex items-center gap-2 text-sm text-gray-500">
-                                        <Link href="/about?section=delivery" className="hover:text-red-600 transition-colors">Доставка</Link>
-                                        <span className="text-gray-300">|</span>
-                                        <Link href="/about?section=payment" className="hover:text-red-600 transition-colors">Оплата</Link>
-                                        <span className="text-gray-300">|</span>
-                                        <Link href="/about" className="hover:text-red-600 transition-colors">Вопросы и ответы</Link>
-                                        <span className="text-gray-300">|</span>
-                                        <Link href="/about?section=we-are-here" className="hover:text-red-600 transition-colors">Как нас найти</Link>
+                                    {/* Navigation */}
+                                    <nav className="flex flex-wrap gap-6 text-xs font-medium">
+                                        <Link href="/about?section=delivery" className="text-gray-900 hover:text-red-600 transition-colors relative group">
+                                            Доставка
+                                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
+                                        </Link>
+                                        <Link href="/about?section=payment" className="text-gray-900 hover:text-red-600 transition-colors relative group">
+                                            Оплата
+                                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
+                                        </Link>
+                                        <Link href="/about" className="text-gray-900 hover:text-red-600 transition-colors relative group">
+                                            Вопросы и ответы
+                                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
+                                        </Link>
+                                        <Link href="/about?section=we-are-here" className="text-gray-900 hover:text-red-600 transition-colors relative group">
+                                            Как нас найти
+                                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
+                                        </Link>
                                     </nav>
                                 </div>
-                            </div>
-                            <div className="mx-auto border-t border-gray-50 mt-8 pt-6 text-center">
-                                <p className="text-[10px] text-gray-300">© 2019-{new Date().getFullYear()} A-Toys. Все права защищены. 18+</p>
+
+                                {/* Bottom Tier: Legal */}
+                                <div className="flex flex-col md:flex-row justify-between items-end gap-4 text-[10px] text-gray-400 font-medium tracking-wide">
+                                    <div className="space-y-1 max-w-xl flex flex-wrap gap-x-4">
+                                        <span>ООО "Адалт Тойс", УНП 192825568.</span>
+                                        <span>Зарегистрировано в Торговом реестре РБ 12.05.2019.</span>
+                                        <span>Свидетельство о гос. регистрации выдано Мингорисполкомом.</span>
+                                    </div>
+                                    <div className="text-right whitespace-nowrap">
+                                        <p>© 2019-{new Date().getFullYear()} A-Toys. Все права защищены. 18+</p>
+                                    </div>
+                                </div>
                             </div>
                         </footer>
                     )}

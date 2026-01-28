@@ -11,10 +11,13 @@
         "inertiajs/inertia-laravel": "^1.0",
         "intervention/image": "^3.11",
         "laravel/framework": "^11.0",
+        "laravel/reverb": "^1.7",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^10.23",
         "laravel/tinker": "^2.9",
-        "meilisearch/meilisearch-php": "^1.16"
+        "meilisearch/meilisearch-php": "^1.16",
+        "neuron-core/neuron-ai": "^2.11",
+        "neuron-core/neuron-laravel": "^0.3.4"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

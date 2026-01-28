@@ -2,7 +2,7 @@ import React from 'react';
 import MainLayout from '@/Layouts/MainLayout';
 import { Head, Link } from '@inertiajs/react';
 import ProductImageGallery from './ProductDetail/ProductImageGallery';
-import { ProductTitle, ProductActions, ImporterInfo } from './ProductDetail/ProductInfo';
+import { ProductHeader, ProductDescription, ProductActions, ImporterInfo, ProductBenefits, StmBlock } from './ProductDetail/ProductInfo';
 import ProductCard from '@/Components/ProductCard';
 import ProductSpecifications from './ProductDetail/ProductSpecifications';
 import ProductReviews from './ProductDetail/ProductReviews';
@@ -113,60 +113,38 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                 </script>
             </Head>
 
-            {/* Header / Back Link */}
-            <div className="bg-white shadow-sm flex-shrink-0 sticky top-0 z-10">
-                <div className="px-4 py-3 w-full flex items-center justify-between">
-                    <Link
-                        href={backUrl}
-                        className="flex items-center gap-2 hover:text-red-600 transition-colors text-gray-900"
-                    >
-                        <ChevronLeftIcon className="w-6 h-6" />
-                        <span className="font-semibold text-sm">Назад</span>
-                    </Link>
-
-                    {/* Breadcrumbs */}
-                    <nav className="hidden sm:flex items-center gap-2 text-[10px] font-medium text-gray-400">
-                        <Link href="/" className="hover:text-red-600 transition-colors">Главная</Link>
-                        <span>/</span>
-                        {product.category?.parent && (
-                            <>
-                                <Link href={`/category/${product.category.parent.slug}`} className="hover:text-red-600 transition-colors max-w-[100px] md:max-w-[150px] lg:max-w-[250px] truncate">{product.category.parent.name}</Link>
-                                <span>/</span>
-                            </>
-                        )}
-                        {product.category && (
-                            <>
-                                <Link href={`/category/${product.category.slug}`} className="hover:text-red-600 transition-colors max-w-[100px] md:max-w-[150px] lg:max-w-[250px] truncate">{product.category.name}</Link>
-                                <span>/</span>
-                            </>
-                        )}
-                        <span className="text-gray-900 max-w-[100px] md:max-w-[150px] lg:max-w-[250px] truncate">{product.name}</span>
-                    </nav>
-                </div>
-            </div>
 
             {/* Content Area */}
             <main className="bg-gray-50">
-                <div className="p-4 pb-32">
+                <div className="p-4">
                     {/* Single column layout for all screens */}
                     <div className="w-full space-y-6">
+                        {/* Product Header (Category, Rating, Title) */}
+                        <ProductHeader product={product} />
+
                         {/* Image Gallery */}
                         <ProductImageGallery product={product} />
 
-                        {/* Title + Specifications Grid */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Product Title & Description */}
-                            <ProductTitle product={product} />
+                        {/* Buy Button Block */}
+                        <ProductActions product={product} />
 
-                            {/* Specifications */}
-                            <ProductSpecifications parameters={product.parameters} />
-                        </div>
+                        {/* STM Block */}
+                        {product.is_stm && <StmBlock />}
+
+                        {/* Benefits Block */}
+                        <ProductBenefits product={product} />
+
+                        {/* Product Description */}
+                        <ProductDescription product={product} />
+
+                        {/* Specifications */}
+                        <ProductSpecifications parameters={product.parameters} />
 
                         {/* Importer Info */}
                         <ImporterInfo />
 
                         {/* Reviews */}
-                        <ProductReviews reviews={product.reviews} />
+                        <ProductReviews reviews={product.reviews} product={product} />
 
                         {/* Related Products */}
                         {relatedProducts.length > 0 && (
@@ -182,13 +160,6 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                     </div>
                 </div>
             </main>
-
-            {/* Fixed Bottom Actions Bar */}
-            <div className="fixed bottom-16 left-20 right-0 z-20">
-                <div className="p-4">
-                    <ProductActions product={product} />
-                </div>
-            </div>
         </MainLayout>
     );
 };

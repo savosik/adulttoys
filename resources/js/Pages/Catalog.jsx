@@ -164,7 +164,14 @@ const Catalog = (props) => {
         if (products.current_page === 1) {
             setItems(products.data || []);
         } else {
-            setItems(prev => [...prev, ...(products.data || [])]);
+            setItems(prev => {
+                const newItems = products.data || [];
+                const prevIds = new Set(prev.map(p => p.id));
+                const uniqueNewItems = newItems.filter(p => !prevIds.has(p.id));
+
+                if (uniqueNewItems.length === 0) return prev;
+                return [...prev, ...uniqueNewItems];
+            });
         }
         setIsLoading(false);
     }, [products]);
@@ -347,18 +354,99 @@ const Catalog = (props) => {
                 </div>
 
                 {/* SEO Text */}
-                {(currentCategory?.description || currentBrand?.description) && (
-                    <div className="bg-gray-50 border-t border-gray-100 mt-12 py-12">
-                        <div className="container mx-auto px-4 max-w-4xl">
-                            <section
-                                className="prose prose-red prose-sm sm:prose-base max-w-none text-gray-600"
-                                dangerouslySetInnerHTML={{ __html: currentCategory?.description || currentBrand?.description }}
-                            />
-                        </div>
-                    </div>
+                {(currentCategory || currentBrand) && (
+                    <CategoryDescription
+                        category={currentCategory}
+                        brand={currentBrand}
+                    />
                 )}
             </main>
         </>
+    );
+};
+
+const CategoryDescription = ({ category, brand }) => {
+    // If it's a brand, just show what we have (or implement brand generation later)
+    if (brand) {
+        if (!brand.description) return null;
+        return (
+            <div className="bg-gray-50 border-t border-gray-100 mt-12 py-12">
+                <div className="container mx-auto px-4 max-w-4xl">
+                    <section
+                        className="prose prose-red prose-sm sm:prose-base max-w-none text-gray-600"
+                        dangerouslySetInnerHTML={{ __html: brand.description }}
+                    />
+                </div>
+            </div>
+        );
+    }
+
+    if (!category) return null;
+
+    // Category Logic
+    const [description, setDescription] = useState(category.description || '');
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    useEffect(() => {
+        // Update local state when prop changes
+        setDescription(category.description || '');
+    }, [category.id]);
+
+    useEffect(() => {
+        const checkAndGenerate = async () => {
+            // Fish detection keywords (Gogol's Dead Souls usually used as fish in this project)
+            const fishMarkers = ['Собакевич', 'Ноздрев', 'Чичиков', 'Lorem', 'ipsum'];
+            const textToCheck = description || '';
+
+            const isFish = fishMarkers.some(marker => textToCheck.includes(marker));
+            const isTooShort = textToCheck.length < 50 && textToCheck.length > 0; // Empty might just mean no description yet, which is also a candidate, but let's focus on replacing bad text first. 
+            // Actually, if it's empty, we probably want to generate it too? 
+            // The prompt said "make it so useful SEO text is written on the fly".
+            // So empty is also a valid trigger.
+
+            const shouldGenerate = isFish || isTooShort || !textToCheck;
+
+            if (shouldGenerate && !isGenerating) {
+                setIsGenerating(true);
+                try {
+                    const response = await axios.post(`/api/categories/${category.slug}/description/generate`);
+                    if (response.data.description) {
+                        setDescription(response.data.description);
+                    }
+                } catch (error) {
+                    console.error('Failed to generate category description', error);
+                } finally {
+                    setIsGenerating(false);
+                }
+            }
+        };
+
+        // Small delay to allow initial render and avoid hydration mismatches if possible, 
+        // though useEffect runs client-side anyway.
+        const timer = setTimeout(checkAndGenerate, 1000);
+        return () => clearTimeout(timer);
+    }, [category.id, category.slug]); // Run when category changes
+
+    if (!description && !isGenerating) return null;
+
+    return (
+        <div className="bg-gray-50 border-t border-gray-100 mt-12 py-12">
+            <div className="container mx-auto px-4 max-w-4xl">
+                {isGenerating && (
+                    <div className="space-y-4 animate-pulse max-w-2xl mx-auto">
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                        <div className="h-4 bg-gray-200 rounded w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                        <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+                    </div>
+                )}
+
+                <section
+                    className={`prose prose-red prose-sm sm:prose-base max-w-none text-gray-600 transition-opacity duration-1000 ${isGenerating ? 'opacity-50 blur-sm' : 'opacity-100'}`}
+                    dangerouslySetInnerHTML={{ __html: description }}
+                />
+            </div>
+        </div>
     );
 };
 

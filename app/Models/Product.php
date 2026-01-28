@@ -20,6 +20,19 @@ class Product extends Model
                 $product->slug = Str::slug($product->name);
             }
         });
+
+        static::saving(function ($product) {
+            if ($product->brand_id) {
+                $brand = $product->relationLoaded('brand') ? $product->brand : $product->brand()->first();
+                if ($brand && in_array($brand->name, config('stm.brands', []))) {
+                    $product->is_stm = true;
+                } else {
+                    $product->is_stm = false;
+                }
+            } else {
+                $product->is_stm = false;
+            }
+        });
     }
 
     public function getRouteKeyName()
@@ -34,6 +47,8 @@ class Product extends Model
         'liquidation' => 'boolean',
         'for_marketplaces' => 'boolean',
         'created_at_source' => 'datetime',
+        'key_benefits' => 'array',
+        'is_stm' => 'boolean',
     ];
 
     public function brand()
@@ -78,6 +93,7 @@ class Product extends Model
             'in_stock' => $this->stock > 0,
             'hit' => (bool) $this->hit,
             'novelty' => (bool) $this->novelty,
+            'is_stm' => (bool) $this->is_stm,
             'created_at' => (int) $this->created_at?->timestamp,
         ];
 

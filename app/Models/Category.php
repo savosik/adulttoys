@@ -10,6 +10,8 @@ class Category extends Model
 {
     use Searchable;
     protected $guarded = [];
+    protected $fillable = ['name', 'slug', 'parent_id', 'icon', 'meta_title', 'meta_description', 'sort_order', 'is_hidden'];
+
 
     protected static function boot()
     {

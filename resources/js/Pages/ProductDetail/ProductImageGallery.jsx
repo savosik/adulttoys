@@ -68,15 +68,14 @@ const ProductImageGallery = ({ product }) => {
                                 slidesPerView: 4,
                                 slidesPerGroup: 4,
                             },
-                            // XL - 5 images
+                            // XL and above - 5 images max
                             1024: {
                                 slidesPerView: 5,
                                 slidesPerGroup: 5,
                             },
-                            // 2XL - 6 images
                             1280: {
-                                slidesPerView: 6,
-                                slidesPerGroup: 6,
+                                slidesPerView: 5,
+                                slidesPerGroup: 5,
                             }
                         }}
                         className="product-detail-swiper"
@@ -102,11 +101,6 @@ const ProductImageGallery = ({ product }) => {
                                                 e.target.src = 'https://placehold.co/400x400/e5e7eb/6b7280?text=No+Image';
                                             }}
                                         />
-                                        {product.old_price && idx === 0 && (
-                                            <div className="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-3 py-1.5 rounded-lg shadow-lg z-10">
-                                                -{Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
-                                            </div>
-                                        )}
                                     </div>
                                 </SwiperSlide>
                             ))

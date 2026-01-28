@@ -27,14 +27,18 @@
     23 => 'Inertia\\ServiceProvider',
     24 => 'Laravel\\Boost\\BoostServiceProvider',
     25 => 'Laravel\\Mcp\\Server\\McpServiceProvider',
-    26 => 'Laravel\\Roster\\RosterServiceProvider',
-    27 => 'Laravel\\Sail\\SailServiceProvider',
-    28 => 'Laravel\\Sanctum\\SanctumServiceProvider',
-    29 => 'Laravel\\Scout\\ScoutServiceProvider',
-    30 => 'Laravel\\Tinker\\TinkerServiceProvider',
-    31 => 'Carbon\\Laravel\\ServiceProvider',
-    32 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    33 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    26 => 'Laravel\\Reverb\\ApplicationManagerServiceProvider',
+    27 => 'Laravel\\Reverb\\ReverbServiceProvider',
+    28 => 'Laravel\\Roster\\RosterServiceProvider',
+    29 => 'Laravel\\Sail\\SailServiceProvider',
+    30 => 'Laravel\\Sanctum\\SanctumServiceProvider',
+    31 => 'Laravel\\Scout\\ScoutServiceProvider',
+    32 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    33 => 'Carbon\\Laravel\\ServiceProvider',
+    34 => 'NeuronAI\\Laravel\\NeuronAIServiceProvider',
+    35 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    36 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    37 => 'App\\Providers\\NeuronOpenRouterServiceProvider',
   ),
   'eager' => 
   array (
@@ -51,12 +55,15 @@
     10 => 'Inertia\\ServiceProvider',
     11 => 'Laravel\\Boost\\BoostServiceProvider',
     12 => 'Laravel\\Mcp\\Server\\McpServiceProvider',
-    13 => 'Laravel\\Roster\\RosterServiceProvider',
-    14 => 'Laravel\\Sanctum\\SanctumServiceProvider',
-    15 => 'Laravel\\Scout\\ScoutServiceProvider',
-    16 => 'Carbon\\Laravel\\ServiceProvider',
-    17 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
-    18 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    13 => 'Laravel\\Reverb\\ReverbServiceProvider',
+    14 => 'Laravel\\Roster\\RosterServiceProvider',
+    15 => 'Laravel\\Sanctum\\SanctumServiceProvider',
+    16 => 'Laravel\\Scout\\ScoutServiceProvider',
+    17 => 'Carbon\\Laravel\\ServiceProvider',
+    18 => 'NeuronAI\\Laravel\\NeuronAIServiceProvider',
+    19 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
+    20 => 'Termwind\\Laravel\\TermwindServiceProvider',
+    21 => 'App\\Providers\\NeuronOpenRouterServiceProvider',
   ),
   'deferred' => 
   array (
@@ -209,6 +216,8 @@
     'validator' => 'Illuminate\\Validation\\ValidationServiceProvider',
     'validation.presence' => 'Illuminate\\Validation\\ValidationServiceProvider',
     'Illuminate\\Contracts\\Validation\\UncompromisedVerifier' => 'Illuminate\\Validation\\ValidationServiceProvider',
+    'Laravel\\Reverb\\ApplicationManager' => 'Laravel\\Reverb\\ApplicationManagerServiceProvider',
+    'Laravel\\Reverb\\Contracts\\ApplicationProvider' => 'Laravel\\Reverb\\ApplicationManagerServiceProvider',
     'Laravel\\Sail\\Console\\InstallCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'Laravel\\Sail\\Console\\PublishCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'command.tinker' => 'Laravel\\Tinker\\TinkerServiceProvider',
@@ -252,6 +261,9 @@
     array (
     ),
     'Illuminate\\Validation\\ValidationServiceProvider' => 
+    array (
+    ),
+    'Laravel\\Reverb\\ApplicationManagerServiceProvider' => 
     array (
     ),
     'Laravel\\Sail\\SailServiceProvider' => 

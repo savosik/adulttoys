@@ -132,7 +132,7 @@ const Favorites = () => {
                 const transcript = event.results[0][0].transcript;
                 setSearchQuery(transcript);
                 setIsListening(false);
-                router.get('/catalog', { search: transcript });
+                router.get('/', { search: transcript });
             };
 
             recognitionRef.current.onerror = () => setIsListening(false);
@@ -146,7 +146,7 @@ const Favorites = () => {
     const handleSearchSubmit = (e) => {
         e?.preventDefault();
         if (searchQuery.trim()) {
-            router.get('/catalog', { search: searchQuery });
+            router.get('/', { search: searchQuery });
         }
     };
 
@@ -401,7 +401,7 @@ const Favorites = () => {
                                 Добавляйте понравившиеся товары, чтобы не потерять их
                             </p>
                             <Link
-                                href="/catalog"
+                                href="/"
                                 className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-colors"
                             >
                                 Перейти в каталог

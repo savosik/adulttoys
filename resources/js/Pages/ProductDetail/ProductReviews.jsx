@@ -1,6 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ProductReviews = ({ reviews = [] }) => {
+const ProductReviews = ({ reviews: initialReviews = [], product }) => {
+    const [reviews, setReviews] = useState(initialReviews);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (reviews.length === 0 && product?.slug && !isLoading) {
+            setIsLoading(true);
+            window.axios.post(`/api/products/${product.slug}/reviews/generate`)
+                .then(response => {
+                    setReviews(response.data.reviews);
+                })
+                .catch(error => {
+                    console.error('Failed to generate reviews', error);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+        }
+    }, [product?.slug]);
+
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-3">
@@ -8,7 +27,12 @@ const ProductReviews = ({ reviews = [] }) => {
                 <button className="text-red-600 text-xs font-semibold">Все ({reviews.length})</button>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {reviews.length > 0 ? (
+                {isLoading ? (
+                    <>
+                        <div className="bg-gray-50 p-4 rounded-xl animate-pulse h-24"></div>
+                        <div className="bg-gray-50 p-4 rounded-xl animate-pulse h-24"></div>
+                    </>
+                ) : reviews.length > 0 ? (
                     reviews.map((review) => (
                         <div key={review.id} className="bg-gray-50 p-4 rounded-xl">
                             <div className="flex justify-between mb-2">
@@ -23,7 +47,7 @@ const ProductReviews = ({ reviews = [] }) => {
                         </div>
                     ))
                 ) : (
-                    <p className="text-gray-500 text-xs text-center py-4">Отзывов пока нет</p>
+                    <p className="text-gray-500 text-xs text-center py-4">Нет отзывов</p>
                 )}
             </div>
         </div>

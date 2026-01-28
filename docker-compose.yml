@@ -11,6 +11,8 @@ services:
     volumes:
       - ./:/var/www
       - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    ports:
+      - "8081:8080"
     networks:
       - ecom_network
     depends_on:

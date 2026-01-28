@@ -16,7 +16,7 @@ export default function Welcome({ message }) {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                             <Link
-                                href="/catalog"
+                                href="/"
                                 className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg shadow-green-200"
                             >
                                 Go to Catalog
