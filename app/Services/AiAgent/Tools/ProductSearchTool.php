@@ -9,6 +9,8 @@ use App\Models\Product;
 
 class ProductSearchTool extends Tool
 {
+    use ProductSearchHelper;
+
     public function __construct()
     {
         parent::__construct(
@@ -36,14 +38,9 @@ class ProductSearchTool extends Tool
         }
 
         return $products->map(function ($product) {
-            return [
-                'id' => $product->id,
-                'name' => $product->name,
-                'price' => $product->price,
-                'slug' => $product->slug,
-                'image' => $product->image, // Assuming image field exists or accessor
-                'key_benefits' => $product->key_benefits,
-            ];
+            return $this->formatProductData($product, [
+               'image' => $product->image, // Keeping image if it exists
+            ]);
         })->toJson();
     }
 }

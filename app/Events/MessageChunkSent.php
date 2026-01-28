@@ -4,24 +4,22 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-use App\Models\ChatMessage;
-
-
-class MessageSent implements ShouldBroadcast
+class MessageChunkSent implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(public ChatMessage $message)
-    {
+    public function __construct(
+        public int $chatId,
+        public int $messageId,
+        public string $chunk
+    ) {
         //
     }
 
@@ -33,17 +31,24 @@ class MessageSent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('chat.' . $this->message->chat_id),
+            new Channel('chat.' . $this->chatId),
         ];
     }
-    
+
+    /**
+     * The event's broadcast name.
+     */
+    public function broadcastAs(): string
+    {
+        return 'message.streaming';
+    }
+
     public function broadcastWith(): array
     {
         return [
-            'id' => $this->message->id,
-            'role' => $this->message->role,
-            'content' => $this->message->content,
-            'created_at' => $this->message->created_at?->toIso8601String(),
+            'message_id' => $this->messageId,
+            'chunk' => $this->chunk,
         ];
     }
 }
+

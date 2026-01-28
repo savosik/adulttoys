@@ -26,7 +26,7 @@ class ChatController extends Controller
             $chat = Chat::create([
                 'user_id' => $user?->id,
                 'session_id' => session()->getId(),
-                'title' => substr($validated['message'], 0, 50),
+                'title' => mb_substr($validated['message'], 0, 50),
             ]);
         }
 
