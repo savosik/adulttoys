@@ -1,6 +1,6 @@
 import React from 'react';
 import MainLayout from '@/Layouts/MainLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
 import ProductImageGallery from './ProductDetail/ProductImageGallery';
 import { ProductHeader, ProductDescription, ProductActions, ImporterInfo, ProductBenefits, StmBlock } from './ProductDetail/ProductInfo';
 import ProductCard from '@/Components/ProductCard';
@@ -27,6 +27,9 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
         return queryString ? `${baseUrl}?${queryString}` : baseUrl;
     })();
 
+    const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://a-toys.by';
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : `${appUrl}${usePage().url}`;
+
     // Schema.org Product Data
     const productSchema = {
         "@context": "https://schema.org/",
@@ -44,7 +47,7 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
         },
         "offers": {
             "@type": "Offer",
-            "url": window.location.href,
+            "url": currentUrl,
             "priceCurrency": "BYN",
             "price": product.price,
             "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
@@ -79,25 +82,25 @@ const ProductDetail = ({ product, relatedProducts = [], categories, filters = {}
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Главная",
-                "item": window.location.origin
+                "item": appUrl
             },
             product.category?.parent && {
                 "@type": "ListItem",
                 "position": 2,
                 "name": product.category.parent.name,
-                "item": `${window.location.origin}/category/${product.category.parent.slug}`
+                "item": `${appUrl}/category/${product.category.parent.slug}`
             },
             product.category && {
                 "@type": "ListItem",
                 "position": product.category?.parent ? 3 : 2,
                 "name": product.category.name,
-                "item": `${window.location.origin}/category/${product.category.slug}`
+                "item": `${appUrl}/category/${product.category.slug}`
             },
             {
                 "@type": "ListItem",
                 "position": product.category?.parent ? 4 : (product.category ? 3 : 2),
                 "name": product.name,
-                "item": window.location.href
+                "item": currentUrl
             }
         ].filter(Boolean)
     };

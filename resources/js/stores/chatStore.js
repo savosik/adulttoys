@@ -5,6 +5,13 @@ export const useChatStore = create((set, get) => ({
     streamingMessageId: null,
     streamingContent: '',
     processingChatId: null, // Chat ID that is currently processing
+    isOpen: false,
+    draftMessage: '',
+
+    openChat: () => set({ isOpen: true }),
+    closeChat: () => set({ isOpen: false }),
+    toggleChat: () => set((state) => ({ isOpen: !state.isOpen })),
+    setDraftMessage: (message) => set({ draftMessage: message }),
 
     setMessages: (chatId, messages) => {
         set((state) => ({

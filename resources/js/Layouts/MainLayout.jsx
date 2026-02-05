@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ChatWindow from '@/Components/Chat/ChatWindow';
+import { useChatStore } from '@/stores/chatStore';
 import { Link, usePage, router, Head } from '@inertiajs/react';
 import axios from 'axios';
 import useStore from '@/store/useStore';
@@ -259,7 +260,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [isListening, setIsListening] = useState(false);
     const [showSortDropdown, setShowSortDropdown] = useState(false);
-    const [showChat, setShowChat] = useState(false);
+    const { isOpen: showChat, closeChat, toggleChat } = useChatStore();
     const [showCallModal, setShowCallModal] = useState(false);
     const [showMenuPanel, setShowMenuPanel] = useState(false);
     const [menuActiveTab, setMenuActiveTab] = useState('categories');
@@ -923,11 +924,11 @@ const MainLayout = ({ children, filters: propsFilters }) => {
             {/* Chat Window Modal/Overlay */}
             {showChat && (
                 <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center pointer-events-none">
-                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto" onClick={() => setShowChat(false)} />
+                    <div className="absolute inset-0 bg-black/20 backdrop-blur-sm pointer-events-auto" onClick={closeChat} />
                     <div className="bg-white w-full sm:w-[500px] h-full sm:h-[95vh] rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col pointer-events-auto animate-in slide-in-from-bottom-10 fade-in duration-300 relative z-10">
                         <div className="absolute top-2 right-2 z-20">
                             <button
-                                onClick={() => setShowChat(false)}
+                                onClick={closeChat}
                                 className="p-1.5 bg-white/80 hover:bg-white rounded-full text-gray-500 hover:text-gray-800 transition-colors shadow-sm"
                             >
                                 <Icons.X className="w-5 h-5" />
@@ -1346,7 +1347,7 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                         </Link>
 
                         <button
-                            onClick={() => setShowChat(!showChat)}
+                            onClick={toggleChat}
                             className="flex flex-col items-center gap-1 relative -mt-8"
                         >
                             <div className="w-14 h-14 bg-gradient-to-br from-red-400 to-red-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all active:scale-95 border-4 border-white relative">

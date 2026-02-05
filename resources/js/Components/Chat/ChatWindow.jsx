@@ -32,12 +32,21 @@ export default function ChatWindow() {
     const streamingMessageId = useChatStore((state) => state.streamingMessageId);
     const streamingContent = useChatStore((state) => state.streamingContent);
     const processingChatId = useChatStore((state) => state.processingChatId);
+    const draftMessage = useChatStore((state) => state.draftMessage);
 
     // Zustand store actions
-    const { addMessage, setProcessing, setMessages, stopProcessing } = useChatStore();
+    const { addMessage, setProcessing, setMessages, stopProcessing, setDraftMessage } = useChatStore();
 
     const isProcessing = processingChatId === chatId && !streamingMessageId;
     const isSending = !!streamingMessageId || isProcessing;
+
+    // Handle draft message
+    useEffect(() => {
+        if (draftMessage) {
+            setInput(draftMessage);
+            setDraftMessage('');
+        }
+    }, [draftMessage, setDraftMessage]);
 
     // Initial greeting
     useEffect(() => {
@@ -72,6 +81,13 @@ export default function ChatWindow() {
             }
         } catch (e) {
             console.error("Failed to load history", e);
+            if (e.response && e.response.status === 404) {
+                localStorage.removeItem('chat_id');
+                setChatId('init');
+                setMessages('init', [
+                    { id: 'init', role: 'assistant', content: 'Привет! Я ваш ИИ-помощник. Чем могу помочь?' }
+                ]);
+            }
         }
     };
 

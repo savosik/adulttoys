@@ -4,7 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+
         <title inertia>{{ ($page['props']['meta']['title'] ?? config('app.name', 'Laravel')) . ' - ' . config('app.name', 'Laravel') }}</title>
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
         
         <!-- Canonical URL -->
         <link rel="canonical" href="{{ url()->current() }}">

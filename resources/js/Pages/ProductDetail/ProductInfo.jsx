@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import useStore from '@/store/useStore';
+import { useChatStore } from '@/stores/chatStore';
 import { Link } from '@inertiajs/react';
 
 // Icons
@@ -232,6 +233,7 @@ export const ProductActions = ({ product }) => {
     const toggleFavorite = useStore((state) => state.toggleFavorite);
     const favorites = useStore((state) => state.favorites);
     const cart = useStore((state) => state.cart);
+    const { openChat, setDraftMessage } = useChatStore();
 
     const isProductFavorite = favorites.some(fav => fav.id === product.id);
 
@@ -313,13 +315,17 @@ export const ProductActions = ({ product }) => {
                 </div>
 
                 {/* Discuss with AI Button */}
-                <Link
-                    href={`/chat?message=Расскажи мне о товаре: ${product.name}`}
+                {/* Discuss with AI Button */}
+                <button
+                    onClick={() => {
+                        setDraftMessage(`Расскажи мне о товаре: ${product.name}`);
+                        openChat();
+                    }}
                     className="w-full mb-4 flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 font-bold py-3 rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100"
                 >
                     <Icons.Sparkles className="w-5 h-5" />
                     <span>Обсудить с ИИ агентом</span>
-                </Link>
+                </button>
 
                 {/* Warranty and Service Center Block */}
                 {/* Warranty and Service Center Block */}

@@ -15,7 +15,7 @@ class ProductSearchTool extends Tool
     {
         parent::__construct(
             name: 'product_search',
-            description: 'Search for products in the catalog based on keywords. Use this to find products when the user asks for suggestions or specific items.'
+            description: 'Search for products in the catalog based on keywords. You MUST provide the "query" parameter with the search terms. Use this to find products when the user asks for suggestions or specific items.'
         );
         
         $this->addProperty(

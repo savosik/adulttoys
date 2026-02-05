@@ -1,23 +1,23 @@
 {
-  "_MainLayout-kfLYubjd.js": {
-    "file": "assets/MainLayout-kfLYubjd.js",
+  "_MainLayout-BkPt7Uhk.js": {
+    "file": "assets/MainLayout-BkPt7Uhk.js",
     "name": "MainLayout",
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_vendor-inertia-CTBPnMsl.js",
-      "_useStore-DuB4Tk4X.js"
+      "_vendor-inertia-BrHcfDBl.js",
+      "_useStore-lGsnt2rf.js"
     ]
   },
-  "_ProductCard-mvMoDgIb.js": {
-    "file": "assets/ProductCard-mvMoDgIb.js",
+  "_ProductCard-ClKGMNci.js": {
+    "file": "assets/ProductCard-ClKGMNci.js",
     "name": "ProductCard",
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_vendor-inertia-CTBPnMsl.js",
+      "_vendor-inertia-BrHcfDBl.js",
       "_pagination-CV6Cq4kt.js",
-      "_useStore-DuB4Tk4X.js",
+      "_useStore-lGsnt2rf.js",
       "_imageHelper-Mbc89JsA.js"
     ]
   },
@@ -33,15 +33,15 @@
       "_vendor-swiper-CNwGi3cp.js"
     ]
   },
-  "_useStore-DuB4Tk4X.js": {
-    "file": "assets/useStore-DuB4Tk4X.js",
+  "_useStore-lGsnt2rf.js": {
+    "file": "assets/useStore-lGsnt2rf.js",
     "name": "useStore",
     "imports": [
       "_vendor-react-D8ePpywI.js"
     ]
   },
-  "_vendor-inertia-CTBPnMsl.js": {
-    "file": "assets/vendor-inertia-CTBPnMsl.js",
+  "_vendor-inertia-BrHcfDBl.js": {
+    "file": "assets/vendor-inertia-BrHcfDBl.js",
     "name": "vendor-inertia",
     "imports": [
       "_vendor-react-D8ePpywI.js"
@@ -56,112 +56,112 @@
     "name": "vendor-swiper"
   },
   "resources/js/Pages/About.jsx": {
-    "file": "assets/About-DLIQ90Ay.js",
+    "file": "assets/About-BTIHWRIU.js",
     "name": "About",
     "src": "resources/js/Pages/About.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_MainLayout-kfLYubjd.js",
-      "_vendor-inertia-CTBPnMsl.js",
+      "_MainLayout-BkPt7Uhk.js",
+      "_vendor-inertia-BrHcfDBl.js",
       "_pagination-CV6Cq4kt.js",
-      "_useStore-DuB4Tk4X.js",
+      "_useStore-lGsnt2rf.js",
       "_vendor-swiper-CNwGi3cp.js"
     ]
   },
   "resources/js/Pages/Cart.jsx": {
-    "file": "assets/Cart-DOdFvJeI.js",
+    "file": "assets/Cart-BWLonwCE.js",
     "name": "Cart",
     "src": "resources/js/Pages/Cart.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_MainLayout-kfLYubjd.js",
-      "_vendor-inertia-CTBPnMsl.js",
-      "_useStore-DuB4Tk4X.js"
+      "_MainLayout-BkPt7Uhk.js",
+      "_vendor-inertia-BrHcfDBl.js",
+      "_useStore-lGsnt2rf.js"
     ]
   },
   "resources/js/Pages/Catalog.jsx": {
-    "file": "assets/Catalog-BjJPrBpc.js",
+    "file": "assets/Catalog-CXPUXANN.js",
     "name": "Catalog",
     "src": "resources/js/Pages/Catalog.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_MainLayout-kfLYubjd.js",
-      "_vendor-inertia-CTBPnMsl.js",
-      "_useStore-DuB4Tk4X.js",
-      "_ProductCard-mvMoDgIb.js",
+      "_MainLayout-BkPt7Uhk.js",
+      "_vendor-inertia-BrHcfDBl.js",
+      "_useStore-lGsnt2rf.js",
+      "_ProductCard-ClKGMNci.js",
       "_pagination-CV6Cq4kt.js",
       "_vendor-swiper-CNwGi3cp.js",
       "_imageHelper-Mbc89JsA.js"
     ]
   },
   "resources/js/Pages/Chat.jsx": {
-    "file": "assets/Chat-DkBo_nmj.js",
+    "file": "assets/Chat-C8-SJSsI.js",
     "name": "Chat",
     "src": "resources/js/Pages/Chat.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
-      "_vendor-inertia-CTBPnMsl.js",
-      "_MainLayout-kfLYubjd.js",
+      "_vendor-inertia-BrHcfDBl.js",
+      "_MainLayout-BkPt7Uhk.js",
       "_vendor-react-D8ePpywI.js",
-      "_useStore-DuB4Tk4X.js"
+      "_useStore-lGsnt2rf.js"
     ]
   },
   "resources/js/Pages/Dashboard.jsx": {
-    "file": "assets/Dashboard-iDbKkLfG.js",
+    "file": "assets/Dashboard-88ZQO8gL.js",
     "name": "Dashboard",
     "src": "resources/js/Pages/Dashboard.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_vendor-inertia-CTBPnMsl.js"
+      "_vendor-inertia-BrHcfDBl.js"
     ]
   },
   "resources/js/Pages/Favorites.jsx": {
-    "file": "assets/Favorites-Ckqqkc20.js",
+    "file": "assets/Favorites-C3ccnQoK.js",
     "name": "Favorites",
     "src": "resources/js/Pages/Favorites.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_MainLayout-kfLYubjd.js",
-      "_vendor-inertia-CTBPnMsl.js",
+      "_MainLayout-BkPt7Uhk.js",
+      "_vendor-inertia-BrHcfDBl.js",
       "_pagination-CV6Cq4kt.js",
-      "_useStore-DuB4Tk4X.js",
+      "_useStore-lGsnt2rf.js",
       "_vendor-swiper-CNwGi3cp.js"
     ]
   },
   "resources/js/Pages/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-CCaLV1ZG.js",
+    "file": "assets/ProductDetail-BTrbhAc8.js",
     "name": "ProductDetail",
     "src": "resources/js/Pages/ProductDetail.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_MainLayout-kfLYubjd.js",
-      "_vendor-inertia-CTBPnMsl.js",
+      "_MainLayout-BkPt7Uhk.js",
+      "_vendor-inertia-BrHcfDBl.js",
       "resources/js/Pages/ProductDetail/ProductImageGallery.jsx",
       "resources/js/Pages/ProductDetail/ProductInfo.jsx",
-      "_ProductCard-mvMoDgIb.js",
+      "_ProductCard-ClKGMNci.js",
       "resources/js/Pages/ProductDetail/ProductSpecifications.jsx",
       "resources/js/Pages/ProductDetail/ProductReviews.jsx",
-      "_useStore-DuB4Tk4X.js",
+      "_useStore-lGsnt2rf.js",
       "_pagination-CV6Cq4kt.js",
       "_vendor-swiper-CNwGi3cp.js",
       "_imageHelper-Mbc89JsA.js"
     ]
   },
   "resources/js/Pages/ProductDetail/ProductImageGallery.jsx": {
-    "file": "assets/ProductImageGallery-BNp58R0Y.js",
+    "file": "assets/ProductImageGallery-mBLXNg2w.js",
     "name": "ProductImageGallery",
     "src": "resources/js/Pages/ProductDetail/ProductImageGallery.jsx",
     "isDynamicEntry": true,
@@ -170,62 +170,62 @@
       "_vendor-react-D8ePpywI.js",
       "_pagination-CV6Cq4kt.js",
       "_imageHelper-Mbc89JsA.js",
-      "_vendor-inertia-CTBPnMsl.js",
+      "_vendor-inertia-BrHcfDBl.js",
       "_vendor-swiper-CNwGi3cp.js"
     ]
   },
   "resources/js/Pages/ProductDetail/ProductInfo.jsx": {
-    "file": "assets/ProductInfo-CKdbRuOs.js",
+    "file": "assets/ProductInfo-CW_rB6f1.js",
     "name": "ProductInfo",
     "src": "resources/js/Pages/ProductDetail/ProductInfo.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_useStore-DuB4Tk4X.js",
-      "_vendor-inertia-CTBPnMsl.js"
+      "_useStore-lGsnt2rf.js",
+      "_vendor-inertia-BrHcfDBl.js"
     ]
   },
   "resources/js/Pages/ProductDetail/ProductReviews.jsx": {
-    "file": "assets/ProductReviews-BwAZWoFm.js",
+    "file": "assets/ProductReviews-CKCLMIlO.js",
     "name": "ProductReviews",
     "src": "resources/js/Pages/ProductDetail/ProductReviews.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_vendor-inertia-CTBPnMsl.js"
+      "_vendor-inertia-BrHcfDBl.js"
     ]
   },
   "resources/js/Pages/ProductDetail/ProductSpecifications.jsx": {
-    "file": "assets/ProductSpecifications-BBKy2Joz.js",
+    "file": "assets/ProductSpecifications-BvIPLgPx.js",
     "name": "ProductSpecifications",
     "src": "resources/js/Pages/ProductDetail/ProductSpecifications.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_vendor-inertia-CTBPnMsl.js"
+      "_vendor-inertia-BrHcfDBl.js"
     ]
   },
   "resources/js/Pages/Welcome.jsx": {
-    "file": "assets/Welcome-DtzGBwHr.js",
+    "file": "assets/Welcome-BN3nKYEC.js",
     "name": "Welcome",
     "src": "resources/js/Pages/Welcome.jsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.jsx",
       "_vendor-react-D8ePpywI.js",
-      "_vendor-inertia-CTBPnMsl.js"
+      "_vendor-inertia-BrHcfDBl.js"
     ]
   },
   "resources/js/app.jsx": {
-    "file": "assets/app-JFefIfGz.js",
+    "file": "assets/app-D56YkDlM.js",
     "name": "app",
     "src": "resources/js/app.jsx",
     "isEntry": true,
     "imports": [
-      "_vendor-inertia-CTBPnMsl.js",
+      "_vendor-inertia-BrHcfDBl.js",
       "_vendor-react-D8ePpywI.js"
     ],
     "dynamicImports": [
@@ -244,7 +244,7 @@
     ]
   },
   "style.css": {
-    "file": "assets/style-DflLSqfF.css",
+    "file": "assets/style-Dvm_goxz.css",
     "src": "style.css"
   }
 }
