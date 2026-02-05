@@ -42,3 +42,5 @@ Route::get('/api/products/{product}/benefits', [\App\Http\Controllers\ProductBen
 Route::post('/api/products/{product}/reviews/generate', [\App\Http\Controllers\ProductReviewController::class, 'generate'])->name('products.reviews.generate');
 Route::post('/api/products/{product}/description/enhance', [\App\Http\Controllers\ProductDescriptionController::class, 'enhance'])->name('products.description.enhance');
 Route::post('/api/categories/{category}/description/generate', [\App\Http\Controllers\CategoryDescriptionController::class, 'generate'])->name('categories.description.generate');
+
+Route::post('/api/user/currency', [\App\Http\Controllers\Api\UserController::class, 'updateCurrency'])->middleware(['auth', 'verified']);

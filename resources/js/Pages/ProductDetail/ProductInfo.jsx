@@ -230,13 +230,11 @@ export const ProductActions = ({ product }) => {
     const incrementCartQuantity = useStore((state) => state.incrementCartQuantity);
     const decrementCartQuantity = useStore((state) => state.decrementCartQuantity);
     const toggleFavorite = useStore((state) => state.toggleFavorite);
-    const toggleChatQueue = useStore((state) => state.toggleChatQueue);
     const favorites = useStore((state) => state.favorites);
     const cart = useStore((state) => state.cart);
-    const chatQueue = useStore((state) => state.chatQueue);
 
     const isProductFavorite = favorites.some(fav => fav.id === product.id);
-    const isInChatQueue = chatQueue.some(item => item.id === product.id);
+
     const cartItem = cart.find(item => item.id === product.id);
 
     return (
@@ -311,19 +309,7 @@ export const ProductActions = ({ product }) => {
                             }`} />
                     </button>
 
-                    {/* Chat Button */}
-                    <button
-                        onClick={() => toggleChatQueue(product)}
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${isInChatQueue
-                            ? 'bg-red-50 border-red-200'
-                            : 'bg-white border-gray-200 hover:border-gray-300'
-                            }`}
-                    >
-                        <Icons.MessageCircle className={`w-5 h-5 transition-all ${isInChatQueue
-                            ? 'fill-red-500 stroke-red-500'
-                            : 'text-gray-600'
-                            }`} />
-                    </button>
+
                 </div>
 
                 {/* Discuss with AI Button */}

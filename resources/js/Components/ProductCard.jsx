@@ -35,9 +35,8 @@ const ProductCard = ({ product, filters = {} }) => {
     const toggleFavorite = useStore((state) => state.toggleFavorite);
     const favorites = useStore((state) => state.favorites);
     const isFavorite = (id) => favorites.some(f => f.id === id);
-    const toggleChatQueue = useStore((state) => state.toggleChatQueue);
+
     const cart = useStore((state) => state.cart);
-    const chatQueue = useStore((state) => state.chatQueue);
 
     // Category icon modal state
     const [showIconModal, setShowIconModal] = useState(false);
@@ -139,11 +138,7 @@ const ProductCard = ({ product, filters = {} }) => {
         toggleFavorite(product);
     };
 
-    const handleAddToChat = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleChatQueue(product);
-    };
+
 
     const images = [
         product.image_main,
@@ -351,24 +346,7 @@ const ProductCard = ({ product, filters = {} }) => {
                                 );
                             })()}
 
-                            {/* Chat Button */}
-                            {(() => {
-                                const isInChat = chatQueue.some(item => item.id === product.id);
-                                return (
-                                    <button
-                                        onClick={handleAddToChat}
-                                        className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${isInChat
-                                            ? 'bg-red-50 border border-red-200'
-                                            : 'bg-gray-100 hover:bg-gray-200'
-                                            }`}
-                                    >
-                                        <Icons.MessageCircle className={`w-5 h-5 transition-all ${isInChat
-                                            ? 'fill-red-500 stroke-red-500'
-                                            : 'text-gray-600'
-                                            }`} />
-                                    </button>
-                                );
-                            })()}
+
                         </div>
                     </div>
                 </div>

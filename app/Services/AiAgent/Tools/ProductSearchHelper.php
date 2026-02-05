@@ -55,9 +55,16 @@ trait ProductSearchHelper
         $price = (float) $product->price;
         $stock = (int) $product->stock;
 
+        // Generate full URLs for the AI to include in responses
+        // image_main contains full external URL, no need to prefix with storage
+        $imageUrl = $product->image_main ?: null;
+        $productUrl = route('product.show', $product->slug);
+
         return array_merge([
             'id' => $product->id,
             'name' => $product->name,
+            'image_url' => $imageUrl,
+            'product_url' => $productUrl,
             'sku' => $product->sku,
             'code' => $product->code,
             'price' => $price,
