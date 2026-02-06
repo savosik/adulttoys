@@ -33,6 +33,7 @@ export default function ChatWindow() {
     const streamingContent = useChatStore((state) => state.streamingContent);
     const processingChatId = useChatStore((state) => state.processingChatId);
     const draftMessage = useChatStore((state) => state.draftMessage);
+    const shouldAutoSubmit = useChatStore((state) => state.shouldAutoSubmit);
 
     // Zustand store actions
     const { addMessage, setProcessing, setMessages, stopProcessing, setDraftMessage } = useChatStore();
@@ -40,13 +41,25 @@ export default function ChatWindow() {
     const isProcessing = processingChatId === chatId && !streamingMessageId;
     const isSending = !!streamingMessageId || isProcessing;
 
+    // Ref to hold the latest sendMessage function
+    const sendMessageRef = useRef(null);
+
     // Handle draft message
     useEffect(() => {
         if (draftMessage) {
             setInput(draftMessage);
             setDraftMessage('');
+            // Auto-submit if flag is set
+            if (shouldAutoSubmit) {
+                // Use setTimeout to allow input state to update first
+                setTimeout(() => {
+                    if (sendMessageRef.current) {
+                        sendMessageRef.current();
+                    }
+                }, 50);
+            }
         }
-    }, [draftMessage, setDraftMessage]);
+    }, [draftMessage, shouldAutoSubmit, setDraftMessage]);
 
     // Initial greeting
     useEffect(() => {
@@ -253,6 +266,9 @@ export default function ChatWindow() {
             stopProcessing();
         }
     };
+
+    // Keep sendMessageRef updated with latest function
+    sendMessageRef.current = sendMessage;
 
     return (
         <div className="flex flex-col h-full bg-[#8EBCDA] sm:rounded-lg overflow-hidden shadow-sm">

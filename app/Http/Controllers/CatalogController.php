@@ -167,6 +167,7 @@ class CatalogController extends Controller
                         $q->where('parent_id', $parentCategoryId);
                     });
             })
+            ->with(['brand', 'category', 'additionalImages'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
             ->limit(12)

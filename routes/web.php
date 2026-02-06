@@ -10,6 +10,7 @@ Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/', [CatalogController::class, 'index'])->name('catalog');
 Route::get('/category/{category:slug}', [CatalogController::class, 'index'])->name('category.show');
 Route::post('/order', [\App\Http\Controllers\OrderController::class, 'store'])->name('order.store');
+Route::post('/order/quick', [\App\Http\Controllers\OrderController::class, 'quickStore'])->name('order.quick');
 Route::get('/brand/{brand:slug}', [CatalogController::class, 'brandIndex'])->name('brand.show');
 
 Route::get('/about', function () {
@@ -20,6 +21,18 @@ Route::get('/about', function () {
 
 Route::get('/search/suggestions', [CatalogController::class, 'suggestions'])->name('search.suggestions');
 Route::get('/product/{product:slug}', [CatalogController::class, 'show'])->name('product.show');
+
+// Fallback route for old favorites data that may have ID instead of slug
+Route::get('/product/{id}', function ($id) {
+    // Check if it's numeric (ID) - if so, find product and redirect to slug
+    if (is_numeric($id)) {
+        $product = \App\Models\Product::find($id);
+        if ($product) {
+            return redirect()->route('product.show', $product->slug);
+        }
+    }
+    abort(404);
+})->where('id', '[0-9]+');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

@@ -9,6 +9,7 @@ import TypingText from '@/components/TypingText';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import AgeVerification, { isAgeVerified } from '@/Components/AgeVerification';
 // Simplified SVG Icons to mimic lucide-react
 const Icons = {
     Search: (props) => (
@@ -46,6 +47,9 @@ const Icons = {
     ),
     Zap: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></svg>
+    ),
+    Sparkles: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></svg>
     ),
     Heart: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /></svg>
@@ -266,6 +270,10 @@ const MainLayout = ({ children, filters: propsFilters }) => {
     const [menuActiveTab, setMenuActiveTab] = useState('categories');
     const [activeCategory, setActiveCategory] = useState(null);
     const [expandedMobileCategory, setExpandedMobileCategory] = useState(null);
+    const [ageVerified, setAgeVerified] = useState(() => {
+        if (typeof window === 'undefined') return true; // SSR safe
+        return isAgeVerified();
+    });
     const searchRef = useRef(null);
     const recognitionRef = useRef(null);
     const sortDropdownRef = useRef(null);
@@ -520,6 +528,10 @@ const MainLayout = ({ children, filters: propsFilters }) => {
 
     return (
         <div className="h-screen bg-gray-50 flex flex-col overflow-hidden font-sans">
+            {/* Age Verification Modal */}
+            {!ageVerified && (
+                <AgeVerification onVerified={() => setAgeVerified(true)} />
+            )}
             <Head>
                 <script type="application/ld+json">
                     {JSON.stringify(organizationSchema)}
@@ -1350,15 +1362,15 @@ const MainLayout = ({ children, filters: propsFilters }) => {
                             onClick={toggleChat}
                             className="flex flex-col items-center gap-1 relative -mt-8"
                         >
-                            <div className="w-14 h-14 bg-gradient-to-br from-red-400 to-red-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all active:scale-95 border-4 border-white relative">
-                                <Icons.MessageCircle className="w-7 h-7 text-white" />
+                            <div className="w-14 h-14 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all active:scale-95 border-4 border-white relative">
+                                <Icons.Sparkles className="w-7 h-7 text-white" />
                                 {chatQueueCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-white text-[10px] flex items-center justify-center font-bold border-2 border-white">
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-indigo-500 rounded-full text-white text-[10px] flex items-center justify-center font-bold border-2 border-white">
                                         {chatQueueCount}
                                     </span>
                                 )}
                             </div>
-                            <span className="text-[9px] font-medium text-gray-700 leading-tight text-center mt-1">Чат</span>
+                            <span className="text-[9px] font-medium text-gray-700 leading-tight text-center mt-1">ИИ помощник</span>
                         </button>
 
                         <Link href="/cart" className="flex flex-col items-center gap-1 relative group">

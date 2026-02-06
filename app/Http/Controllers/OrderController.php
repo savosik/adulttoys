@@ -101,4 +101,57 @@ class OrderController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Quick order - simplified order with just phone number
+     */
+    public function quickStore(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'customer_phone' => 'required|string|min:10',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Fetch the product
+            $product = \App\Models\Product::findOrFail($validated['product_id']);
+
+            $order = Order::create([
+                'status' => 'new',
+                'delivery_method' => 'pickup', // Default to pickup for quick orders
+                'payment_method' => 'on_receipt',
+                'delivery_cost' => 0, // Pickup is free
+                'total_amount' => $product->price,
+                'customer_name' => 'Быстрый заказ', // Will be clarified during call
+                'customer_phone' => $validated['customer_phone'],
+                'delivery_data' => [],
+                'comment' => 'Быстрый заказ - уточнить данные при звонке',
+            ]);
+
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => 1,
+                'price' => $product->price,
+                'product_name' => $product->name,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Быстрый заказ успешно оформлен',
+                'order_id' => $order->id,
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Ошибка при оформлении заказа: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

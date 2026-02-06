@@ -7,11 +7,12 @@ export const useChatStore = create((set, get) => ({
     processingChatId: null, // Chat ID that is currently processing
     isOpen: false,
     draftMessage: '',
+    shouldAutoSubmit: false,
 
     openChat: () => set({ isOpen: true }),
     closeChat: () => set({ isOpen: false }),
     toggleChat: () => set((state) => ({ isOpen: !state.isOpen })),
-    setDraftMessage: (message) => set({ draftMessage: message }),
+    setDraftMessage: (message, autoSubmit = false) => set({ draftMessage: message, shouldAutoSubmit: autoSubmit }),
 
     setMessages: (chatId, messages) => {
         set((state) => ({

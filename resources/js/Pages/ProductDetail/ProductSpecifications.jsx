@@ -3,14 +3,17 @@ import React from 'react';
 const ProductSpecifications = ({ parameters }) => {
     const [isExpanded, setIsExpanded] = React.useState(false);
 
-    if (!parameters || parameters.length === 0) {
+    // Filter out parameters with value "Нет"
+    const filteredParameters = (parameters || []).filter(param => param.value !== 'Нет');
+
+    if (filteredParameters.length === 0) {
         return null;
     }
 
     // Always show at least 3 items, otherwise 30%
-    const initialCount = Math.max(3, Math.ceil(parameters.length * 0.3));
-    const displayedParams = isExpanded ? parameters : parameters.slice(0, initialCount);
-    const hasMore = parameters.length > initialCount;
+    const initialCount = Math.max(3, Math.ceil(filteredParameters.length * 0.3));
+    const displayedParams = isExpanded ? filteredParameters : filteredParameters.slice(0, initialCount);
+    const hasMore = filteredParameters.length > initialCount;
 
     return (
         <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -30,7 +33,7 @@ const ProductSpecifications = ({ parameters }) => {
                         onClick={() => setIsExpanded(!isExpanded)}
                         className="text-sm font-medium text-red-500 hover:text-red-600 transition-colors"
                     >
-                        {isExpanded ? 'Скрыть' : `Показать все (${parameters.length})`}
+                        {isExpanded ? 'Скрыть' : `Показать все (${filteredParameters.length})`}
                     </button>
                 </div>
             )}

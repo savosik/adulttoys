@@ -6,6 +6,7 @@ import { Pagination, Navigation } from 'swiper/modules';
 import useStore from '@/store/useStore';
 import { generateResponsiveImageProps, getThumbnailUrl } from '@/helpers/imageHelper';
 import SetCategoryIconModal from '@/Components/SetCategoryIconModal';
+import AskAiButton from '@/Components/AskAiButton';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -346,7 +347,8 @@ const ProductCard = ({ product, filters = {} }) => {
                                 );
                             })()}
 
-
+                            {/* Ask AI Button */}
+                            <AskAiButton productName={product.name} />
                         </div>
                     </div>
                 </div>

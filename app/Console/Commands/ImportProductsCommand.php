@@ -115,9 +115,6 @@ class ImportProductsCommand extends Command
                     'description_html' => $item['description_html'] ?? null,
                     'short_description' => $item['short_description'] ?? null,
                     'image_main' => $item['image_main'] ?? null,
-                    'price' => $price = rand(1000, 50000),
-                    'old_price' => rand(0, 1) ? $price + rand(500, 10000) : null,
-                    'stock' => rand(0, 50),
                     'group_code' => $item['group_code'] ?? null,
                     'group_name' => $item['group_name'] ?? null,
                 ]

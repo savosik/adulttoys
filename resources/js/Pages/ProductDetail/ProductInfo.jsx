@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import useStore from '@/store/useStore';
 import { useChatStore } from '@/stores/chatStore';
 import { Link } from '@inertiajs/react';
+import QuickOrderModal from '@/Components/QuickOrderModal';
 
 // Icons
 const Icons = {
@@ -25,6 +26,9 @@ const Icons = {
     ),
     Shield: (props) => (
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></svg>
+    ),
+    Zap: (props) => (
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z" /></svg>
     ),
 };
 
@@ -234,144 +238,163 @@ export const ProductActions = ({ product }) => {
     const favorites = useStore((state) => state.favorites);
     const cart = useStore((state) => state.cart);
     const { openChat, setDraftMessage } = useChatStore();
+    const [isQuickOrderOpen, setIsQuickOrderOpen] = useState(false);
 
     const isProductFavorite = favorites.some(fav => fav.id === product.id);
 
     const cartItem = cart.find(item => item.id === product.id);
 
     return (
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
-            <div className="p-3">
-                {/* Compact Price Line */}
-                <div className="flex items-center gap-3 mb-3 flex-wrap">
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-bold text-gray-900">
-                            {new Intl.NumberFormat('ru-RU').format(product.price)}
-                        </span>
-                        <span className="text-base font-bold text-gray-900">BYN</span>
+        <>
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-200">
+                <div className="p-3">
+                    {/* Compact Price Line */}
+                    <div className="flex items-center gap-3 mb-3 flex-wrap">
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-2xl font-bold text-gray-900">
+                                {new Intl.NumberFormat('ru-RU').format(product.price)}
+                            </span>
+                            <span className="text-base font-bold text-gray-900">BYN</span>
+                        </div>
+
+                        {product.old_price && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-400 line-through">
+                                    {new Intl.NumberFormat('ru-RU').format(product.old_price)} BYN
+                                </span>
+                                <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
+                                    -{Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    {/* Action Buttons */}
+                    <div className="flex gap-2 mb-4">
+                        {/* Add to Cart Button */}
+                        {cartItem ? (
+                            <div className="flex-1 flex items-center bg-green-600 rounded-xl overflow-hidden h-12">
+                                <button
+                                    onClick={() => decrementCartQuantity(product.id)}
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-green-700 transition-colors text-white font-bold text-lg"
+                                >
+                                    −
+                                </button>
+                                <div className="flex-1 text-center">
+                                    <div className="text-white font-bold text-base">{cartItem.quantity}</div>
+                                </div>
+                                <button
+                                    onClick={() => incrementCartQuantity(product.id)}
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-green-700 transition-colors text-white font-bold text-lg"
+                                >
+                                    +
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                onClick={() => product.stock > 0 && addToCart(product)}
+                                className={`flex-1 h-12 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${product.stock <= 0
+                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                                    : 'bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl'
+                                    }`}
+                                disabled={product.stock <= 0}
+                            >
+                                <Icons.ShoppingCart className="w-5 h-5" />
+                                <span>{product.stock <= 0 ? 'Нет в наличии' : 'В корзину'}</span>
+                            </button>
+                        )}
+
+                        {/* Favorites Button */}
+                        <button
+                            onClick={() => toggleFavorite(product)}
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${isProductFavorite
+                                ? 'bg-red-50 border-red-200'
+                                : 'bg-white border-gray-200 hover:border-gray-300'
+                                }`}
+                        >
+                            <Icons.Heart className={`w-5 h-5 transition-all ${isProductFavorite
+                                ? 'fill-red-500 stroke-red-500'
+                                : 'text-gray-600'
+                                }`} />
+                        </button>
+
+
                     </div>
 
-                    {product.old_price && (
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-400 line-through">
-                                {new Intl.NumberFormat('ru-RU').format(product.old_price)} BYN
-                            </span>
-                            <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded shadow-sm">
-                                -{Math.round(((product.old_price - product.price) / product.old_price) * 100)}%
-                            </span>
-                        </div>
-                    )}
-                </div>
-                {/* Action Buttons */}
-                <div className="flex gap-2 mb-4">
-                    {/* Add to Cart Button */}
-                    {cartItem ? (
-                        <div className="flex-1 flex items-center bg-green-600 rounded-xl overflow-hidden h-12">
-                            <button
-                                onClick={() => decrementCartQuantity(product.id)}
-                                className="w-12 h-12 flex items-center justify-center hover:bg-green-700 transition-colors text-white font-bold text-lg"
-                            >
-                                −
-                            </button>
-                            <div className="flex-1 text-center">
-                                <div className="text-white font-bold text-base">{cartItem.quantity}</div>
-                            </div>
-                            <button
-                                onClick={() => incrementCartQuantity(product.id)}
-                                className="w-12 h-12 flex items-center justify-center hover:bg-green-700 transition-colors text-white font-bold text-lg"
-                            >
-                                +
-                            </button>
-                        </div>
-                    ) : (
+                    {/* Quick Order Button */}
+                    {product.stock > 0 && (
                         <button
-                            onClick={() => product.stock > 0 && addToCart(product)}
-                            className={`flex-1 h-12 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${product.stock <= 0
-                                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                : 'bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl'
-                                }`}
-                            disabled={product.stock <= 0}
+                            onClick={() => setIsQuickOrderOpen(true)}
+                            className="w-full mb-3 flex items-center justify-center gap-2 bg-gray-50 text-gray-700 font-bold py-3 rounded-xl hover:bg-gray-100 transition-colors border border-gray-200"
                         >
-                            <Icons.ShoppingCart className="w-5 h-5" />
-                            <span className="text-sm">{product.stock <= 0 ? 'Нет в наличии' : 'В корзину'}</span>
+                            <Icons.Zap className="w-5 h-5" />
+                            <span>Быстрый заказ</span>
                         </button>
                     )}
 
-                    {/* Favorites Button */}
+                    {/* Discuss in Chat Button */}
                     <button
-                        onClick={() => toggleFavorite(product)}
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all border-2 ${isProductFavorite
-                            ? 'bg-red-50 border-red-200'
-                            : 'bg-white border-gray-200 hover:border-gray-300'
-                            }`}
+                        onClick={() => {
+                            setDraftMessage(`Расскажи мне о товаре: ${product.name}`, true);
+                            openChat();
+                        }}
+                        className="w-full mb-4 flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 font-bold py-3 rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100"
                     >
-                        <Icons.Heart className={`w-5 h-5 transition-all ${isProductFavorite
-                            ? 'fill-red-500 stroke-red-500'
-                            : 'text-gray-600'
-                            }`} />
+                        <Icons.Sparkles className="w-5 h-5" />
+                        <span>Спросить у ИИ помощника</span>
                     </button>
 
-
-                </div>
-
-                {/* Discuss with AI Button */}
-                {/* Discuss with AI Button */}
-                <button
-                    onClick={() => {
-                        setDraftMessage(`Расскажи мне о товаре: ${product.name}`);
-                        openChat();
-                    }}
-                    className="w-full mb-4 flex items-center justify-center gap-2 bg-indigo-50 text-indigo-700 font-bold py-3 rounded-xl hover:bg-indigo-100 transition-colors border border-indigo-100"
-                >
-                    <Icons.Sparkles className="w-5 h-5" />
-                    <span>Обсудить с ИИ агентом</span>
-                </button>
-
-                {/* Warranty and Service Center Block */}
-                {/* Warranty and Service Center Block */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-3 border-t border-gray-100">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                            <Icons.Shield className="w-4 h-4 text-green-600" />
-                        </div>
-                        <div>
-                            <div className="text-xs font-bold text-gray-900 mb-0.5">Гарантия {product.is_stm ? '2 года' : '1 год'}</div>
-                            <div className="text-[10px] sm:text-xs text-gray-500 leading-tight">
-                                Сервисный центр: г. Минск, пр-т Победителей 57
-                            </div>
-                        </div>
-                    </div>
-
-                    {product.brand?.name === 'Satisfyer' && (
-                        <div className="flex items-start gap-3 border-l border-gray-100 pl-4 sm:border-l-0 sm:pl-0 sm:border-l sm:border-gray-100 sm:pl-4">
+                    {/* Warranty and Service Center Block */}
+                    {/* Warranty and Service Center Block */}
+                    <div className="flex flex-col sm:flex-row gap-4 pt-3 border-t border-gray-100">
+                        <div className="flex items-start gap-3">
                             <div className="flex-shrink-0 mt-0.5">
-                                <Icons.Shield className="w-4 h-4 text-purple-600" />
+                                <Icons.Shield className="w-4 h-4 text-green-600" />
                             </div>
                             <div>
-                                <div className="text-xs font-bold text-gray-900 mb-0.5">Гарантия производителя 15 лет.</div>
-                                <a
-                                    href="https://www.satisfyer.com/guarantee"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[10px] sm:text-xs text-gray-500 hover:text-red-600 transition-colors leading-tight underline decoration-gray-300 underline-offset-2"
-                                >
-                                    Условия гарантии
-                                </a>
+                                <div className="text-xs font-bold text-gray-900 mb-0.5">Гарантия {product.is_stm ? '2 года' : '1 год'}</div>
+                                <div className="text-[10px] sm:text-xs text-gray-500 leading-tight">
+                                    Сервисный центр: г. Минск, пр-т Победителей 57
+                                </div>
                             </div>
                         </div>
-                    )}
-                </div>
 
-                {/* Anonymity Assurance Block */}
-                <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-3">
-                    <div className="flex-shrink-0 bg-gray-100 p-1.5 rounded-lg">
-                        <Icons.Shield className="w-4 h-4 text-gray-500" />
+                        {product.brand?.name === 'Satisfyer' && (
+                            <div className="flex items-start gap-3 border-l border-gray-100 pl-4 sm:border-l-0 sm:pl-0 sm:border-l sm:border-gray-100 sm:pl-4">
+                                <div className="flex-shrink-0 mt-0.5">
+                                    <Icons.Shield className="w-4 h-4 text-purple-600" />
+                                </div>
+                                <div>
+                                    <div className="text-xs font-bold text-gray-900 mb-0.5">Гарантия производителя 15 лет.</div>
+                                    <a
+                                        href="https://www.satisfyer.com/guarantee"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[10px] sm:text-xs text-gray-500 hover:text-red-600 transition-colors leading-tight underline decoration-gray-300 underline-offset-2"
+                                    >
+                                        Условия гарантии
+                                    </a>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                    <div className="text-xs text-gray-500 font-medium">
-                        100% анонимно. Закрытая упаковка. Конфиденциальность покупки.
+
+                    {/* Anonymity Assurance Block */}
+                    <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-3">
+                        <div className="flex-shrink-0 bg-gray-100 p-1.5 rounded-lg">
+                            <Icons.Shield className="w-4 h-4 text-gray-500" />
+                        </div>
+                        <div className="text-xs text-gray-500 font-medium">
+                            100% анонимно. Закрытая упаковка. Конфиденциальность покупки.
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+
+            <QuickOrderModal
+                isOpen={isQuickOrderOpen}
+                onClose={() => setIsQuickOrderOpen(false)}
+                product={product}
+            />
+        </>
     );
 };
